@@ -6,6 +6,7 @@
 
 @theme inline {
   --color-background: var(--background);
+  --color-canvas: var(--canvas);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-sans);
   --font-mono: var(--font-geist-mono);
@@ -49,75 +50,77 @@
 }
 
 :root {
-  /* Palette chiara "Vendere Casa da Privato"
-     bianco #FFFFFF · inchiostro blu notte #0F1E33 · grigio blu #5B6676
-     verde bosco #1E5A47 · superficie #F6F7F9 · bordo #E4E7EC */
+  /* Tema chiaro — bianco, inchiostro blu notte, accento blu */
   --background: #ffffff;
   --foreground: #0f1e33;
   --card: #ffffff;
   --card-foreground: #0f1e33;
   --popover: #ffffff;
   --popover-foreground: #0f1e33;
-  --primary: #0f1e33;
+  --primary: #2b5bd7;
   --primary-foreground: #ffffff;
   --secondary: #f1f3f6;
   --secondary-foreground: #0f1e33;
-  --muted: #f6f7f9;
+  --muted: #f5f6f8;
   --muted-foreground: #5b6676;
-  --accent: #e7f0ec;
-  --accent-foreground: #1e5a47;
+  --accent: #e9effc;
+  --accent-foreground: #1f47b0;
   --destructive: oklch(0.577 0.245 27.325);
   --border: #e4e7ec;
   --input: #e4e7ec;
-  --ring: #1e5a47;
-  --chart-1: #0f1e33;
-  --chart-2: #1e5a47;
-  --chart-3: #3d6b9a;
-  --chart-4: #6f9d8a;
+  --ring: #2b5bd7;
+  --chart-1: #2b5bd7;
+  --chart-2: #6b95ff;
+  --chart-3: #0f1e33;
+  --chart-4: #9aa8bd;
   --chart-5: #5b6676;
-  --radius: 0.625rem;
-  --sidebar: #f6f7f9;
+  --radius: 0.75rem;
+  --sidebar: #ffffff;
   --sidebar-foreground: #5b6676;
-  --sidebar-primary: #1e5a47;
+  --sidebar-primary: #2b5bd7;
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e9edf2;
-  --sidebar-accent-foreground: #0f1e33;
+  --sidebar-accent: #e9effc;
+  --sidebar-accent-foreground: #1f47b0;
   --sidebar-border: #e4e7ec;
-  --sidebar-ring: #1e5a47;
+  --sidebar-ring: #2b5bd7;
+  /* Sfondo dell'area contenuti, leggermente diverso dalle superfici. */
+  --canvas: #f5f6f8;
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
+  /* Tema scuro — quasi nero, riquadri grigio antracite, accento blu */
+  --background: #0e1116;
+  --foreground: #e8ebf0;
+  --card: #161a21;
+  --card-foreground: #e8ebf0;
+  --popover: #161a21;
+  --popover-foreground: #e8ebf0;
+  --primary: #6b95ff;
+  --primary-foreground: #0b1222;
+  --secondary: #1d222b;
+  --secondary-foreground: #e8ebf0;
+  --muted: #1d222b;
+  --muted-foreground: #8b94a4;
+  --accent: #1a2540;
+  --accent-foreground: #9db8ff;
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
+  --border: #252b35;
+  --input: #2b3240;
+  --ring: #6b95ff;
+  --chart-1: #6b95ff;
+  --chart-2: #3d66d6;
+  --chart-3: #9db8ff;
+  --chart-4: #5b6676;
+  --chart-5: #e8ebf0;
+  --sidebar: #0e1116;
+  --sidebar-foreground: #8b94a4;
+  --sidebar-primary: #6b95ff;
+  --sidebar-primary-foreground: #0b1222;
+  --sidebar-accent: #1a2540;
+  --sidebar-accent-foreground: #9db8ff;
+  --sidebar-border: #1f242d;
+  --sidebar-ring: #6b95ff;
+  --canvas: #0e1116;
 }
 
 @layer base {

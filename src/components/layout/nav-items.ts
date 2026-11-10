@@ -65,8 +65,18 @@ export function isVoceAttiva(pathname: string, href: string, radice: string) {
  *  componenti client, perché le icone sono funzioni e non possono attraversare
  *  il confine server → client. */
 export const aree = {
-  cliente: { voci: navigazioneCliente, radice: "/dashboard" },
-  admin: { voci: navigazioneAdmin, radice: "/admin" },
+  cliente: {
+    voci: navigazioneCliente,
+    radice: "/dashboard",
+    nome: "La tua area",
+    etichettaNav: "Navigazione principale",
+  },
+  admin: {
+    voci: navigazioneAdmin,
+    radice: "/admin",
+    nome: "Amministrazione",
+    etichettaNav: "Navigazione amministrazione",
+  },
 } as const;
 
 export type Area = keyof typeof aree;

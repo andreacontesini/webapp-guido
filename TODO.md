@@ -15,6 +15,7 @@
 - [x] Pensare un layout più moderno, con sidebar di navigazione e aspetto leggermente più dark
 - [x] Dammi le indicazioni per pubblicare il progetto su vercel
 - [x] Font: Geist (default del preset shadcn base-nova), classi tipografiche standard
+- [x] Nuovo design: sidebar a icone, griglia bento, tema chiaro/scuro selezionabile, accento blu
 
 
 ### Fase 2: Database & Autenticazione Core
