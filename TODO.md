@@ -14,7 +14,7 @@
 - [x] Sistemare tutti gli errori presenti di next
 - [x] Pensare un layout più moderno, con sidebar di navigazione e aspetto leggermente più dark
 - [x] Dammi le indicazioni per pubblicare il progetto su vercel
-- [ ] Utilizziamo l'inter come font per l'app
+- [x] Utilizziamo l'inter come font per l'app
 
 
 ### Fase 2: Database & Autenticazione Core

@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   outputFileTracingRoot: radiceProgetto,
+  // In basso a sinistra coprirebbe il piede della sidebar.
+  devIndicators: { position: "bottom-right" },
   turbopack: {
     root: radiceProgetto,
     rules: {
