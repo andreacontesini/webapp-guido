@@ -16,6 +16,9 @@
 - [x] Dammi le indicazioni per pubblicare il progetto su vercel
 - [x] Font: Geist (default del preset shadcn base-nova), classi tipografiche standard
 - [x] Nuovo design: sidebar a icone, griglia bento, tema chiaro/scuro selezionabile, accento blu
+- [x] Raggi ridotti (base `0.5rem`, pulsanti più squadrati)
+- [x] Prima pubblicazione su Vercel con dominio `app.guidocontesini.it` (CNAME su DNS Aruba)
+- [x] Errore di idratazione in sviluppo: causato dall'estensione Chrome "Directo", non dal codice (va limitata in `chrome://extensions`)
 
 
 ### Fase 2: Database & Autenticazione Core
