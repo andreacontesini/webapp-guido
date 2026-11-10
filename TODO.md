@@ -7,10 +7,10 @@
 ## 🟢 FASE BETA (Focus: Core, Auth & Guida PDF)
 
 ### Fase 1: Setup & Design System
-- [ ] Inizializzare Next.js (App Router, TS, Tailwind CSS).
-- [ ] Configurare shadcn/ui (solo in lingua italiana).
-- [ ] Creare layout base mobile-first per `/dashboard` e layout desktop per `/admin`.
-- [ ] Configurare `.env.local` e il `.gitignore`.
+- [x] Inizializzare Next.js (App Router, TS, Tailwind CSS).
+- [x] Configurare shadcn/ui (solo in lingua italiana).
+- [x] Creare layout base mobile-first per `/dashboard` e layout desktop per `/admin`.
+- [x] Configurare `.env.local` e il `.gitignore`.
 
 ### Fase 2: Database & Autenticazione Core
 - [ ] Configurare schema base su Supabase (`profiles`, `guide_settings`).
@@ -64,18 +64,3 @@
 - [ ] Configurazione PWA (manifest, icone).
 - [ ] Test flussi di pagamento in Test Mode.
 - [ ] Passaggio variabili live per il lancio al pubblico.
-
-
-Comando Claude
-
-Ciao Claude! Lavoriamo nella repo "webapp-guido".
-Ho inserito il nuovo file TODO.md nella root del progetto.
-
-Iniziamo con la FASE 1 della BETA:
-1. Inizializza Next.js (App Router, TS, Tailwind CSS).
-2. Configura shadcn/ui.
-3. Prepara i layout (clienti mobile-first e /admin).
-4. Verifica che .gitignore escluda .env.local.
-5. Quando hai testato la build in locale, spunta la Fase 1 nel TODO.md ed esegui un commit git: "feat(beta): setup fase 1 - nextjs e UI".
-
-Fermati dopo la Fase 1 e attendi istruzioni.
