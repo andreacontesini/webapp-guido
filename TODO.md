@@ -14,7 +14,7 @@
 - [x] Sistemare tutti gli errori presenti di next
 - [x] Pensare un layout più moderno, con sidebar di navigazione e aspetto leggermente più dark
 - [x] Dammi le indicazioni per pubblicare il progetto su vercel
-- [x] Utilizziamo l'inter come font per l'app
+- [x] Font: Geist (default del preset shadcn base-nova), classi tipografiche standard
 
 
 ### Fase 2: Database & Autenticazione Core
