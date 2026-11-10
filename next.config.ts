@@ -1,10 +1,16 @@
+import path from "node:path";
 import type { NextConfig } from "next";
 
+// Radice del progetto: evita che Next.js scelga per errore un lockfile
+// esterno (es. ~/package-lock.json) come radice del workspace.
+const radiceProgetto = path.resolve(__dirname);
+
 const nextConfig: NextConfig = {
-  /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  outputFileTracingRoot: radiceProgetto,
   turbopack: {
+    root: radiceProgetto,
     rules: {
       "*.css": {
         loaders: ["@tailwindcss/turbopack"],

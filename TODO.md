@@ -11,6 +11,9 @@
 - [x] Configurare shadcn/ui (solo in lingua italiana).
 - [x] Creare layout base mobile-first per `/dashboard` e layout desktop per `/admin`.
 - [x] Configurare `.env.local` e il `.gitignore`.
+- [x] Sistemare tutti gli errori presenti di next
+- [ ] Pensare un layout più moderno, con sidebar di navigazione e aspetto leggermente più dark
+- [ ] Dammi le indicazioni per pubblicare il progetto su vercel
 
 ### Fase 2: Database & Autenticazione Core
 - [ ] Configurare schema base su Supabase (`profiles`, `guide_settings`).
