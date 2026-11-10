@@ -1,0 +1,14 @@
+# Ambiente e segreti
+.env
+.env.local
+.env.*.local
+
+# Dipendenze e build
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# File di sistema
+.DS_Store
