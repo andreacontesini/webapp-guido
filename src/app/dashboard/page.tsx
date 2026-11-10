@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 };
 
 /** Stile comune dei riquadri della griglia. */
-const riquadro = "rounded-2xl border bg-card p-6 text-card-foreground";
+const riquadro = "rounded-xl border bg-card p-6 text-card-foreground";
 
 export default function DashboardPage() {
   return (
@@ -34,7 +34,7 @@ export default function DashboardPage() {
             aria-hidden
             className="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full bg-primary/10 blur-3xl"
           />
-          <span className="mb-6 inline-flex size-12 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+          <span className="mb-6 inline-flex size-12 items-center justify-center rounded-lg bg-accent text-accent-foreground">
             <BookOpenIcon className="size-6" aria-hidden />
           </span>
           <h2 id="titolo-guida" className="text-xl font-semibold">
@@ -57,7 +57,7 @@ export default function DashboardPage() {
         {/* Videocorso: bloccato fino all'uscita. */}
         <section aria-labelledby="titolo-videocorso" className={riquadro}>
           <div className="mb-5 flex items-center justify-between gap-3">
-            <span className="inline-flex size-10 items-center justify-center rounded-xl bg-muted text-muted-foreground">
+            <span className="inline-flex size-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
               <LockIcon className="size-5" aria-hidden />
             </span>
             <Badge variant="outline">Presto disponibile</Badge>

@@ -20,7 +20,7 @@ export function BarraSuperiore({ area }: { area: Area }) {
         <Link
           href={radice}
           aria-label="Vendere casa da privato — inizio"
-          className="inline-flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground lg:hidden"
+          className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary text-primary-foreground lg:hidden"
         >
           <HouseIcon className="size-4" aria-hidden />
         </Link>

@@ -17,7 +17,7 @@ export function BarraLaterale({ area }: { area: Area }) {
       <Link
         href={radice}
         aria-label="Vendere casa da privato — inizio"
-        className="mb-8 inline-flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar focus-visible:outline-none"
+        className="mb-8 inline-flex size-10 items-center justify-center rounded-lg bg-primary text-primary-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-sidebar focus-visible:outline-none"
       >
         <HouseIcon className="size-5" aria-hidden />
       </Link>
@@ -32,7 +32,7 @@ export function BarraLaterale({ area }: { area: Area }) {
               <>
                 <span
                   className={cn(
-                    "inline-flex size-10 items-center justify-center rounded-xl transition-colors",
+                    "inline-flex size-10 items-center justify-center rounded-lg transition-colors",
                     attiva
                       ? "bg-sidebar-accent text-sidebar-accent-foreground"
                       : "group-hover:bg-muted group-hover:text-foreground"
@@ -52,7 +52,7 @@ export function BarraLaterale({ area }: { area: Area }) {
             );
 
             const classi =
-              "group flex w-full flex-col items-center gap-1 rounded-xl py-1.5 text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none";
+              "group flex w-full flex-col items-center gap-1 rounded-lg py-1.5 text-sidebar-foreground focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none";
 
             return (
               <li key={voce.href}>

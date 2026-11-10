@@ -36,10 +36,10 @@ export default function AdminPage() {
         {sezioni.map(({ titolo, descrizione, icona: Icona }) => (
           <li
             key={titolo}
-            className="flex flex-col rounded-2xl border bg-card p-6 text-card-foreground"
+            className="flex flex-col rounded-xl border bg-card p-6 text-card-foreground"
           >
             <div className="mb-5 flex items-center justify-between gap-3">
-              <span className="inline-flex size-10 items-center justify-center rounded-xl bg-accent text-accent-foreground">
+              <span className="inline-flex size-10 items-center justify-center rounded-lg bg-accent text-accent-foreground">
                 <Icona className="size-5" aria-hidden />
               </span>
               <Badge variant="outline">Fase 4</Badge>

@@ -74,7 +74,8 @@
   --chart-3: #0f1e33;
   --chart-4: #9aa8bd;
   --chart-5: #5b6676;
-  --radius: 0.75rem;
+  /* Raggio base: pulsanti e riquadri ne usano multipli (sm, md, lg, xl). */
+  --radius: 0.5rem;
   --sidebar: #ffffff;
   --sidebar-foreground: #5b6676;
   --sidebar-primary: #2b5bd7;

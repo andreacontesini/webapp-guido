@@ -53,7 +53,7 @@ export function SelettoreTema({ className }: { className?: string }) {
       role="radiogroup"
       aria-label="Tema dell'interfaccia"
       className={cn(
-        "inline-flex items-center gap-0.5 rounded-full border bg-muted p-0.5",
+        "inline-flex items-center gap-0.5 rounded-lg border bg-muted p-0.5",
         className
       )}
     >
@@ -69,7 +69,7 @@ export function SelettoreTema({ className }: { className?: string }) {
             title={etichetta}
             onClick={() => salvaPreferenza(valore)}
             className={cn(
-              "inline-flex size-7 items-center justify-center rounded-full text-muted-foreground transition-colors hover:text-foreground",
+              "inline-flex size-7 items-center justify-center rounded-md text-muted-foreground transition-colors hover:text-foreground",
               "focus-visible:ring-2 focus-visible:ring-ring focus-visible:outline-none",
               attivo && "bg-background text-foreground shadow-sm"
             )}
