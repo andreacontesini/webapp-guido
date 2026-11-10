@@ -12,7 +12,7 @@ export default function DashboardPage() {
   return (
     <div className="space-y-10">
       <header className="max-w-[34rem] space-y-3">
-        <h1 className="text-[2rem] leading-[1.1] font-bold tracking-[-0.025em] sm:text-[2.5rem]">
+        <h1 className="titolo-pagina">
           Benvenuto nella tua area
         </h1>
         <p className="text-lg leading-relaxed text-muted-foreground">
@@ -25,14 +25,14 @@ export default function DashboardPage() {
         {/* Sezione principale: la guida è il contenuto disponibile in beta. */}
         <section
           aria-labelledby="titolo-guida"
-          className="flex flex-col rounded-xl bg-card p-6 shadow-[0_1px_0_rgba(30,36,39,0.06)] ring-1 ring-border sm:p-8"
+          className="flex flex-col rounded-xl bg-card p-6 shadow-[0_1px_2px_rgba(15,30,51,0.05)] ring-1 ring-border sm:p-8"
         >
           <span className="mb-6 inline-flex size-11 items-center justify-center rounded-lg bg-accent text-accent-foreground">
             <BookOpenIcon className="size-5" aria-hidden />
           </span>
           <h2
             id="titolo-guida"
-            className="text-2xl font-bold tracking-[-0.015em]"
+            className="titolo-sezione"
           >
             La tua guida
           </h2>
@@ -53,7 +53,7 @@ export default function DashboardPage() {
         {/* Sezione secondaria: bloccata fino all'uscita del videocorso. */}
         <section
           aria-labelledby="titolo-videocorso"
-          className="flex flex-col rounded-xl border border-dashed border-border bg-muted/60 p-6 sm:p-8"
+          className="flex flex-col rounded-xl border border-dashed border-border bg-muted p-6 sm:p-8"
         >
           <div className="mb-6 flex items-center justify-between gap-3">
             <span className="inline-flex size-11 items-center justify-center rounded-lg bg-secondary text-muted-foreground">
@@ -63,7 +63,7 @@ export default function DashboardPage() {
           </div>
           <h2
             id="titolo-videocorso"
-            className="text-xl font-bold tracking-[-0.01em] text-foreground/80"
+            className="titolo-sezione text-foreground/75"
           >
             Il tuo videocorso
           </h2>

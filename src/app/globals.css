@@ -49,41 +49,41 @@
 }
 
 :root {
-  /* Palette "Vendere Casa da Privato"
-     antracite #1E2427 · pietra #EBEAE6 · bianco #FFFFFF
-     ottanio #2D6A5F · ottanio chiaro #A8D5C6 */
-  --background: #ebeae6;
-  --foreground: #1e2427;
+  /* Palette chiara "Vendere Casa da Privato"
+     bianco #FFFFFF · inchiostro blu notte #0F1E33 · grigio blu #5B6676
+     verde bosco #1E5A47 · superficie #F6F7F9 · bordo #E4E7EC */
+  --background: #ffffff;
+  --foreground: #0f1e33;
   --card: #ffffff;
-  --card-foreground: #1e2427;
+  --card-foreground: #0f1e33;
   --popover: #ffffff;
-  --popover-foreground: #1e2427;
-  --primary: #2d6a5f;
+  --popover-foreground: #0f1e33;
+  --primary: #0f1e33;
   --primary-foreground: #ffffff;
-  --secondary: #e0dfda;
-  --secondary-foreground: #1e2427;
-  --muted: #e3e2dd;
-  --muted-foreground: #5b6266;
-  --accent: #dcebe6;
-  --accent-foreground: #1e4a42;
+  --secondary: #f1f3f6;
+  --secondary-foreground: #0f1e33;
+  --muted: #f6f7f9;
+  --muted-foreground: #5b6676;
+  --accent: #e7f0ec;
+  --accent-foreground: #1e5a47;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: #d6d4ce;
-  --input: #d6d4ce;
-  --ring: #2d6a5f;
-  --chart-1: #2d6a5f;
-  --chart-2: #5b8f84;
-  --chart-3: #8fb8ad;
-  --chart-4: #5b6266;
-  --chart-5: #1e2427;
+  --border: #e4e7ec;
+  --input: #e4e7ec;
+  --ring: #1e5a47;
+  --chart-1: #0f1e33;
+  --chart-2: #1e5a47;
+  --chart-3: #3d6b9a;
+  --chart-4: #6f9d8a;
+  --chart-5: #5b6676;
   --radius: 0.625rem;
-  --sidebar: #1e2427;
-  --sidebar-foreground: #c9cfd1;
-  --sidebar-primary: #a8d5c6;
-  --sidebar-primary-foreground: #1e2427;
-  --sidebar-accent: #2a3135;
-  --sidebar-accent-foreground: #ffffff;
-  --sidebar-border: #2f373b;
-  --sidebar-ring: #a8d5c6;
+  --sidebar: #f6f7f9;
+  --sidebar-foreground: #5b6676;
+  --sidebar-primary: #1e5a47;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #e9edf2;
+  --sidebar-accent-foreground: #0f1e33;
+  --sidebar-border: #e4e7ec;
+  --sidebar-ring: #1e5a47;
 }
 
 .dark {
@@ -135,4 +135,33 @@
   h3 {
     @apply text-balance;
   }
+  html {
+    /* Inter: "a" a un piano e cifre più leggibili. */
+    font-feature-settings: "cv11", "ss01";
+  }
+}
+/* Scala tipografica unica: pesi 400 (testo), 500 (enfasi, voce attiva),
+   600 (titoli). Niente 700, per un aspetto più leggero. */
+@utility titolo-pagina {
+  font-size: 1.875rem;
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  @media (width >= 40rem) {
+    font-size: 2.25rem;
+  }
+}
+
+@utility titolo-sezione {
+  font-size: 1.25rem;
+  line-height: 1.3;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+
+@utility titolo-voce {
+  font-size: 1rem;
+  line-height: 1.4;
+  font-weight: 600;
+  letter-spacing: -0.006em;
 }

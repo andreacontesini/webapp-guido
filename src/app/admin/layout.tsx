@@ -28,13 +28,13 @@ export default function AdminLayout({ children }: LayoutProps<"/admin">) {
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 bg-sidebar px-2 lg:hidden">
+        <header className="sticky top-0 z-30 flex h-14 items-center gap-2 border-b bg-background/95 px-2 backdrop-blur lg:hidden">
           <MenuMobile
             area="admin"
             sottotitolo="Amministrazione"
             etichettaNav={ETICHETTA_NAV}
           />
-          <span className="font-bold text-white">Amministrazione</span>
+          <span className="font-semibold">Amministrazione</span>
         </header>
 
         <main className="w-full max-w-6xl flex-1 px-5 py-8 sm:px-8 lg:px-12 lg:py-14">

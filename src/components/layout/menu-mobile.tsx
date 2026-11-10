@@ -34,7 +34,7 @@ export function MenuMobile({
           <Button
             variant="ghost"
             size="icon"
-            className="text-white hover:bg-sidebar-accent hover:text-white lg:hidden"
+            className="lg:hidden"
           />
         }
       >

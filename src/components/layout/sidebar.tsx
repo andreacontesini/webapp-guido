@@ -16,10 +16,10 @@ export function Marchio({ href, sottotitolo }: MarchioProps) {
       href={href}
       className="group block rounded-md focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none"
     >
-      <span className="block text-[1.375rem] leading-[1.05] font-bold tracking-[-0.02em] text-white">
+      <span className="block text-[1.3125rem] leading-[1.1] font-semibold tracking-[-0.02em] text-foreground">
         Vendere casa
         <br />
-        <span className="text-sidebar-primary">da privato</span>
+        <span className="text-accent-foreground">da privato</span>
       </span>
       <span className="mt-2 block text-sm text-sidebar-foreground">
         {sottotitolo}
@@ -44,7 +44,7 @@ export function Sidebar({
 }: SidebarProps) {
   const { radice } = aree[area];
   return (
-    <aside className="sticky top-0 hidden h-dvh w-68 shrink-0 flex-col bg-sidebar text-sidebar-foreground lg:flex">
+    <aside className="sticky top-0 hidden h-dvh w-68 shrink-0 flex-col border-r border-sidebar-border bg-sidebar text-sidebar-foreground lg:flex">
       <div className="px-6 pt-8 pb-10">
         <Marchio href={radice} sottotitolo={sottotitolo} />
       </div>

@@ -22,7 +22,7 @@ export default function AdminPage() {
   return (
     <div className="space-y-10">
       <header className="max-w-[40rem] space-y-2">
-        <h1 className="text-[2rem] leading-[1.1] font-bold tracking-[-0.025em]">
+        <h1 className="titolo-pagina">
           Panoramica
         </h1>
         <p className="text-lg text-muted-foreground">
@@ -40,7 +40,7 @@ export default function AdminPage() {
               <Icona className="size-5" aria-hidden />
             </span>
             <div>
-              <h2 className="font-bold">{titolo}</h2>
+              <h2 className="titolo-voce">{titolo}</h2>
               <p className="mt-1 text-muted-foreground">{descrizione}</p>
               <p className="mt-3 text-sm text-muted-foreground">
                 Disponibile nella Fase 4.

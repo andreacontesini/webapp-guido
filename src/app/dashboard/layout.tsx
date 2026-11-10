@@ -21,13 +21,13 @@ export default function DashboardLayout({ children }: LayoutProps<"/dashboard">)
       />
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 items-center bg-sidebar px-4 lg:hidden">
+        <header className="sticky top-0 z-30 flex h-14 items-center border-b bg-background/95 px-4 backdrop-blur lg:hidden">
           <Link
             href="/dashboard"
-            className="text-[1.0625rem] font-bold tracking-[-0.01em] text-white"
+            className="text-[1.0625rem] font-semibold tracking-[-0.012em]"
           >
             Vendere casa{" "}
-            <span className="text-sidebar-primary">da privato</span>
+            <span className="text-accent-foreground">da privato</span>
           </Link>
         </header>
 

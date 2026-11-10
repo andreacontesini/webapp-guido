@@ -20,7 +20,7 @@ export function BarraInferiore({
   return (
     <nav
       aria-label={etichettaNav}
-      className="fixed inset-x-0 bottom-0 z-40 bg-sidebar pb-[env(safe-area-inset-bottom)] lg:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/95 pb-[env(safe-area-inset-bottom)] backdrop-blur lg:hidden"
     >
       <ul
         className="mx-auto grid max-w-lg"
@@ -30,9 +30,9 @@ export function BarraInferiore({
           const attiva = isVoceAttiva(pathname, voce.href, radice);
           const Icona = voce.icona;
           const classi = cn(
-            "flex flex-col items-center justify-center gap-1 pt-2.5 pb-2 text-xs font-medium text-sidebar-foreground",
-            "border-t-2 border-transparent focus-visible:bg-sidebar-accent focus-visible:outline-none",
-            attiva && "border-sidebar-primary text-white"
+            "-mt-px flex flex-col items-center justify-center gap-1 pt-2.5 pb-2 text-xs text-muted-foreground",
+            "border-t-2 border-transparent focus-visible:bg-muted focus-visible:outline-none",
+            attiva && "border-sidebar-primary font-medium text-foreground"
           );
 
           return (
