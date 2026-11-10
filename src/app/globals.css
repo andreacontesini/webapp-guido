@@ -135,33 +135,5 @@
   h3 {
     @apply text-balance;
   }
-  html {
-    /* Inter: "a" a un piano e cifre più leggibili. */
-    font-feature-settings: "cv11", "ss01";
-  }
-}
-/* Scala tipografica unica: pesi 400 (testo), 500 (enfasi, voce attiva),
-   600 (titoli). Niente 700, per un aspetto più leggero. */
-@utility titolo-pagina {
-  font-size: 1.875rem;
-  line-height: 1.15;
-  font-weight: 600;
-  letter-spacing: -0.022em;
-  @media (width >= 40rem) {
-    font-size: 2.25rem;
-  }
-}
 
-@utility titolo-sezione {
-  font-size: 1.25rem;
-  line-height: 1.3;
-  font-weight: 600;
-  letter-spacing: -0.012em;
-}
-
-@utility titolo-voce {
-  font-size: 1rem;
-  line-height: 1.4;
-  font-weight: 600;
-  letter-spacing: -0.006em;
 }

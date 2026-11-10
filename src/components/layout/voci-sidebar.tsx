@@ -22,7 +22,7 @@ export function VociSidebar({ area, onNavigate }: Props) {
         const attiva = isVoceAttiva(pathname, voce.href, radice);
         const Icona = voce.icona;
         const classi = cn(
-          "relative flex items-center gap-3 rounded-md py-2.5 pr-3 pl-4 text-[0.9375rem] transition-colors",
+          "relative flex items-center gap-3 rounded-md py-2 pr-3 pl-4 text-sm transition-colors",
           "before:absolute before:inset-y-2 before:left-0 before:w-[3px] before:rounded-full before:bg-transparent before:transition-colors",
           "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
           "focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none",
@@ -37,7 +37,7 @@ export function VociSidebar({ area, onNavigate }: Props) {
                 aria-disabled="true"
                 className={cn(classi, "pointer-events-none opacity-45")}
               >
-                <Icona className="size-[1.125rem]" aria-hidden />
+                <Icona className="size-4" aria-hidden />
                 <span className="flex-1">{voce.titolo}</span>
                 <span className="text-xs font-normal">In arrivo</span>
               </span>
@@ -55,7 +55,7 @@ export function VociSidebar({ area, onNavigate }: Props) {
             >
               <Icona
                 className={cn(
-                  "size-[1.125rem]",
+                  "size-4",
                   attiva && "text-sidebar-primary"
                 )}
                 aria-hidden

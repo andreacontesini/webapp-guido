@@ -9,7 +9,7 @@ export default function Home() {
         <p className="text-sm font-medium text-muted-foreground">
           Guido Contesini
         </p>
-        <h1 className="titolo-pagina">
+        <h1 className="text-3xl font-semibold tracking-tight">
           Vendere Casa da Privato
         </h1>
         <p className="text-muted-foreground">

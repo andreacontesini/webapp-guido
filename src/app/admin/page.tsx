@@ -22,10 +22,10 @@ export default function AdminPage() {
   return (
     <div className="space-y-10">
       <header className="max-w-[40rem] space-y-2">
-        <h1 className="titolo-pagina">
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
           Panoramica
         </h1>
-        <p className="text-lg text-muted-foreground">
+        <p className="text-muted-foreground">
           Gestisci utenti, permessi e contenuti dell&apos;app.
         </p>
       </header>
@@ -40,7 +40,7 @@ export default function AdminPage() {
               <Icona className="size-5" aria-hidden />
             </span>
             <div>
-              <h2 className="titolo-voce">{titolo}</h2>
+              <h2 className="font-medium">{titolo}</h2>
               <p className="mt-1 text-muted-foreground">{descrizione}</p>
               <p className="mt-3 text-sm text-muted-foreground">
                 Disponibile nella Fase 4.

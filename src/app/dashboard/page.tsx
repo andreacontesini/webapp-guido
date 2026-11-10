@@ -12,10 +12,10 @@ export default function DashboardPage() {
   return (
     <div className="space-y-10">
       <header className="max-w-[34rem] space-y-3">
-        <h1 className="titolo-pagina">
+        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
           Benvenuto nella tua area
         </h1>
-        <p className="text-lg leading-relaxed text-muted-foreground">
+        <p className="text-muted-foreground">
           Qui trovi i materiali per vendere casa da privato, un passo alla
           volta e senza intermediari.
         </p>
@@ -32,16 +32,16 @@ export default function DashboardPage() {
           </span>
           <h2
             id="titolo-guida"
-            className="titolo-sezione"
+            className="text-lg font-semibold"
           >
             La tua guida
           </h2>
-          <p className="mt-2 max-w-[42ch] leading-relaxed text-muted-foreground">
+          <p className="mt-2 max-w-prose text-muted-foreground">
             Tutte le fasi della vendita, dalla valutazione dell&apos;immobile
             al rogito. Puoi leggerla qui, da qualsiasi dispositivo.
           </p>
           <div className="mt-8">
-            <Button size="lg" disabled className="h-11 px-5 text-[0.9375rem]">
+            <Button size="lg" disabled>
               Apri la guida
             </Button>
             <p className="mt-2 text-sm text-muted-foreground">
@@ -63,11 +63,11 @@ export default function DashboardPage() {
           </div>
           <h2
             id="titolo-videocorso"
-            className="titolo-sezione text-foreground/75"
+            className="text-lg font-semibold text-foreground/75"
           >
             Il tuo videocorso
           </h2>
-          <p className="mt-2 leading-relaxed text-muted-foreground">
+          <p className="mt-2 text-muted-foreground">
             Lezioni video su ogni fase della vendita, con modelli e documenti
             da scaricare.
           </p>

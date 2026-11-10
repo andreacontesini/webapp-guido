@@ -24,7 +24,7 @@ export default function DashboardLayout({ children }: LayoutProps<"/dashboard">)
         <header className="sticky top-0 z-30 flex h-14 items-center border-b bg-background/95 px-4 backdrop-blur lg:hidden">
           <Link
             href="/dashboard"
-            className="text-[1.0625rem] font-semibold tracking-[-0.012em]"
+            className="font-semibold"
           >
             Vendere casa{" "}
             <span className="text-accent-foreground">da privato</span>

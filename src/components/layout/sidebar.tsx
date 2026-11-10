@@ -16,7 +16,7 @@ export function Marchio({ href, sottotitolo }: MarchioProps) {
       href={href}
       className="group block rounded-md focus-visible:ring-2 focus-visible:ring-sidebar-ring focus-visible:outline-none"
     >
-      <span className="block text-[1.3125rem] leading-[1.1] font-semibold tracking-[-0.02em] text-foreground">
+      <span className="block text-xl leading-tight font-semibold tracking-tight text-foreground">
         Vendere casa
         <br />
         <span className="text-accent-foreground">da privato</span>
