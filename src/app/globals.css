@@ -49,38 +49,41 @@
 }
 
 :root {
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
+  /* Palette "Vendere Casa da Privato"
+     antracite #1E2427 · pietra #EBEAE6 · bianco #FFFFFF
+     ottanio #2D6A5F · ottanio chiaro #A8D5C6 */
+  --background: #ebeae6;
+  --foreground: #1e2427;
+  --card: #ffffff;
+  --card-foreground: #1e2427;
+  --popover: #ffffff;
+  --popover-foreground: #1e2427;
+  --primary: #2d6a5f;
+  --primary-foreground: #ffffff;
+  --secondary: #e0dfda;
+  --secondary-foreground: #1e2427;
+  --muted: #e3e2dd;
+  --muted-foreground: #5b6266;
+  --accent: #dcebe6;
+  --accent-foreground: #1e4a42;
   --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --border: #d6d4ce;
+  --input: #d6d4ce;
+  --ring: #2d6a5f;
+  --chart-1: #2d6a5f;
+  --chart-2: #5b8f84;
+  --chart-3: #8fb8ad;
+  --chart-4: #5b6266;
+  --chart-5: #1e2427;
   --radius: 0.625rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #1e2427;
+  --sidebar-foreground: #c9cfd1;
+  --sidebar-primary: #a8d5c6;
+  --sidebar-primary-foreground: #1e2427;
+  --sidebar-accent: #2a3135;
+  --sidebar-accent-foreground: #ffffff;
+  --sidebar-border: #2f373b;
+  --sidebar-ring: #a8d5c6;
 }
 
 .dark {
@@ -126,5 +129,10 @@
   }
   html {
     @apply font-sans;
+  }
+  h1,
+  h2,
+  h3 {
+    @apply text-balance;
   }
 }

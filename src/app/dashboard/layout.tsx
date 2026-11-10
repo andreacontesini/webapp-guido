@@ -1,29 +1,45 @@
 import Link from "next/link";
 
-import { ClienteNav } from "@/components/layout/cliente-nav";
+import { BarraInferiore } from "@/components/layout/barra-inferiore";
+import { Sidebar } from "@/components/layout/sidebar";
+
+const ETICHETTA_NAV = "Navigazione principale";
 
 /**
  * Layout area riservata cliente — mobile-first.
- * Su smartphone: header compatto + navigazione fissa in basso.
- * Da `md` in su: navigazione nell'header e contenuto centrato.
+ * Sotto `lg`: barra superiore antracite + navigazione fissa in basso.
+ * Da `lg` in su: sidebar antracite fissa a sinistra.
  */
 export default function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
   return (
-    <div className="flex min-h-dvh flex-col bg-muted/30">
-      <header className="sticky top-0 z-30 border-b bg-background/95 backdrop-blur">
-        <div className="mx-auto flex h-14 w-full max-w-5xl items-center justify-between gap-4 px-4">
-          <Link href="/dashboard" className="font-semibold tracking-tight">
-            Vendere Casa da Privato
+    <div className="flex min-h-dvh">
+      <Sidebar
+        area="cliente"
+        sottotitolo="con Guido Contesini"
+        etichettaNav={ETICHETTA_NAV}
+        piede={<p>Versione beta</p>}
+      />
+
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-30 flex h-14 items-center bg-sidebar px-4 lg:hidden">
+          <Link
+            href="/dashboard"
+            className="text-[1.0625rem] font-bold tracking-[-0.01em] text-white"
+          >
+            Vendere casa{" "}
+            <span className="text-sidebar-primary">da privato</span>
           </Link>
-          <ClienteNav variante="alto" />
-        </div>
-      </header>
+        </header>
 
-      <main className="mx-auto w-full max-w-5xl flex-1 px-4 pt-6 pb-24 md:pb-10">
-        {children}
-      </main>
+        <main className="w-full max-w-4xl flex-1 px-5 pt-8 pb-28 sm:px-8 lg:px-12 lg:pt-14 lg:pb-14">
+          {children}
+        </main>
+      </div>
 
-      <ClienteNav variante="basso" />
+      <BarraInferiore
+        area="cliente"
+        etichettaNav={ETICHETTA_NAV}
+      />
     </div>
   );
 }

@@ -60,3 +60,13 @@ export function isVoceAttiva(pathname: string, href: string, radice: string) {
   if (href === radice) return pathname === radice;
   return pathname === href || pathname.startsWith(`${href}/`);
 }
+
+/** Aree dell'app con la propria navigazione. Si passa la chiave (stringa) ai
+ *  componenti client, perché le icone sono funzioni e non possono attraversare
+ *  il confine server → client. */
+export const aree = {
+  cliente: { voci: navigazioneCliente, radice: "/dashboard" },
+  admin: { voci: navigazioneAdmin, radice: "/admin" },
+} as const;
+
+export type Area = keyof typeof aree;

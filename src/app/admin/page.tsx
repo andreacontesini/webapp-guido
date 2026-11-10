@@ -1,44 +1,54 @@
 import type { Metadata } from "next";
-
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { FileTextIcon, UsersIcon } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Panoramica",
 };
 
+const sezioni = [
+  {
+    titolo: "Utenti",
+    descrizione: "Elenco utenti, blocco degli account e gestione dei permessi.",
+    icona: UsersIcon,
+  },
+  {
+    titolo: "Guida PDF",
+    descrizione: "Caricamento della guida e aggiornamento dei suoi dettagli.",
+    icona: FileTextIcon,
+  },
+];
+
 export default function AdminPage() {
   return (
-    <div className="space-y-6">
-      <div className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight">Panoramica</h1>
-        <p className="text-muted-foreground">
+    <div className="space-y-10">
+      <header className="max-w-[40rem] space-y-2">
+        <h1 className="text-[2rem] leading-[1.1] font-bold tracking-[-0.025em]">
+          Panoramica
+        </h1>
+        <p className="text-lg text-muted-foreground">
           Gestisci utenti, permessi e contenuti dell&apos;app.
         </p>
-      </div>
+      </header>
 
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-        <Card>
-          <CardHeader>
-            <CardTitle>Utenti</CardTitle>
-            <CardDescription>
-              Elenco utenti, blocchi e permessi. Disponibile nella Fase 4.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle>Guida PDF</CardTitle>
-            <CardDescription>
-              Caricamento e aggiornamento della guida. Disponibile nella Fase 4.
-            </CardDescription>
-          </CardHeader>
-        </Card>
-      </div>
+      <ul className="grid gap-4 md:grid-cols-2">
+        {sezioni.map(({ titolo, descrizione, icona: Icona }) => (
+          <li
+            key={titolo}
+            className="flex gap-4 rounded-xl bg-card p-6 ring-1 ring-border"
+          >
+            <span className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+              <Icona className="size-5" aria-hidden />
+            </span>
+            <div>
+              <h2 className="font-bold">{titolo}</h2>
+              <p className="mt-1 text-muted-foreground">{descrizione}</p>
+              <p className="mt-3 text-sm text-muted-foreground">
+                Disponibile nella Fase 4.
+              </p>
+            </div>
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
