@@ -13,7 +13,7 @@
 - [x] Configurare `.env.local` e il `.gitignore`.
 - [x] Sistemare tutti gli errori presenti di next
 - [x] Pensare un layout più moderno, con sidebar di navigazione e aspetto leggermente più dark
-- [ ] Dammi le indicazioni per pubblicare il progetto su vercel
+- [x] Dammi le indicazioni per pubblicare il progetto su vercel
 - [ ] Utilizziamo l'inter come font per l'app
 
 
