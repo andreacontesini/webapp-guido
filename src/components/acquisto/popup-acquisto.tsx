@@ -21,7 +21,7 @@ import {
 
 /**
  * Pulsante "Acquista" che apre il popup con descrizione e prezzo del prodotto.
- * Il pulsante del popup porterà a Stripe Checkout con la Fase 9: fino ad
+ * Il pulsante del popup porterà a Stripe Checkout con la Fase 5: fino ad
  * allora è disattivato e indica come ottenere l'accesso.
  */
 export function PopupAcquisto({

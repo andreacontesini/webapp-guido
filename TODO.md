@@ -41,48 +41,61 @@
 - [x] Guida "Una vendita buona e giusta" (v1.0, 18 pagine) caricata nel bucket privato `guida` e attiva per gli utenti.
 - [x] Filigrana su ogni pagina: "Guido Contesini - Mediatore immobiliare" con l'email dell'utente in piccolo, leggera e poco fitta.
 - [x] Lettore compatibile anche con browser meno recenti (build legacy di pdf.js).
-- [x] Pagine di ritorno da Stripe Checkout (anticipate dalla Fase 9, solo grafica): conferma e annullato, con email di assistenza `contesiniconsulenze@gmail.com`.
+- [x] Pagine di ritorno da Stripe Checkout (anticipate dalla Fase 5, solo grafica): conferma e annullato, con email di assistenza `contesiniconsulenze@gmail.com`.
 
 ### Fase 4: Area Amministrazione Base
-- [x] **Accesso solo per chi ha diritto:** chi si registra liberamente non deve vedere guida né corso. `guide_access` di default `false`; in beta l'accesso lo assegna l'admin (o un elenco di email beta), poi lo sblocca il pagamento (Fase 9).
-- [x] Per gli utenti senza accesso: home e pagina guida con pulsante "Acquista la guida" (apre il popup di acquisto, Fase 9) invece di "Non attiva".
+- [x] **Accesso solo per chi ha diritto:** chi si registra liberamente non deve vedere guida né corso. `guide_access` di default `false`; in beta l'accesso lo assegna l'admin (o un elenco di email beta), poi lo sblocca il pagamento (Fase 5).
+- [x] Per gli utenti senza accesso: home e pagina guida con pulsante "Acquista la guida" (apre il popup di acquisto, Fase 5) invece di "Non attiva".
 - [x] Proteggere la rotta `/admin` (solo `role: admin`).
 - [x] Gestione Utenti: visualizzazione lista, blocco utente, eliminazione, revoca/assegnazione permessi.
 - [x] Gestione Guida PDF: upload del file su Supabase Storage e aggiornamento dettagli.
 - [x] Prendi spunto dalla sezione id="hero" del sito a questo link https://finorio.demo.nextjstemplates.com/ e ricomponi la pagina iniziale dell'app. Non ho bisogno di pulsanti particolari o header / footer, ma semplicemente contenuti e bottone che rimanda alla pagina di accesso / login
 
-### Fase 5: Pagamento della Guida con Stripe (Target: v0.5.0)
-- [ ] Prezzo della guida definito e prodotto/prezzo creati su Stripe (account del cliente), prima in Test Mode.
+### Fase 5: Pagamento base con Stripe (Target: v0.5.0)
+- [ ] Prezzo della guida definito e prodotto/prezzo creati su Stripe (account del cliente), in Test Mode.
 - [ ] Tabella `purchases` (acquisti: utente, prodotto, sessione Stripe, importo, stato) con RLS: l'utente vede solo i propri acquisti.
 - [ ] Popup "Acquista la guida": prezzo reale e pulsante che apre Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica.
 - [ ] Webhook Stripe (`/api/webhooks/stripe`): a pagamento confermato registra l'acquisto e sblocca `guide_access` (mai lato client), gestendo gli eventi duplicati.
+- [ ] Test di un acquisto completo in locale (carte di prova, webhook con Stripe CLI).
+- [ ] **Tag Versione:** `v0.5.0`.
+
+### Fase 6: Rimborsi, ritorno da Stripe e acquisti in admin (Target: v0.6.0)
 - [ ] Revoca automatica dell'accesso in caso di rimborso o contestazione del pagamento.
 - [ ] Pagine di ritorno (logica): collegare il `session_id` di Stripe alla verifica dello sblocco.
 - [ ] Area admin: elenco acquisti nella scheda utente e assegnazione manuale ancora possibile.
-- [ ] Aspetti legali e fiscali da verificare con il cliente/commercialista: condizioni di vendita, rinuncia al recesso per contenuti digitali (casella nel checkout), emissione della fattura (la ricevuta Stripe non è una fattura).
-- [ ] Test completi in Test Mode (carte di prova, webhook in locale con Stripe CLI, rimborso).
-- [ ] **Tag Versione:** `v0.5.0`.
+- [ ] Test in Test Mode di pagamento annullato, rimborso e contestazione.
+- [ ] **Tag Versione:** `v0.6.0`.
 
-### Fase 6: Landing gestibili dall'admin (Target: v0.6.0)
+### Fase 7: Acquisto senza account (Target: v0.7.0)
+- [ ] Stripe Checkout apribile anche senza login: Stripe chiede l'email del cliente.
+- [ ] Il webhook crea l'account e sblocca la guida; se l'email appartiene a un account già esistente, sblocca la guida su quello invece di crearne uno nuovo.
+- [ ] Accesso immediato all'app dalla pagina di conferma (link di accesso generato dopo la verifica del pagamento) e, in ogni caso, email con il link di accesso.
+- [ ] Test: acquisto senza account, con email già registrata, pagamento annullato.
+- [ ] **Tag Versione:** `v0.7.0`.
+
+### Fase 8: Landing di vendita della guida (Target: v0.8.0)
 - [ ] Tabella `landing_pages` (indirizzo/slug, titolo, testi SEO, blocchi di contenuto, stato bozza/pubblicata).
 - [ ] Blocchi predefiniti con lo stile dell'app: hero, punti chiave, contenuti della guida (tappe), testo libero, immagine, testimonianze, domande frequenti, prezzo con pulsante "Acquista", invito all'accesso.
-- [ ] Editor nell'area admin: crea, duplica ed elimina landing; aggiungi, modifica e riordina i blocchi; anteprima; pubblica/ritira.
-- [ ] Caricamento immagini per le landing (bucket pubblico su Supabase Storage).
 - [ ] Pagine pubbliche delle landing e scelta della landing da usare come pagina iniziale (al posto di quella attuale in `src/app/page.tsx`).
-- [ ] Acquisto direttamente da una landing anche per chi non ha ancora un account: Stripe Checkout chiede l'email, il webhook crea l'account, sblocca la guida e invia il link di accesso.
-- [ ] **Landing di vendita della guida** (prima landing, costruita con i blocchi sopra e ottimizzata per la conversione):
+- [ ] **Prima landing di vendita**, ottimizzata per la conversione:
   - Hero con promessa chiara e pulsante "Acquista la guida" ben visibile (ripetuto lungo la pagina e fisso in basso su smartphone).
   - Vantaggi dell'acquisto (perché vendere da privato con la guida: risparmio, sicurezza, metodo).
   - Elenco brevissimo dei temi trattati (le tappe della guida, una riga ciascuna).
   - Chi è l'autore, testimonianze (solo se reali), domande frequenti, prezzo e garanzie (pagamento sicuro Stripe, accesso immediato).
-  - Il pulsante porta direttamente al form di pagamento Stripe Checkout (senza passare dal login): dopo il pagamento il cliente torna alla pagina di conferma, l'account viene creato e la guida sbloccata; accesso immediato all'app (link di accesso generato dopo la verifica del pagamento) e, in ogni caso, email con il link di accesso.
-  - Se l'email usata nel pagamento appartiene a un account già esistente, sblocca la guida su quell'account invece di crearne uno nuovo.
-  - Misurazione delle conversioni (visite landing → checkout → acquisti), nel rispetto della privacy/cookie.
+  - Il pulsante porta direttamente a Stripe Checkout senza passare dal login (flusso della Fase 7).
+- [ ] Contenuti con dati reali (tappe, pagine, ecc.); dati come utenti o valutazioni solo se veri.
 - [ ] SEO e condivisione: titolo, descrizione e immagine di anteprima per ogni landing; sitemap.
-- [ ] Contenuti delle landing aggiornati con dati reali (tappe, pagine, ecc.); dati come utenti o valutazioni solo se veri.
-- [ ] **Tag Versione:** `v0.6.0`.
+- [ ] **Tag Versione:** `v0.8.0`.
 
-### Fase 7: Lancio della Guida (Target: v1.0.0)
+### Fase 9: Editor delle landing in admin (Target: v0.9.0)
+- [ ] Elenco landing in admin: crea, duplica, elimina, pubblica/ritira.
+- [ ] Editor dei blocchi: aggiungi, modifica e riordina; anteprima prima della pubblicazione.
+- [ ] Caricamento immagini per le landing (bucket pubblico su Supabase Storage).
+- [ ] Misurazione delle conversioni (visite landing → checkout → acquisti), nel rispetto della privacy/cookie.
+- [ ] **Tag Versione:** `v0.9.0`.
+
+### Fase 10: Lancio della Guida (Target: v1.0.0)
+- [ ] Aspetti legali e fiscali da verificare con il cliente/commercialista: condizioni di vendita, rinuncia al recesso per contenuti digitali (casella nel checkout), emissione della fattura (la ricevuta Stripe non è una fattura), privacy e cookie.
 - [ ] Test end-to-end: Magic Link, permessi PDF, redirect, acquisto, rimborso, acquisto da landing senza account.
 - [ ] Passaggio di Stripe alle chiavi live e webhook di produzione.
 - [ ] Deploy su Vercel (app.guidocontesini.it) e controllo finale su smartphone e desktop.
@@ -93,28 +106,30 @@
 ## 🔵 VERSIONE 2.x (Focus: Videocorso)
 **Sviluppo su un branch separato (`videocorso`), unito a `main` solo a corso completo e testato.** Fino ad allora in app il videocorso resta "In arrivo".
 
-### Fase 8: Database Videocorso
+### Fase 11: Database Videocorso
 - [ ] Estendere DB: tabelle `modules`, `lessons`, `attachments`; prodotto videocorso in `purchases`.
 - [ ] Configurare RLS per i nuovi contenuti (accesso legato allo stato di acquisto).
 
-### Fase 9: Area Amministrazione Videocorso
+### Fase 12: Admin Videocorso - Moduli e video
 - [ ] Integrazione Bunny Stream API nel back office.
-- [ ] Sviluppo interfaccia per creazione moduli e lezioni.
-- [ ] Implementare "Direct Upload" per i video da app verso Bunny.net.
-- [ ] Funzionalità di upload per file allegati (modelli/documenti) associati alle lezioni.
+- [ ] Interfaccia per creazione moduli e lezioni.
+- [ ] "Direct Upload" dei video dall'app verso Bunny.net.
 
-### Fase 10: Area Riservata Cliente - Sblocco Video
+### Fase 13: Admin Videocorso - Allegati
+- [ ] Upload di file allegati (modelli/documenti) associati alle lezioni.
+
+### Fase 14: Area Cliente - Sblocco Video
 - [ ] Rimuovere "Coming Soon" e attivare la lista moduli/lezioni.
 - [ ] Lezione 1: preview gratuita accessibile a chi possiede solo la guida.
 - [ ] Player video integrato (Bunny Stream) con logiche di protezione.
 - [ ] Area download documenti per le singole lezioni.
 
-### Fase 11: Pagamenti Videocorso & Upgrade
+### Fase 15: Pagamenti Videocorso & Upgrade
 - [ ] Acquisto del videocorso (stesso flusso Stripe della guida).
 - [ ] Banner e flussi di upgrade (es. da "Solo Guida" a "Videocorso Completo") interni all'app.
 - [ ] Blocchi landing dedicati al videocorso.
 
-### Fase 12: Lancio Videocorso (Target: v2.0.0)
+### Fase 16: Lancio Videocorso (Target: v2.0.0)
 - [ ] Configurazione PWA (manifest, icone).
 - [ ] Test end-to-end del videocorso e dei pagamenti.
 - [ ] Merge del branch `videocorso` in `main` e rilascio `v2.0.0`.

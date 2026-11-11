@@ -32,7 +32,7 @@ function Contenuto({ delNome }: { delNome?: string }) {
       icona={CircleSlashIcon}
       tono="neutro"
       titolo="Pagamento annullato"
-      // In Fase 9 "Riprova" riaprirà il popup di acquisto del prodotto.
+      // In Fase 5 "Riprova" riaprirà il popup di acquisto del prodotto.
       azionePrincipale={{ etichetta: "Torna alla tua area", href: "/dashboard" }}
     >
       <p>

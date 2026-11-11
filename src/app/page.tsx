@@ -6,7 +6,7 @@ import { PERCORSO_ACCESSO } from "@/lib/auth/percorsi";
 
 /**
  * Numeri chiave mostrati sotto il testo.
- * Da aggiornare periodicamente con dati reali (vedi TODO.md, Fase 5).
+ * Da aggiornare periodicamente con dati reali (vedi TODO.md, Fase 8).
  */
 const punti = [
   { valore: "7", etichetta: "tappe, dai controlli preliminari al rogito" },

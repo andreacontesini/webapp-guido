@@ -1,6 +1,6 @@
 /**
  * Prodotti acquistabili dalla dashboard.
- * Prezzi e collegamento a Stripe arriveranno con la Fase 9.
+ * Prezzi e collegamento a Stripe arriveranno con la Fase 5.
  */
 type SchedaProdotto = {
   nome: string;

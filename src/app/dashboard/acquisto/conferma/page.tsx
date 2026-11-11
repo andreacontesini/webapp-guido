@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 
 /**
  * Ritorno da Stripe Checkout dopo un pagamento riuscito
- * (`?prodotto=guida|videocorso`, in Fase 9 anche `session_id`).
+ * (`?prodotto=guida|videocorso`, in Fase 6 anche `session_id`).
  * Mostra la conferma quando il contenuto risulta sbloccato, altrimenti attende.
  */
 export default function PaginaConferma({ searchParams }: PageProps<"/dashboard/acquisto/conferma">) {
@@ -35,7 +35,7 @@ export default function PaginaConferma({ searchParams }: PageProps<"/dashboard/a
 /** True se l'utente ha già accesso al prodotto acquistato. */
 async function isSbloccato(codice: CodiceProdotto) {
   if (codice === "guida") return (await leggiStatoGuida()).stato !== "non-abilitata";
-  // Il permesso per il videocorso arriverà con la Fase 6 (tabella purchases).
+  // Il permesso per il videocorso arriverà con la Fase 11 (prodotto videocorso in purchases).
   return false;
 }
 
