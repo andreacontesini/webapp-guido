@@ -70,6 +70,14 @@
 - [ ] Caricamento immagini per le landing (bucket pubblico su Supabase Storage).
 - [ ] Pagine pubbliche delle landing e scelta della landing da usare come pagina iniziale (al posto di quella attuale in `src/app/page.tsx`).
 - [ ] Acquisto direttamente da una landing anche per chi non ha ancora un account: Stripe Checkout chiede l'email, il webhook crea l'account, sblocca la guida e invia il link di accesso.
+- [ ] **Landing di vendita della guida** (prima landing, costruita con i blocchi sopra e ottimizzata per la conversione):
+  - Hero con promessa chiara e pulsante "Acquista la guida" ben visibile (ripetuto lungo la pagina e fisso in basso su smartphone).
+  - Vantaggi dell'acquisto (perché vendere da privato con la guida: risparmio, sicurezza, metodo).
+  - Elenco brevissimo dei temi trattati (le tappe della guida, una riga ciascuna).
+  - Chi è l'autore, testimonianze (solo se reali), domande frequenti, prezzo e garanzie (pagamento sicuro Stripe, accesso immediato).
+  - Il pulsante porta direttamente al form di pagamento Stripe Checkout (senza passare dal login): dopo il pagamento il cliente torna alla pagina di conferma, l'account viene creato e la guida sbloccata; accesso immediato all'app (link di accesso generato dopo la verifica del pagamento) e, in ogni caso, email con il link di accesso.
+  - Se l'email usata nel pagamento appartiene a un account già esistente, sblocca la guida su quell'account invece di crearne uno nuovo.
+  - Misurazione delle conversioni (visite landing → checkout → acquisti), nel rispetto della privacy/cookie.
 - [ ] SEO e condivisione: titolo, descrizione e immagine di anteprima per ogni landing; sitemap.
 - [ ] Contenuti delle landing aggiornati con dati reali (tappe, pagine, ecc.); dati come utenti o valutazioni solo se veri.
 - [ ] **Tag Versione:** `v0.6.0`.
