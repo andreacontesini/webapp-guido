@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { ArrowRightIcon, BookOpenIcon, LockIcon, PlayCircleIcon } from "lucide-react";
 
+import { PopupAcquisto } from "@/components/acquisto/popup-acquisto";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { leggiProfiloCorrente } from "@/lib/auth/utente";
@@ -31,9 +32,9 @@ const testiGuida: Record<
     nota: "Stiamo preparando la guida: sarà disponibile qui a breve.",
   },
   "non-abilitata": {
-    badge: "Non attiva",
+    badge: "Non acquistata",
     variante: "outline",
-    nota: "La guida non è attiva sul tuo account. Scrivici se pensi sia un errore.",
+    nota: "Dopo l'acquisto la leggi qui, da qualsiasi dispositivo.",
   },
 };
 
@@ -156,6 +157,8 @@ async function AzioneGuida() {
           Apri la guida
           <ArrowRightIcon aria-hidden />
         </Button>
+      ) : stato === "non-abilitata" ? (
+        <PopupAcquisto prodotto="guida" />
       ) : (
         <Button size="lg" disabled>
           Apri la guida

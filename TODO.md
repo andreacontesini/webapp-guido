@@ -45,7 +45,7 @@
 
 ### Fase 4: Area Amministrazione Base
 - [x] **Accesso solo per chi ha diritto:** chi si registra liberamente non deve vedere guida né corso. `guide_access` di default `false`; in beta l'accesso lo assegna l'admin (o un elenco di email beta), poi lo sblocca il pagamento (Fase 9).
-- [ ] Per gli utenti senza accesso: home e pagina guida con pulsante "Acquista la guida" (apre il popup di acquisto, Fase 9) invece di "Non attiva".
+- [x] Per gli utenti senza accesso: home e pagina guida con pulsante "Acquista la guida" (apre il popup di acquisto, Fase 9) invece di "Non attiva".
 - [ ] Proteggere la rotta `/admin` (solo `role: admin`).
 - [ ] Gestione Utenti: visualizzazione lista, blocco utente, eliminazione, revoca/assegnazione permessi.
 - [ ] Gestione Guida PDF: upload del file su Supabase Storage e aggiornamento dettagli.

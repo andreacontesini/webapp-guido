@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { ArrowLeftIcon, BookOpenIcon, ClockIcon, LockIcon } from "lucide-react";
 
+import { PopupAcquisto } from "@/components/acquisto/popup-acquisto";
 import { LettorePdf } from "@/components/guida/lettore-pdf";
 import { Button } from "@/components/ui/button";
 import { leggiProfiloCorrente } from "@/lib/auth/utente";
@@ -43,9 +44,11 @@ async function ContenutoGuida() {
     return (
       <Avviso
         icona={LockIcon}
-        titolo="La guida non è attiva sul tuo account"
-        testo="Se pensi che si tratti di un errore, scrivici e la abilitiamo."
-      />
+        titolo="La guida non è ancora sul tuo account"
+        testo="Acquistala per leggerla qui, da qualsiasi dispositivo. Se l'hai già acquistata, scrivici e la attiviamo."
+      >
+        <PopupAcquisto prodotto="guida" />
+      </Avviso>
     );
   }
 
@@ -85,10 +88,12 @@ function Avviso({
   icona: Icona,
   titolo,
   testo,
+  children,
 }: {
   icona: typeof BookOpenIcon;
   titolo: string;
   testo: string;
+  children?: React.ReactNode;
 }) {
   return (
     <section className="rounded-xl border bg-card p-6 text-card-foreground sm:p-8">
@@ -96,7 +101,8 @@ function Avviso({
         <Icona className="size-5" aria-hidden />
       </span>
       <h1 className="text-xl font-semibold">{titolo}</h1>
-      <p className="mt-1 text-muted-foreground">{testo}</p>
+      <p className="mt-1 max-w-prose text-muted-foreground">{testo}</p>
+      {children && <div className="mt-6">{children}</div>}
     </section>
   );
 }
