@@ -40,6 +40,8 @@
   - Logica di accesso (abilitata di default per gli utenti beta o sbloccabile manualmente da admin).
 
 ### Fase 4: Area Amministrazione Base
+- [ ] **Accesso solo per chi ha diritto:** chi si registra liberamente non deve vedere guida né corso. `guide_access` di default `false`; in beta l'accesso lo assegna l'admin (o un elenco di email beta), poi lo sblocca il pagamento (Fase 9).
+- [ ] Per gli utenti senza accesso: home e pagina guida con messaggio "Acquista la guida" (link alla pagina di vendita) invece di "Non attiva".
 - [ ] Proteggere la rotta `/admin` (solo `role: admin`).
 - [ ] Gestione Utenti: visualizzazione lista, blocco utente, eliminazione, revoca/assegnazione permessi.
 - [ ] Gestione Guida PDF: upload del file su Supabase Storage e aggiornamento dettagli.
@@ -72,6 +74,7 @@
 ### Fase 9: Automazione Pagamenti (v1.3.0)
 - [ ] Integrazione Stripe Checkout.
 - [ ] Webhook Stripe (`/api/webhooks/stripe`) per creazione/aggiornamento utenti e sblocco permessi.
+- [ ] Sblocco automatico di guida/corso solo a pagamento confermato (mai lato client), con revoca in caso di rimborso.
 - [ ] Banner e flussi di upgrade (es. da "Solo Guida" a "Videocorso Completo") interni all'app.
 
 ### Fase 10: Ottimizzazione & Lancio Definitivo (Target: v1.4.0)
