@@ -30,7 +30,7 @@
 - [x] Blocco sessioni simultanee (tracciamento `current_session_id`): vince l'ultimo accesso, le altre sessioni vengono revocate e chiuse dal proxy.
 - [x] Voglio vedere il localhost sempre in localhost:3000 quindi verifica se ci sono sessioni attive, fermale. (`npm run dev` libera la porta 3000 e parte sempre lì)
 - [x] Fai in modo che la skin dark sia quella di default del tema
-- [ ] Aiutami a creare una github action che pinga ogni 3 giorni il db di Supabase in modo che con la licenza base il progetto non si stoppi mai
+- [x] Aiutami a creare una github action che pinga ogni 3 giorni il db di Supabase in modo che con la licenza base il progetto non si stoppi mai
 
 ### Fase 3: Area Riservata Cliente (Beta UI)
 - [ ] Sviluppare Home utente con 2 sezioni principali: "La tua guida" e "Il tuo videocorso".
