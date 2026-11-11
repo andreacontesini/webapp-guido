@@ -4,7 +4,7 @@
 
 ---
 
-## 🟢 FASE BETA (Focus: Core, Auth & Guida PDF)
+## 🟢 VERSIONE 1.0 (Focus: Guida PDF, pagamenti e landing) — branch `main`
 
 ### Fase 1: Setup & Design System
 - [x] Inizializzare Next.js (App Router, TS, Tailwind CSS).
@@ -51,42 +51,62 @@
 - [x] Gestione Guida PDF: upload del file su Supabase Storage e aggiornamento dettagli.
 - [x] Prendi spunto dalla sezione id="hero" del sito a questo link https://finorio.demo.nextjstemplates.com/ e ricomponi la pagina iniziale dell'app. Non ho bisogno di pulsanti particolari o header / footer, ma semplicemente contenuti e bottone che rimanda alla pagina di accesso / login
 
-### Fase 5: Chiusura Beta & Deploy (Target: v0.9.0-beta)
-- [ ] Test end-to-end (ricezione Magic Link, permessi PDF, redirect).
-- [ ] Landing (`src/app/page.tsx`): aggiornare periodicamente testi e numeri chiave (tappe, pagine, ecc.) con dati reali; quando ci saranno, valutare dati come utenti o valutazioni (solo se veri).
-- [ ] Deploy su Vercel (app.guidocontesini.it).
-- [ ] **Tag Versione:** Commit finale e rilascio versione `v0.9.0-beta`.
+### Fase 5: Pagamento della Guida con Stripe (Target: v0.5.0)
+- [ ] Prezzo della guida definito e prodotto/prezzo creati su Stripe (account del cliente), prima in Test Mode.
+- [ ] Tabella `purchases` (acquisti: utente, prodotto, sessione Stripe, importo, stato) con RLS: l'utente vede solo i propri acquisti.
+- [ ] Popup "Acquista la guida": prezzo reale e pulsante che apre Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica.
+- [ ] Webhook Stripe (`/api/webhooks/stripe`): a pagamento confermato registra l'acquisto e sblocca `guide_access` (mai lato client), gestendo gli eventi duplicati.
+- [ ] Revoca automatica dell'accesso in caso di rimborso o contestazione del pagamento.
+- [ ] Pagine di ritorno (logica): collegare il `session_id` di Stripe alla verifica dello sblocco.
+- [ ] Area admin: elenco acquisti nella scheda utente e assegnazione manuale ancora possibile.
+- [ ] Aspetti legali e fiscali da verificare con il cliente/commercialista: condizioni di vendita, rinuncia al recesso per contenuti digitali (casella nel checkout), emissione della fattura (la ricevuta Stripe non è una fattura).
+- [ ] Test completi in Test Mode (carte di prova, webhook in locale con Stripe CLI, rimborso).
+- [ ] **Tag Versione:** `v0.5.0`.
+
+### Fase 6: Landing gestibili dall'admin (Target: v0.6.0)
+- [ ] Tabella `landing_pages` (indirizzo/slug, titolo, testi SEO, blocchi di contenuto, stato bozza/pubblicata).
+- [ ] Blocchi predefiniti con lo stile dell'app: hero, punti chiave, contenuti della guida (tappe), testo libero, immagine, testimonianze, domande frequenti, prezzo con pulsante "Acquista", invito all'accesso.
+- [ ] Editor nell'area admin: crea, duplica ed elimina landing; aggiungi, modifica e riordina i blocchi; anteprima; pubblica/ritira.
+- [ ] Caricamento immagini per le landing (bucket pubblico su Supabase Storage).
+- [ ] Pagine pubbliche delle landing e scelta della landing da usare come pagina iniziale (al posto di quella attuale in `src/app/page.tsx`).
+- [ ] Acquisto direttamente da una landing anche per chi non ha ancora un account: Stripe Checkout chiede l'email, il webhook crea l'account, sblocca la guida e invia il link di accesso.
+- [ ] SEO e condivisione: titolo, descrizione e immagine di anteprima per ogni landing; sitemap.
+- [ ] Contenuti delle landing aggiornati con dati reali (tappe, pagine, ecc.); dati come utenti o valutazioni solo se veri.
+- [ ] **Tag Versione:** `v0.6.0`.
+
+### Fase 7: Lancio della Guida (Target: v1.0.0)
+- [ ] Test end-to-end: Magic Link, permessi PDF, redirect, acquisto, rimborso, acquisto da landing senza account.
+- [ ] Passaggio di Stripe alle chiavi live e webhook di produzione.
+- [ ] Deploy su Vercel (app.guidocontesini.it) e controllo finale su smartphone e desktop.
+- [ ] **Tag Versione:** rilascio `v1.0.0` (prima versione pubblica, solo guida).
 
 ---
 
-## 🔵 VERSIONE 1.x (Focus: Videocorso, Stripe & Upgrade)
+## 🔵 VERSIONE 2.x (Focus: Videocorso)
+**Sviluppo su un branch separato (`videocorso`), unito a `main` solo a corso completo e testato.** Fino ad allora in app il videocorso resta "In arrivo".
 
-### Fase 6: Database Avanzato (v1.0.0)
-- [ ] Estendere DB: tabelle `products`, `purchases`, `modules`, `lessons`, `attachments`.
+### Fase 8: Database Videocorso
+- [ ] Estendere DB: tabelle `modules`, `lessons`, `attachments`; prodotto videocorso in `purchases`.
 - [ ] Configurare RLS per i nuovi contenuti (accesso legato allo stato di acquisto).
 
-### Fase 7: Area Amministrazione Videocorso (v1.1.0)
+### Fase 9: Area Amministrazione Videocorso
 - [ ] Integrazione Bunny Stream API nel back office.
 - [ ] Sviluppo interfaccia per creazione moduli e lezioni.
 - [ ] Implementare "Direct Upload" per i video da app verso Bunny.net.
 - [ ] Funzionalità di upload per file allegati (modelli/documenti) associati alle lezioni.
 
-### Fase 8: Area Riservata Cliente - Sblocco Video (v1.2.0)
+### Fase 10: Area Riservata Cliente - Sblocco Video
 - [ ] Rimuovere "Coming Soon" e attivare la lista moduli/lezioni.
 - [ ] Lezione 1: preview gratuita accessibile a chi possiede solo la guida.
 - [ ] Player video integrato (Bunny Stream) con logiche di protezione.
 - [ ] Area download documenti per le singole lezioni.
 
-### Fase 9: Automazione Pagamenti (v1.3.0)
-- [ ] **Acquisto dalla dashboard (niente pagina prodotti):** al click su "Acquista" si apre un popup con breve descrizione del prodotto, prezzo e pulsante "Acquista" che porta a Stripe Checkout.
-- [ ] Integrazione Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica.
-- [x] Pagine di ritorno (grafica): **conferma** (`/dashboard/acquisto/conferma`, attende lo sblocco e porta al contenuto) e **annullato** (`/dashboard/acquisto/annullato`, nessun addebito, torna alla dashboard).
-- [ ] Pagine di ritorno (logica): collegare `session_id` di Stripe alla verifica dello sblocco.
-- [ ] Webhook Stripe (`/api/webhooks/stripe`) per creazione/aggiornamento utenti e sblocco permessi.
-- [ ] Sblocco automatico di guida/corso solo a pagamento confermato (mai lato client), con revoca in caso di rimborso.
+### Fase 11: Pagamenti Videocorso & Upgrade
+- [ ] Acquisto del videocorso (stesso flusso Stripe della guida).
 - [ ] Banner e flussi di upgrade (es. da "Solo Guida" a "Videocorso Completo") interni all'app.
+- [ ] Blocchi landing dedicati al videocorso.
 
-### Fase 10: Ottimizzazione & Lancio Definitivo (Target: v1.4.0)
+### Fase 12: Lancio Videocorso (Target: v2.0.0)
 - [ ] Configurazione PWA (manifest, icone).
-- [ ] Test flussi di pagamento in Test Mode.
-- [ ] Passaggio variabili live per il lancio al pubblico.
+- [ ] Test end-to-end del videocorso e dei pagamenti.
+- [ ] Merge del branch `videocorso` in `main` e rilascio `v2.0.0`.
