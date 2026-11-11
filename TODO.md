@@ -44,7 +44,7 @@
 - [x] Pagine di ritorno da Stripe Checkout (anticipate dalla Fase 9, solo grafica): conferma e annullato, con email di assistenza `info@guidocontesini.it`.
 
 ### Fase 4: Area Amministrazione Base
-- [ ] **Accesso solo per chi ha diritto:** chi si registra liberamente non deve vedere guida né corso. `guide_access` di default `false`; in beta l'accesso lo assegna l'admin (o un elenco di email beta), poi lo sblocca il pagamento (Fase 9).
+- [x] **Accesso solo per chi ha diritto:** chi si registra liberamente non deve vedere guida né corso. `guide_access` di default `false`; in beta l'accesso lo assegna l'admin (o un elenco di email beta), poi lo sblocca il pagamento (Fase 9).
 - [ ] Per gli utenti senza accesso: home e pagina guida con pulsante "Acquista la guida" (apre il popup di acquisto, Fase 9) invece di "Non attiva".
 - [ ] Proteggere la rotta `/admin` (solo `role: admin`).
 - [ ] Gestione Utenti: visualizzazione lista, blocco utente, eliminazione, revoca/assegnazione permessi.
