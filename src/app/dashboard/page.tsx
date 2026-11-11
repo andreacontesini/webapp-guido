@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { BookOpenIcon, LockIcon, PlayCircleIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { leggiProfiloCorrente } from "@/lib/auth/utente";
 
 export const metadata: Metadata = {
   title: "La tua area",
@@ -16,7 +18,9 @@ export default function DashboardPage() {
     <div className="space-y-6">
       <header className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          Bentornato
+          <Suspense fallback="Bentornato">
+            <Saluto />
+          </Suspense>
         </h1>
         <p className="text-muted-foreground">
           Qui trovi i materiali per vendere casa da privato, un passo alla
@@ -96,4 +100,10 @@ export default function DashboardPage() {
       </div>
     </div>
   );
+}
+
+/** Saluto con il nome, letto dal profilo a ogni richiesta. */
+async function Saluto() {
+  const { first_name } = await leggiProfiloCorrente();
+  return first_name ? `Ciao, ${first_name}` : "Bentornato";
 }

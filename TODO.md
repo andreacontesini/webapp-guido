@@ -26,7 +26,7 @@
 - [x] Configurare schema base su Supabase (`profiles`, `guide_settings`).
 - [x] Implementare Row Level Security (RLS) protettiva.
 - [x] Implementare Login/Registrazione con Magic Link via Supabase Auth + Resend.
-- [ ] Se al login il cliente è nuovo, richiedi i dati di base per riempire l'account. Il resto dei dati potrà inserirli in futuro nell'area Profilo.
+- [x] Se al login il cliente è nuovo, richiedi i dati di base per riempire l'account. Il resto dei dati potrà inserirli in futuro nell'area Profilo.
 - [ ] Blocco sessioni simultanee (tracciamento `current_session_id`).
 
 ### Fase 3: Area Riservata Cliente (Beta UI)
