@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
-import { FileTextIcon, UsersIcon } from "lucide-react";
-
-import { Badge } from "@/components/ui/badge";
+import Link from "next/link";
+import { ArrowRightIcon, FileTextIcon, UsersIcon } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Panoramica",
@@ -12,11 +11,13 @@ const sezioni = [
     titolo: "Utenti",
     descrizione: "Elenco utenti, blocco degli account e gestione dei permessi.",
     icona: UsersIcon,
+    href: "/admin/utenti",
   },
   {
     titolo: "Guida PDF",
     descrizione: "Caricamento della guida e aggiornamento dei suoi dettagli.",
     icona: FileTextIcon,
+    href: "/admin/guida",
   },
 ];
 
@@ -33,19 +34,24 @@ export default function AdminPage() {
       </header>
 
       <ul className="grid gap-4 md:grid-cols-2">
-        {sezioni.map(({ titolo, descrizione, icona: Icona }) => (
-          <li
-            key={titolo}
-            className="flex flex-col rounded-xl border bg-card p-6 text-card-foreground"
-          >
-            <div className="mb-5 flex items-center justify-between gap-3">
-              <span className="inline-flex size-10 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-                <Icona className="size-5" aria-hidden />
-              </span>
-              <Badge variant="outline">Fase 4</Badge>
-            </div>
-            <h2 className="font-semibold">{titolo}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{descrizione}</p>
+        {sezioni.map(({ titolo, descrizione, icona: Icona, href }) => (
+          <li key={titolo}>
+            <Link
+              href={href}
+              className="group flex h-full flex-col rounded-xl border bg-card p-6 text-card-foreground transition-colors hover:bg-muted/40 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+            >
+              <div className="mb-5 flex items-center justify-between gap-3">
+                <span className="inline-flex size-10 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+                  <Icona className="size-5" aria-hidden />
+                </span>
+                <ArrowRightIcon
+                  className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                  aria-hidden
+                />
+              </div>
+              <h2 className="font-semibold">{titolo}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{descrizione}</p>
+            </Link>
           </li>
         ))}
       </ul>

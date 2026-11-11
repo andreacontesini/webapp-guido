@@ -48,7 +48,7 @@
 - [ ] Per gli utenti senza accesso: home e pagina guida con pulsante "Acquista la guida" (apre il popup di acquisto, Fase 9) invece di "Non attiva".
 - [x] Proteggere la rotta `/admin` (solo `role: admin`).
 - [x] Gestione Utenti: visualizzazione lista, blocco utente, eliminazione, revoca/assegnazione permessi.
-- [ ] Gestione Guida PDF: upload del file su Supabase Storage e aggiornamento dettagli.
+- [x] Gestione Guida PDF: upload del file su Supabase Storage e aggiornamento dettagli.
 - [ ] Prendi spunto dalla sezione id="hero" del sito a questo link https://finorio.demo.nextjstemplates.com/ e ricomponi la pagina iniziale dell'app. Non ho bisogno di pulsanti particolari o header / footer, ma semplicemente contenuti e bottone che rimanda alla pagina di accesso / login
 
 ### Fase 5: Chiusura Beta & Deploy (Target: v0.9.0-beta)

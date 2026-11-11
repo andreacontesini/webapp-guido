@@ -20,10 +20,13 @@ Apri **SQL Editor** ed esegui **in ordine** il contenuto dei file in `supabase/m
 
 1. `20261111100000_schema_base.sql`: tabelle `profiles` e `guide_settings`, trigger che crea il profilo alla registrazione.
 2. `20261111100100_rls.sql`: Row Level Security e funzione per la sessione unica.
+3. `20261111120000_ping.sql`: funzione di keep-alive per la GitHub Action.
+4. `20261112090000_storage_guida.sql`: bucket privato `guida` per il PDF.
+5. `20261113090000_accesso_guida.sql`: i nuovi utenti non hanno la guida finché non la assegna l'admin (o il pagamento).
 
 In alternativa, con la Supabase CLI: `supabase link --project-ref <ref>` e poi `supabase db push`. Le migrazioni applicate sono registrate in `supabase_migrations.schema_migrations`, la stessa tabella usata dalla CLI.
 
-Per rendere admin un utente (dopo il suo primo accesso):
+Per rendere admin il primo utente (dopo il suo primo accesso); gli altri si gestiscono poi da **Amministrazione → Utenti**:
 
 ```sql
 update public.profiles set role = 'admin' where email = 'indirizzo@esempio.it';

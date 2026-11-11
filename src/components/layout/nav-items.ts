@@ -49,7 +49,6 @@ export const navigazioneAdmin: VoceNavigazione[] = [
     titolo: "Guida PDF",
     href: "/admin/guida",
     icona: FileTextIcon,
-    disabilitata: true,
   },
   { titolo: "Area cliente", href: "/dashboard", icona: HomeIcon },
 ];

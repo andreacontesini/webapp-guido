@@ -6,8 +6,7 @@ import { leggiProfiloCorrente } from "@/lib/auth/utente";
 import { creaClientServer } from "@/lib/supabase/server";
 import type { ImpostazioniGuida } from "@/lib/supabase/tipi";
 
-/** Nome del bucket Storage privato che contiene il PDF. */
-export const BUCKET_GUIDA = "guida";
+export { BUCKET_GUIDA } from "@/lib/bucket";
 
 export type StatoGuida =
   /** L'utente non ha il permesso (revocato dall'admin). */
