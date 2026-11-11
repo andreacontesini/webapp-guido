@@ -21,7 +21,7 @@ Apri **SQL Editor** ed esegui **in ordine** il contenuto dei file in `supabase/m
 1. `20261111100000_schema_base.sql`: tabelle `profiles` e `guide_settings`, trigger che crea il profilo alla registrazione.
 2. `20261111100100_rls.sql`: Row Level Security e funzione per la sessione unica.
 
-In alternativa, con la Supabase CLI: `supabase link --project-ref <ref>` e poi `supabase db push`.
+In alternativa, con la Supabase CLI: `supabase link --project-ref <ref>` e poi `supabase db push`. Le migrazioni applicate sono registrate in `supabase_migrations.schema_migrations`, la stessa tabella usata dalla CLI.
 
 Per rendere admin un utente (dopo il suo primo accesso):
 
