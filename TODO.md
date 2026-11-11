@@ -52,6 +52,10 @@
 - [x] Prendi spunto dalla sezione id="hero" del sito a questo link https://finorio.demo.nextjstemplates.com/ e ricomponi la pagina iniziale dell'app. Non ho bisogno di pulsanti particolari o header / footer, ma semplicemente contenuti e bottone che rimanda alla pagina di accesso / login
 
 ### Fase 5: Pagamento base con Stripe (Target: v0.5.0)
+> ⏸️ **Stripe rinviato** (account Stripe del cliente non ancora disponibile). Ordine di lavoro nel frattempo:
+> 1. Parti di Fase 5–7 che non richiedono Stripe (tabella `purchases`, restyle delle email).
+> 2. Fase 8 e Fase 9 (landing ed editor): il pulsante "Acquista" usa per ora il popup di acquisto esistente e verrà collegato a Stripe Checkout in seguito.
+> 3. Le voci Stripe di Fase 5, 6 e 7, appena l'account è disponibile.
 - [ ] Prezzo della guida definito e prodotto/prezzo creati su Stripe (account del cliente), in Test Mode.
 - [ ] Tabella `purchases` (acquisti: utente, prodotto, sessione Stripe, importo, stato) con RLS: l'utente vede solo i propri acquisti.
 - [ ] Popup "Acquista la guida": prezzo reale e pulsante che apre Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica.
