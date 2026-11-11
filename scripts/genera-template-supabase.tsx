@@ -8,7 +8,7 @@
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 
-import { pretty, render } from "@react-email/render";
+import { render } from "@react-email/render";
 
 import EmailAccesso from "../src/emails/accesso";
 import EmailCambioEmail from "../src/emails/cambio-email";
@@ -42,7 +42,8 @@ const modelli = [
 async function genera() {
   mkdirSync("supabase/templates", { recursive: true });
   for (const { file, email } of modelli) {
-    const html = await pretty(await render(email));
+    // Niente formattazione: spezzerebbe i segnaposto {{ ... }} su più righe.
+    const html = await render(email);
     writeFileSync(`supabase/templates/${file}`, html);
     console.log(`Creato supabase/templates/${file}`);
   }
