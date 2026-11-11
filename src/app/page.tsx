@@ -4,7 +4,10 @@ import { ArrowRightIcon, BookOpenIcon, LockIcon, PlayCircleIcon } from "lucide-r
 import { Button } from "@/components/ui/button";
 import { PERCORSO_ACCESSO } from "@/lib/auth/percorsi";
 
-/** Numeri chiave mostrati sotto il testo. */
+/**
+ * Numeri chiave mostrati sotto il testo.
+ * Da aggiornare periodicamente con dati reali (vedi TODO.md, Fase 5).
+ */
 const punti = [
   { valore: "7", etichetta: "tappe, dai controlli preliminari al rogito" },
   { valore: "18", etichetta: "pagine pratiche, senza giri di parole" },

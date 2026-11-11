@@ -53,6 +53,7 @@
 
 ### Fase 5: Chiusura Beta & Deploy (Target: v0.9.0-beta)
 - [ ] Test end-to-end (ricezione Magic Link, permessi PDF, redirect).
+- [ ] Landing (`src/app/page.tsx`): aggiornare periodicamente testi e numeri chiave (tappe, pagine, ecc.) con dati reali; quando ci saranno, valutare dati come utenti o valutazioni (solo se veri).
 - [ ] Deploy su Vercel (app.guidocontesini.it).
 - [ ] **Tag Versione:** Commit finale e rilascio versione `v0.9.0-beta`.
 
