@@ -5,16 +5,25 @@ import { BarraLaterale } from "@/components/layout/barra-laterale";
 import { BarraSuperiore } from "@/components/layout/barra-superiore";
 import { aree, type Area } from "@/components/layout/nav-items";
 import { SoloAdmin } from "@/components/layout/solo-admin";
-import { VoceAmministrazione } from "@/components/layout/voce-amministrazione";
+import { VoceFondo } from "@/components/layout/voce-fondo";
 
-/** Voce "Amministrazione" nell'area cliente, letta dal profilo (solo admin). */
-const voceAdmin = (tipo: "laterale" | "inferiore") => (
-  <Suspense fallback={null}>
-    <SoloAdmin>
-      <VoceAmministrazione tipo={tipo} />
-    </SoloAdmin>
-  </Suspense>
-);
+type Posizione = "laterale" | "inferiore";
+
+/**
+ * Voce in fondo alla navigazione per passare all'altra area:
+ * - area cliente: "Admin", solo per gli admin (ruolo letto dal profilo);
+ * - area admin: "Indietro", ritorno all'area cliente.
+ */
+const voceFondo = (area: Area, posizione: Posizione) =>
+  area === "admin" ? (
+    <VoceFondo tipo="ritorno" posizione={posizione} />
+  ) : (
+    <Suspense fallback={null}>
+      <SoloAdmin>
+        <VoceFondo tipo="amministrazione" posizione={posizione} />
+      </SoloAdmin>
+    </Suspense>
+  );
 
 /**
  * Struttura comune di area cliente e admin.
@@ -28,10 +37,9 @@ export function GuscioApp({
   area: Area;
   children: React.ReactNode;
 }) {
-  const conVoceAdmin = area === "cliente";
   return (
     <div className="flex min-h-dvh bg-canvas">
-      <BarraLaterale area={area} fondo={conVoceAdmin ? voceAdmin("laterale") : undefined} />
+      <BarraLaterale area={area} fondo={voceFondo(area, "laterale")} />
       <div className="flex min-w-0 flex-1 flex-col">
         <BarraSuperiore area={area} />
         <main className="w-full max-w-6xl flex-1 px-4 pt-6 pb-28 sm:px-6 lg:px-8 lg:pt-8 lg:pb-10">
@@ -41,7 +49,7 @@ export function GuscioApp({
       <BarraInferiore
         area={area}
         etichettaNav={aree[area].etichettaNav}
-        extra={conVoceAdmin ? voceAdmin("inferiore") : undefined}
+        extra={voceFondo(area, "inferiore")}
       />
     </div>
   );
