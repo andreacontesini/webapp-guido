@@ -33,8 +33,8 @@
 - [x] Aiutami a creare una github action che pinga ogni 3 giorni il db di Supabase in modo che con la licenza base il progetto non si stoppi mai
 
 ### Fase 3: Area Riservata Cliente (Beta UI)
-- [ ] Sviluppare Home utente con 2 sezioni principali: "La tua guida" e "Il tuo videocorso".
-- [ ] **Videocorso (Placeholder):** Disegnare la sezione videocorso bloccata con badge "Coming Soon".
+- [x] Sviluppare Home utente con 2 sezioni principali: "La tua guida" e "Il tuo videocorso".
+- [x] **Videocorso (Placeholder):** Disegnare la sezione videocorso bloccata con badge "Coming Soon".
 - [ ] **Guida PDF:**
   - Sviluppare visualizzatore PDF in-app protetto.
   - Logica di accesso (abilitata di default per gli utenti beta o sbloccabile manualmente da admin).

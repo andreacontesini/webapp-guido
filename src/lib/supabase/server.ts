@@ -2,6 +2,7 @@ import "server-only";
 
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
+import { connection } from "next/server";
 
 import { configSupabase } from "@/lib/supabase/config";
 import type { Database } from "@/lib/supabase/tipi";
@@ -11,6 +12,9 @@ import type { Database } from "@/lib/supabase/tipi";
  * Va creato a ogni richiesta (mai condiviso in una variabile globale).
  */
 export async function creaClientServer() {
+  // La sessione dipende dalla richiesta: niente prerender. Serve anche perché
+  // il client Supabase usa Date.now() per controllare la scadenza del token.
+  await connection();
   const cookieStore = await cookies();
   const { url, chiaveAnonima } = configSupabase();
 

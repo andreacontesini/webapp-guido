@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Suspense } from "react";
-import { BookOpenIcon, LockIcon, PlayCircleIcon } from "lucide-react";
+import { ArrowRightIcon, BookOpenIcon, LockIcon, PlayCircleIcon } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { leggiProfiloCorrente } from "@/lib/auth/utente";
+import { leggiStatoGuida, type StatoGuida } from "@/lib/guida";
 
 export const metadata: Metadata = {
   title: "La tua area",
@@ -12,6 +14,28 @@ export const metadata: Metadata = {
 
 /** Stile comune dei riquadri della griglia. */
 const riquadro = "rounded-xl border bg-card p-6 text-card-foreground";
+
+/** Testi della sezione guida in base allo stato del permesso e del file. */
+const testiGuida: Record<
+  StatoGuida["stato"],
+  { badge: string; variante: "default" | "secondary" | "outline"; nota: string }
+> = {
+  disponibile: {
+    badge: "Attiva",
+    variante: "default",
+    nota: "Puoi leggerla qui, da qualsiasi dispositivo.",
+  },
+  "in-preparazione": {
+    badge: "In arrivo",
+    variante: "secondary",
+    nota: "Stiamo preparando la guida: sarà disponibile qui a breve.",
+  },
+  "non-abilitata": {
+    badge: "Non attiva",
+    variante: "outline",
+    nota: "La guida non è attiva sul tuo account. Scrivici se pensi sia un errore.",
+  },
+};
 
 export default function DashboardPage() {
   return (
@@ -29,73 +53,81 @@ export default function DashboardPage() {
       </header>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {/* Riquadro principale: la guida, disponibile in beta. */}
+        {/* La tua guida: sezione principale, disponibile in beta. */}
         <section
           aria-labelledby="titolo-guida"
-          className={`${riquadro} relative flex flex-col overflow-hidden sm:p-8 lg:col-span-2 lg:row-span-2`}
+          className={`${riquadro} relative flex flex-col overflow-hidden sm:p-8 lg:col-span-2`}
         >
           <div
             aria-hidden
             className="pointer-events-none absolute -top-24 -right-24 size-72 rounded-full bg-primary/10 blur-3xl"
           />
-          <span className="mb-6 inline-flex size-12 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-            <BookOpenIcon className="size-6" aria-hidden />
-          </span>
+          <div className="mb-6 flex items-center justify-between gap-3">
+            <span className="inline-flex size-12 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+              <BookOpenIcon className="size-6" aria-hidden />
+            </span>
+            <Suspense fallback={null}>
+              <BadgeGuida />
+            </Suspense>
+          </div>
           <h2 id="titolo-guida" className="text-xl font-semibold">
             La tua guida
           </h2>
           <p className="mt-2 max-w-prose text-muted-foreground">
             Tutte le fasi della vendita, dalla valutazione dell&apos;immobile
-            al rogito. Puoi leggerla qui, da qualsiasi dispositivo.
+            al rogito.
           </p>
           <div className="mt-auto pt-10">
-            <Button size="lg" disabled>
-              Apri la guida
-            </Button>
-            <p className="mt-2 text-sm text-muted-foreground">
-              La lettura in app sarà attiva a breve.
-            </p>
+            <Suspense
+              fallback={
+                <Button size="lg" disabled>
+                  Apri la guida
+                </Button>
+              }
+            >
+              <AzioneGuida />
+            </Suspense>
           </div>
         </section>
 
-        {/* Videocorso: bloccato fino all'uscita. */}
-        <section aria-labelledby="titolo-videocorso" className={riquadro}>
+        {/* Il tuo videocorso: bloccato fino all'uscita. */}
+        <section
+          aria-labelledby="titolo-videocorso"
+          className={`${riquadro} relative flex flex-col overflow-hidden`}
+        >
           <div className="mb-5 flex items-center justify-between gap-3">
-            <span className="inline-flex size-10 items-center justify-center rounded-lg bg-muted text-muted-foreground">
-              <LockIcon className="size-5" aria-hidden />
+            <span className="inline-flex size-12 items-center justify-center rounded-lg bg-muted text-muted-foreground">
+              <PlayCircleIcon className="size-6" aria-hidden />
             </span>
-            <Badge variant="outline">Presto disponibile</Badge>
+            <Badge variant="outline" className="gap-1">
+              <LockIcon className="size-3" aria-hidden />
+              Coming Soon
+            </Badge>
           </div>
-          <h2 id="titolo-videocorso" className="font-semibold">
+          <h2 id="titolo-videocorso" className="text-xl font-semibold">
             Il tuo videocorso
           </h2>
-          <p className="mt-1 text-sm text-muted-foreground">
+          <p className="mt-2 text-muted-foreground">
             Lezioni video su ogni fase della vendita, con modelli e documenti
             da scaricare.
           </p>
-        </section>
-
-        {/* Stato dei contenuti a cui l'utente ha accesso. */}
-        <section aria-labelledby="titolo-accesso" className={riquadro}>
-          <h2 id="titolo-accesso" className="font-semibold">
-            Il tuo accesso
-          </h2>
-          <ul className="mt-4 divide-y">
-            <li className="flex items-center justify-between gap-3 py-3 first:pt-0">
-              <span className="flex items-center gap-2 text-sm">
-                <BookOpenIcon className="size-4 text-muted-foreground" aria-hidden />
-                Guida PDF
-              </span>
-              <Badge>Attiva</Badge>
-            </li>
-            <li className="flex items-center justify-between gap-3 py-3 last:pb-0">
-              <span className="flex items-center gap-2 text-sm">
-                <PlayCircleIcon className="size-4 text-muted-foreground" aria-hidden />
-                Videocorso
-              </span>
-              <Badge variant="secondary">In arrivo</Badge>
-            </li>
+          {/* Anteprima delle lezioni, in grigio finché il corso è bloccato. */}
+          <ul aria-hidden className="mt-6 space-y-2 opacity-60 blur-[1px]">
+            {["Valutare l'immobile", "Preparare la casa e le foto", "Trattativa e rogito"].map(
+              (lezione, i) => (
+                <li
+                  key={lezione}
+                  className="flex items-center gap-3 rounded-lg border border-dashed px-3 py-2 text-sm text-muted-foreground"
+                >
+                  <span className="tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                  {lezione}
+                </li>
+              ),
+            )}
           </ul>
+          <p className="mt-auto pt-6 text-sm text-muted-foreground">
+            Ti avviseremo appena sarà disponibile.
+          </p>
         </section>
       </div>
     </div>
@@ -106,4 +138,30 @@ export default function DashboardPage() {
 async function Saluto() {
   const { first_name } = await leggiProfiloCorrente();
   return first_name ? `Ciao, ${first_name}` : "Bentornato";
+}
+
+async function BadgeGuida() {
+  const { stato } = await leggiStatoGuida();
+  const { badge, variante } = testiGuida[stato];
+  return <Badge variant={variante}>{badge}</Badge>;
+}
+
+async function AzioneGuida() {
+  const { stato } = await leggiStatoGuida();
+  const { nota } = testiGuida[stato];
+  return (
+    <>
+      {stato === "disponibile" ? (
+        <Button size="lg" render={<Link href="/dashboard/guida" />} nativeButton={false}>
+          Apri la guida
+          <ArrowRightIcon aria-hidden />
+        </Button>
+      ) : (
+        <Button size="lg" disabled>
+          Apri la guida
+        </Button>
+      )}
+      <p className="mt-2 text-sm text-muted-foreground">{nota}</p>
+    </>
+  );
 }
