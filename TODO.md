@@ -41,7 +41,7 @@
 
 ### Fase 4: Area Amministrazione Base
 - [ ] **Accesso solo per chi ha diritto:** chi si registra liberamente non deve vedere guida né corso. `guide_access` di default `false`; in beta l'accesso lo assegna l'admin (o un elenco di email beta), poi lo sblocca il pagamento (Fase 9).
-- [ ] Per gli utenti senza accesso: home e pagina guida con messaggio "Acquista la guida" (link alla pagina di vendita) invece di "Non attiva".
+- [ ] Per gli utenti senza accesso: home e pagina guida con pulsante "Acquista la guida" (apre il popup di acquisto, Fase 9) invece di "Non attiva".
 - [ ] Proteggere la rotta `/admin` (solo `role: admin`).
 - [ ] Gestione Utenti: visualizzazione lista, blocco utente, eliminazione, revoca/assegnazione permessi.
 - [ ] Gestione Guida PDF: upload del file su Supabase Storage e aggiornamento dettagli.
@@ -72,9 +72,10 @@
 - [ ] Area download documenti per le singole lezioni.
 
 ### Fase 9: Automazione Pagamenti (v1.3.0)
-- [ ] Pagina **Acquista** (`/acquista`): prodotti "Solo Guida" e "Videocorso completo" con prezzo, cosa include e pulsante di acquisto; raggiungibile da home, guida bloccata e banner di upgrade.
+- [ ] **Acquisto dalla dashboard (niente pagina prodotti):** al click su "Acquista" si apre un popup con breve descrizione del prodotto, prezzo e pulsante "Acquista" che porta a Stripe Checkout.
 - [ ] Integrazione Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica.
-- [ ] Pagine di ritorno: **conferma** (`/acquista/conferma`, attende lo sblocco dal webhook e porta al contenuto) e **annullato** (`/acquista/annullato`, torna alla pagina Acquista).
+- [x] Pagine di ritorno (grafica): **conferma** (`/dashboard/acquisto/conferma`, attende lo sblocco e porta al contenuto) e **annullato** (`/dashboard/acquisto/annullato`, nessun addebito, torna alla dashboard).
+- [ ] Pagine di ritorno (logica): collegare `session_id` di Stripe alla verifica dello sblocco.
 - [ ] Webhook Stripe (`/api/webhooks/stripe`) per creazione/aggiornamento utenti e sblocco permessi.
 - [ ] Sblocco automatico di guida/corso solo a pagamento confermato (mai lato client), con revoca in caso di rimborso.
 - [ ] Banner e flussi di upgrade (es. da "Solo Guida" a "Videocorso Completo") interni all'app.
