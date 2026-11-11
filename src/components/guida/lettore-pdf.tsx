@@ -16,7 +16,7 @@ const LARGHEZZA_MAX = 900;
 type Props = {
   /** Route protetta che restituisce il PDF. */
   url: string;
-  /** Testo della filigrana disegnata su ogni pagina (es. email dell'utente). */
+  /** Testo della filigrana disegnata su ogni pagina. */
   filigrana: string;
 };
 
@@ -35,7 +35,7 @@ async function caricaPdfjs() {
 
 /**
  * Lettore della guida: disegna le pagine su canvas (niente link di download
- * né lettore nativo del browser), con filigrana personale dentro l'immagine.
+ * né lettore nativo del browser), con la filigrana disegnata dentro l'immagine.
  * Non è una protezione assoluta, ma scoraggia copia e diffusione.
  */
 export function LettorePdf({ url, filigrana }: Props) {

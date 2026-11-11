@@ -5,8 +5,10 @@ import { ArrowLeftIcon, BookOpenIcon, ClockIcon, LockIcon } from "lucide-react";
 
 import { LettorePdf } from "@/components/guida/lettore-pdf";
 import { Button } from "@/components/ui/button";
-import { leggiProfiloCorrente } from "@/lib/auth/utente";
 import { leggiStatoGuida } from "@/lib/guida";
+
+/** Testo della filigrana disegnata su ogni pagina della guida. */
+const FILIGRANA = "Guido Contesini - Mediatore immobiliare";
 
 export const metadata: Metadata = {
   title: "La tua guida",
@@ -34,7 +36,7 @@ export default function PaginaGuida() {
 }
 
 async function ContenutoGuida() {
-  const [stato, profilo] = await Promise.all([leggiStatoGuida(), leggiProfiloCorrente()]);
+  const stato = await leggiStatoGuida();
 
   if (stato.stato === "non-abilitata") {
     return (
@@ -69,7 +71,7 @@ async function ContenutoGuida() {
           </p>
         )}
       </header>
-      <LettorePdf url="/dashboard/guida/file" filigrana={profilo.email} />
+      <LettorePdf url="/dashboard/guida/file" filigrana={FILIGRANA} />
     </>
   );
 }
