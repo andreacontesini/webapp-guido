@@ -26,7 +26,9 @@ export default function PaginaBenvenuto() {
           <EmailAccount />
         </Suspense>
       </div>
-      <ModuloBenvenuto />
+      <Suspense fallback={null}>
+        <ModuloPrecompilato />
+      </Suspense>
     </main>
   );
 }
@@ -37,5 +39,20 @@ async function EmailAccount() {
     <p className="text-sm text-muted-foreground">
       Account: <span className="font-medium text-foreground">{email}</span>
     </p>
+  );
+}
+
+/** Il modulo parte dai dati già presenti (es. inseriti dall'admin creando l'account). */
+async function ModuloPrecompilato() {
+  const profilo = await leggiProfiloCorrente();
+  return (
+    <ModuloBenvenuto
+      iniziali={{
+        nome: profilo.first_name ?? "",
+        cognome: profilo.last_name ?? "",
+        telefono: profilo.phone ?? "",
+        marketing: profilo.marketing_consent,
+      }}
+    />
   );
 }

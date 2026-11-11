@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { SearchIcon } from "lucide-react";
 
 import { AzioniUtente, InterruttoreGuida } from "@/app/admin/utenti/azioni-utente";
+import { NuovoUtente } from "@/app/admin/utenti/nuovo-utente";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,11 +25,15 @@ const formatoData = new Intl.DateTimeFormat("it-IT", {
 export default function PaginaUtenti({ searchParams }: PageProps<"/admin/utenti">) {
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Utenti</h1>
-        <p className="text-muted-foreground">
-          Assegna o revoca la guida, blocca gli account e gestisci gli amministratori.
-        </p>
+      <header className="flex flex-wrap items-end justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Utenti</h1>
+          <p className="text-muted-foreground">
+            Crea account, assegna o revoca la guida, blocca gli account e gestisci gli
+            amministratori.
+          </p>
+        </div>
+        <NuovoUtente />
       </header>
       <Suspense fallback={<p className="text-muted-foreground">Caricamento utenti…</p>}>
         <ElencoUtenti searchParams={searchParams} />

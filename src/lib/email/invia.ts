@@ -31,7 +31,8 @@ export async function inviaEmail({ a, oggetto, email, chiaveIdempotenza }: Invio
   const html = await render(email);
   const { data, error } = await resend().emails.send(
     {
-      from: `Guido Contesini <${mittente}>`,
+      // Già nel formato "Nome <indirizzo>" (vedi .env.example).
+      from: mittente,
       to: a,
       subject: oggetto,
       html,

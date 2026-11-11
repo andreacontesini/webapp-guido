@@ -24,8 +24,11 @@ function Errore({ id, testo }: { id: string; testo?: string }) {
   );
 }
 
-export function ModuloBenvenuto() {
-  const [stato, azione, inCorso] = useActionState(salvaDatiIniziali, statoIniziale);
+export function ModuloBenvenuto({ iniziali }: { iniziali?: StatoBenvenuto["valori"] }) {
+  const [stato, azione, inCorso] = useActionState(
+    salvaDatiIniziali,
+    iniziali ? { errori: {}, valori: iniziali } : statoIniziale,
+  );
   const { errori, valori } = stato;
 
   /** Attributi di accessibilità per un campo con eventuale errore. */
