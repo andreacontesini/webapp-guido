@@ -90,6 +90,7 @@
   - Il pulsante porta direttamente a Stripe Checkout senza passare dal login (flusso della Fase 7).
 - [ ] Contenuti con dati reali (tappe, pagine, ecc.); dati come utenti o valutazioni solo se veri.
 - [ ] SEO e condivisione: titolo, descrizione e immagine di anteprima per ogni landing; sitemap.
+- [ ] Landing pronte a spostarsi sul dominio principale: per ora vivono su `app.guidocontesini.it` (il dominio principale ospita il sito WordPress, da non toccare), ma URL canonici, sitemap, link di ritorno da Stripe e link verso l'area riservata usano due variabili d'ambiente separate (indirizzo delle landing e indirizzo dell'app) invece di indirizzi scritti nel codice.
 - [ ] **Tag Versione:** `v0.8.0`.
 
 ### Fase 9: Editor delle landing in admin (Target: v0.9.0)
@@ -138,3 +139,12 @@
 - [ ] Configurazione PWA (manifest, icone).
 - [ ] Test end-to-end del videocorso e dei pagamenti.
 - [ ] Merge del branch `videocorso` in `main` e rilascio `v2.0.0`.
+
+---
+
+## ⚪ IN FUTURO: Landing sul dominio principale
+Quando il sito WordPress su `guidocontesini.it` verrà dismesso.
+- [ ] Aggiungere `guidocontesini.it` e `www` al progetto Vercel (record A su DNS Aruba) e aggiornare la variabile d'ambiente con l'indirizzo delle landing.
+- [ ] Smistamento per dominio nel proxy: sul dominio principale solo le landing, il resto (`/login`, `/admin`, area riservata) rimandato su `app.guidocontesini.it`.
+- [ ] Redirect 301 dalle vecchie pagine WordPress che hanno traffico o posizionamento.
+- [ ] Escludere `app.guidocontesini.it` dall'indicizzazione e aggiornare l'URL di ritorno in Stripe.
