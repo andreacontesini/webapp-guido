@@ -44,25 +44,25 @@ update public.profiles set role = 'admin' where email = 'indirizzo@esempio.it';
    - Sender name: `Guido Contesini`
 3. In **Authentication → Rate Limits** alza il limite delle email orarie (quello di default è molto basso).
 
-## 4. Template dell'email "Magic Link"
+## 4. Modelli delle email
 
-**Authentication → Emails → Templates → Magic Link**. Il link punta direttamente all'app con `token_hash`, quindi funziona anche se l'email viene aperta su un altro dispositivo.
+I modelli HTML sono in `supabase/templates/`, generati dai componenti React Email di `src/emails/` (stesso layout delle email inviate dall'app con Resend). Dopo ogni modifica a `src/emails/` rigenerali con:
 
-Oggetto: `Il tuo link per accedere`
-
-```html
-<h2>Accedi alla tua area riservata</h2>
-<p>Ciao, clicca sul pulsante qui sotto per entrare in <strong>Vendere Casa da Privato</strong>.</p>
-<p>
-  <a href="{{ .SiteURL }}/auth/conferma?token_hash={{ .TokenHash }}&type=email&next=/dashboard"
-     style="display:inline-block;padding:12px 20px;background:#2563eb;color:#ffffff;border-radius:6px;text-decoration:none;font-weight:600">
-    Accedi ora
-  </a>
-</p>
-<p>Il link vale per un solo accesso e scade dopo un'ora. Se non hai richiesto tu questa email, puoi ignorarla.</p>
+```bash
+npm run email:supabase
 ```
 
-Usa lo stesso testo anche per il template **Confirm signup**: per un indirizzo nuovo Supabase manda quello.
+Per vedere le email nel browser mentre le modifichi: `npm run email:anteprima` (apre http://localhost:3001).
+
+Poi in **Authentication → Emails → Templates** copia il contenuto di ogni file nel modello corrispondente:
+
+| Modello Supabase | File | Oggetto |
+|---|---|---|
+| Magic Link | `magic-link.html` | `Il tuo link per accedere` |
+| Confirm signup | `conferma-registrazione.html` | `Conferma la tua email` |
+| Change Email Address | `cambio-email.html` | `Conferma il nuovo indirizzo email` |
+
+I link puntano direttamente all'app con `token_hash` (`/auth/conferma`), quindi funzionano anche se l'email viene aperta su un altro dispositivo. Il logo è servito dall'app in `{{ .SiteURL }}/email/logo.png` (rigenerabile con `node scripts/genera-logo-email.mjs`).
 
 ## 5. URL dell'app
 

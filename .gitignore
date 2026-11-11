@@ -39,3 +39,6 @@ yarn-error.log*
 
 # File di sistema
 .DS_Store
+
+# React Email (anteprima con npm run email:anteprima)
+.react-email
