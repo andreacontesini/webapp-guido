@@ -1,23 +1,27 @@
 export type PreferenzaTema = "sistema" | "chiaro" | "scuro";
 
 export const CHIAVE_TEMA = "tema";
+/** Tema usato finché l'utente non ne sceglie un altro. */
+export const TEMA_PREDEFINITO: PreferenzaTema = "scuro";
 export const EVENTO_TEMA = "cambio-tema";
 
 /**
  * Script eseguito nel <head> prima del primo disegno della pagina:
- * applica la classe `dark` in base alla preferenza salvata (o al sistema),
+ * applica la classe `dark` in base alla preferenza salvata (di default: scuro),
  * così non c'è il lampo di tema sbagliato al caricamento.
  */
-export const scriptTemaIniziale = `(function(){try{var p=localStorage.getItem("${CHIAVE_TEMA}")||"sistema";var d=p==="scuro"||(p==="sistema"&&window.matchMedia("(prefers-color-scheme: dark)").matches);var r=document.documentElement;r.classList.toggle("dark",d);r.style.colorScheme=d?"dark":"light";}catch(e){}})();`;
+export const scriptTemaIniziale = `(function(){try{var p=localStorage.getItem("${CHIAVE_TEMA}")||"${TEMA_PREDEFINITO}";var d=p==="scuro"||(p==="sistema"&&window.matchMedia("(prefers-color-scheme: dark)").matches);var r=document.documentElement;r.classList.toggle("dark",d);r.style.colorScheme=d?"dark":"light";}catch(e){}})();`;
 
 export function leggiPreferenza(): PreferenzaTema {
   try {
     const valore = localStorage.getItem(CHIAVE_TEMA);
-    if (valore === "chiaro" || valore === "scuro") return valore;
+    if (valore === "chiaro" || valore === "scuro" || valore === "sistema") {
+      return valore;
+    }
   } catch {
     // localStorage non disponibile (es. navigazione privata restrittiva)
   }
-  return "sistema";
+  return TEMA_PREDEFINITO;
 }
 
 export function applicaTema(preferenza: PreferenzaTema) {
@@ -32,7 +36,7 @@ export function applicaTema(preferenza: PreferenzaTema) {
 
 export function salvaPreferenza(preferenza: PreferenzaTema) {
   try {
-    if (preferenza === "sistema") localStorage.removeItem(CHIAVE_TEMA);
+    if (preferenza === TEMA_PREDEFINITO) localStorage.removeItem(CHIAVE_TEMA);
     else localStorage.setItem(CHIAVE_TEMA, preferenza);
   } catch {
     // Se non si può salvare, il tema vale comunque per la sessione corrente.

@@ -26,19 +26,19 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#0e1116" },
-  ],
+  // Colore della barra del browser su mobile: segue il tema scuro predefinito.
+  themeColor: "#0e1116",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    // suppressHydrationWarning: lo script del tema aggiunge la classe `dark`
-    // (e color-scheme) a <html> prima che React si avvii. Vale solo per <html>.
+    // Il tema scuro è il predefinito: `dark` è già nell'HTML del server.
+    // suppressHydrationWarning: lo script del tema può cambiare la classe
+    // (e color-scheme) di <html> prima che React si avvii. Vale solo per <html>.
     <html
       lang="it"
-      className={`${geist.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${geist.variable} ${geistMono.variable} dark h-full antialiased`}
+      style={{ colorScheme: "dark" }}
       suppressHydrationWarning
     >
       <head>

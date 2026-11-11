@@ -29,7 +29,7 @@
 - [x] Se al login il cliente è nuovo, richiedi i dati di base per riempire l'account. Il resto dei dati potrà inserirli in futuro nell'area Profilo.
 - [x] Blocco sessioni simultanee (tracciamento `current_session_id`): vince l'ultimo accesso, le altre sessioni vengono revocate e chiuse dal proxy.
 - [x] Voglio vedere il localhost sempre in localhost:3000 quindi verifica se ci sono sessioni attive, fermale. (`npm run dev` libera la porta 3000 e parte sempre lì)
-- [ ] Fai in modo che la skin dark sia quella di default del tema
+- [x] Fai in modo che la skin dark sia quella di default del tema
 - [ ] Aiutami a creare una github action che pinga ogni 3 giorni il db di Supabase in modo che con la licenza base il progetto non si stoppi mai
 
 ### Fase 3: Area Riservata Cliente (Beta UI)
