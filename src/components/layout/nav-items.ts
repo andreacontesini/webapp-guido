@@ -23,7 +23,6 @@ export const navigazioneCliente: VoceNavigazione[] = [
     titolo: "Guida",
     href: "/dashboard/guida",
     icona: BookOpenIcon,
-    disabilitata: true,
   },
   {
     titolo: "Videocorso",

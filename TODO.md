@@ -35,7 +35,7 @@
 ### Fase 3: Area Riservata Cliente (Beta UI)
 - [x] Sviluppare Home utente con 2 sezioni principali: "La tua guida" e "Il tuo videocorso".
 - [x] **Videocorso (Placeholder):** Disegnare la sezione videocorso bloccata con badge "Coming Soon".
-- [ ] **Guida PDF:**
+- [x] **Guida PDF:**
   - Sviluppare visualizzatore PDF in-app protetto.
   - Logica di accesso (abilitata di default per gli utenti beta o sbloccabile manualmente da admin).
 
