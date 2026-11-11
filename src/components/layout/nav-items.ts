@@ -52,6 +52,7 @@ export const navigazioneAdmin: VoceNavigazione[] = [
     icona: FileTextIcon,
     disabilitata: true,
   },
+  { titolo: "Area cliente", href: "/dashboard", icona: HomeIcon },
 ];
 
 /** Una voce è attiva se coincide con il percorso o ne è un antenato (esclusa la radice dell'area). */

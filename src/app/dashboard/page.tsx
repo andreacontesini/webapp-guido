@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { ArrowRightIcon, BookOpenIcon, LockIcon, PlayCircleIcon } from "lucide-react";
+import {
+  ArrowRightIcon,
+  BookOpenIcon,
+  LockIcon,
+  PlayCircleIcon,
+  ShieldIcon,
+} from "lucide-react";
 
 import { PopupAcquisto } from "@/components/acquisto/popup-acquisto";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { PERCORSO_ADMIN } from "@/lib/auth/percorsi";
 import { leggiProfiloCorrente } from "@/lib/auth/utente";
 import { leggiStatoGuida, type StatoGuida } from "@/lib/guida";
 
@@ -41,16 +48,21 @@ const testiGuida: Record<
 export default function DashboardPage() {
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-          <Suspense fallback="Bentornato">
-            <Saluto />
-          </Suspense>
-        </h1>
-        <p className="text-muted-foreground">
-          Qui trovi i materiali per vendere casa da privato, un passo alla
-          volta.
-        </p>
+      <header className="flex flex-wrap items-start justify-between gap-4">
+        <div className="space-y-1">
+          <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
+            <Suspense fallback="Bentornato">
+              <Saluto />
+            </Suspense>
+          </h1>
+          <p className="text-muted-foreground">
+            Qui trovi i materiali per vendere casa da privato, un passo alla
+            volta.
+          </p>
+        </div>
+        <Suspense fallback={null}>
+          <LinkAmministrazione />
+        </Suspense>
       </header>
 
       <div className="grid gap-4 lg:grid-cols-3">
@@ -139,6 +151,18 @@ export default function DashboardPage() {
 async function Saluto() {
   const { first_name } = await leggiProfiloCorrente();
   return first_name ? `Ciao, ${first_name}` : "Bentornato";
+}
+
+/** Scorciatoia verso il back office, visibile solo agli admin. */
+async function LinkAmministrazione() {
+  const { role } = await leggiProfiloCorrente();
+  if (role !== "admin") return null;
+  return (
+    <Button variant="outline" render={<Link href={PERCORSO_ADMIN} />} nativeButton={false}>
+      <ShieldIcon aria-hidden />
+      Amministrazione
+    </Button>
+  );
 }
 
 async function BadgeGuida() {

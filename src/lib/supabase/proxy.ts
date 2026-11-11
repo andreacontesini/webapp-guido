@@ -6,6 +6,7 @@ import {
   PERCORSO_BENVENUTO,
   PERCORSO_ESCI,
   PERCORSO_INIZIALE,
+  isPercorsoAdmin,
   isPercorsoProtetto,
   type MotivoUscita,
 } from "@/lib/auth/percorsi";
@@ -18,7 +19,8 @@ import type { Database } from "@/lib/supabase/tipi";
  * 2. manda alla pagina di accesso chi non è autenticato;
  * 3. fa uscire gli utenti bloccati o con una sessione non più valida
  *    (accesso da un altro dispositivo);
- * 4. porta al primo accesso (`/benvenuto`) chi non ha completato il profilo.
+ * 4. porta al primo accesso (`/benvenuto`) chi non ha completato il profilo;
+ * 5. riserva il back office (`/admin`) agli utenti con `role: admin`.
  */
 export async function aggiornaSessione(request: NextRequest) {
   let risposta = NextResponse.next({ request });
@@ -80,7 +82,7 @@ export async function aggiornaSessione(request: NextRequest) {
 
   const { data: profilo } = await supabase
     .from("profiles")
-    .select("is_blocked, onboarded_at, current_session_id")
+    .select("role, is_blocked, onboarded_at, current_session_id")
     .eq("id", claims.sub)
     .maybeSingle();
 
@@ -101,6 +103,9 @@ export async function aggiornaSessione(request: NextRequest) {
     return vaiA(PERCORSO_BENVENUTO);
   }
   if (profilo.onboarded_at && pathname === PERCORSO_BENVENUTO) {
+    return vaiA(PERCORSO_INIZIALE);
+  }
+  if (isPercorsoAdmin(pathname) && profilo.role !== "admin") {
     return vaiA(PERCORSO_INIZIALE);
   }
 

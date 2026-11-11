@@ -4,14 +4,21 @@ export const PERCORSO_BENVENUTO = "/benvenuto";
 export const PERCORSO_ESCI = "/auth/esci";
 export const PERCORSO_CONFERMA = "/auth/conferma";
 export const PERCORSO_INIZIALE = "/dashboard";
+export const PERCORSO_ADMIN = "/admin";
 
 /** Aree riservate: serve una sessione valida. */
-const PREFISSI_PROTETTI = ["/dashboard", "/admin", PERCORSO_BENVENUTO];
+const PREFISSI_PROTETTI = ["/dashboard", PERCORSO_ADMIN, PERCORSO_BENVENUTO];
+
+const sottoPercorso = (pathname: string, prefisso: string) =>
+  pathname === prefisso || pathname.startsWith(`${prefisso}/`);
 
 export function isPercorsoProtetto(pathname: string) {
-  return PREFISSI_PROTETTI.some(
-    (p) => pathname === p || pathname.startsWith(`${p}/`),
-  );
+  return PREFISSI_PROTETTI.some((p) => sottoPercorso(pathname, p));
+}
+
+/** Back office: oltre alla sessione serve `role: admin`. */
+export function isPercorsoAdmin(pathname: string) {
+  return sottoPercorso(pathname, PERCORSO_ADMIN);
 }
 
 /** Motivi per cui un utente viene fatto uscire, mostrati nella pagina di accesso. */
