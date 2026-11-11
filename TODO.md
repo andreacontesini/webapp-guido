@@ -49,26 +49,28 @@
 - [x] Proteggere la rotta `/admin` (solo `role: admin`).
 - [x] Gestione Utenti: visualizzazione lista, blocco utente, eliminazione, revoca/assegnazione permessi.
 - [x] Creazione utenti dall'area admin (account già confermato, guida e ruolo admin opzionali, email con link di accesso via Resend; al primo accesso l'utente accetta la privacy con i dati precompilati).
+  - [ ] Verificare che su Vercel ci siano `RESEND_API_KEY` ed `EMAIL_FROM` (formato `Nome <indirizzo>`), poi provare una creazione con invio dell'email.
 - [x] Gestione Guida PDF: upload del file su Supabase Storage e aggiornamento dettagli.
 - [x] Prendi spunto dalla sezione id="hero" del sito a questo link https://finorio.demo.nextjstemplates.com/ e ricomponi la pagina iniziale dell'app. Non ho bisogno di pulsanti particolari o header / footer, ma semplicemente contenuti e bottone che rimanda alla pagina di accesso / login
 - [x] Pagina 404 con lo stile della pagina iniziale (sfondo condiviso in `SfondoHero`).
 
 ### Fase 5: Pagamento base con Stripe (Target: v0.5.0)
-> ⏸️ **Stripe rinviato** (account Stripe del cliente non ancora disponibile). Ordine di lavoro nel frattempo:
-> 1. Parti di Fase 5–7 che non richiedono Stripe (tabella `purchases`, restyle delle email).
-> 2. Fase 8 e Fase 9 (landing ed editor): il pulsante "Acquista" usa per ora il popup di acquisto esistente e verrà collegato a Stripe Checkout in seguito.
-> 3. Le voci Stripe di Fase 5, 6 e 7, appena l'account è disponibile.
+> ⏸️ **Stripe in attesa dei dati dell'account del cliente** (attesi il 12/11/2026). Già fatto senza account: tabella `purchases`, checkout, webhook (provato con eventi firmati in locale), restyle delle email, guida `docs/stripe.md`.
+> **Prossimo passo:** con i dati Stripe completare le voci aperte di questa fase (chiavi, prezzo, webhook, branding, test), poi Fase 6 e 7. Senza account si può proseguire con Fase 8 e 9: il pulsante "Acquista" delle landing usa il popup di acquisto e passerà a Stripe Checkout diretto con la Fase 7.
 - [ ] Prezzo della guida definito (in `src/lib/prodotti.ts`, oggi `null`) e chiavi Stripe Test Mode dell'account del cliente in `.env.local` e su Vercel. Prodotto e prezzo non vanno creati a mano: li crea il checkout (vedi `docs/stripe.md`).
+- [ ] Endpoint webhook di test creato nel pannello Stripe (`/api/webhooks/stripe`, eventi `checkout.session.completed` e `checkout.session.async_payment_succeeded`) e `STRIPE_WEBHOOK_SECRET` su Vercel.
 - [x] Tabella `purchases` (acquisti: utente, prodotto, sessione Stripe, importo, stato) con RLS: l'utente vede solo i propri acquisti.
 - [x] Popup "Acquista la guida": prezzo reale e pulsante che apre Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica. *Codice pronto, si attiva da solo con chiavi vere e prezzo definito; da provare con l'account.*
 - [ ] Aspetto della pagina di pagamento Stripe vicino allo stile dell'app (logo, colori, font e angoli dalle impostazioni di branding dell'account Stripe). *Valori pronti in `docs/stripe.md`.*
 - [x] Webhook Stripe (`/api/webhooks/stripe`): a pagamento confermato registra l'acquisto e sblocca `guide_access` (mai lato client), gestendo gli eventi duplicati. *Provato in locale con eventi firmati: firma non valida, pagamento, duplicato, non pagato.*
-- [ ] Test di un acquisto completo in locale (carte di prova, webhook con Stripe CLI).
+- [ ] Test di un acquisto completo in locale (carte di prova, webhook con Stripe CLI): popup con pulsante attivo, pagina Stripe, ritorno, sblocco, email di conferma, riga in `purchases`.
+- [ ] Stesso test online su `app.guidocontesini.it` in Test Mode.
 - [ ] **Tag Versione:** `v0.5.0`.
 
 ### Fase 6: Rimborsi, ritorno da Stripe e acquisti in admin (Target: v0.6.0)
 - [ ] Revoca automatica dell'accesso in caso di rimborso o contestazione del pagamento.
-- [ ] Pagine di ritorno (logica): collegare il `session_id` di Stripe alla verifica dello sblocco.
+- [ ] Pagine di ritorno (logica): collegare il `session_id` di Stripe alla verifica dello sblocco (l'URL di ritorno lo contiene già).
+- [ ] Pagina "Pagamento annullato": pulsante "Riprova" che riapre il popup di acquisto.
 - [ ] Area admin: elenco acquisti nella scheda utente e assegnazione manuale ancora possibile.
 - [ ] Test in Test Mode di pagamento annullato, rimborso e contestazione.
 - [ ] **Tag Versione:** `v0.6.0`.
@@ -78,8 +80,9 @@
 - [ ] Il webhook crea l'account e sblocca la guida; se l'email appartiene a un account già esistente, sblocca la guida su quello invece di crearne uno nuovo.
 - [ ] Accesso immediato all'app dalla pagina di conferma (link di accesso generato dopo la verifica del pagamento) e, in ogni caso, email con il link di accesso.
 - [ ] **Restyle delle email** con uno stile moderno e professionale, coerente con l'app (logo, colori, tipografia, pulsante ben visibile, piè di pagina con contatti e assistenza):
-  - [ ] Modelli di Supabase Auth (link di accesso, conferma e cambio email) salvati nel repository (`supabase/templates/`, ✅) e copiati nel pannello Supabase (da fare a mano).
-  - [x] Email inviate dall'app con Resend (accesso dopo l'acquisto, conferma acquisto) costruite con React Email (`src/emails/`, invio con `src/lib/email/invia.ts`; collegamento al webhook con Stripe).
+  - [x] Modelli di Supabase Auth (link di accesso, conferma registrazione, cambio email) generati da React Email in `supabase/templates/` con `npm run email:supabase`.
+  - [ ] Modelli copiati nel pannello Supabase (Authentication → Emails → Templates, vedi `docs/supabase-auth.md`) e provati con un accesso reale.
+  - [x] Email inviate dall'app con Resend costruite con React Email (`src/emails/`, invio con `src/lib/email/invia.ts`): conferma acquisto (già inviata dal webhook), account creato dall'admin. La variante con link di accesso per l'acquisto senza account si collega con questa fase.
   - [ ] Controllo dell'aspetto nei principali client (Gmail, Apple Mail, Outlook, smartphone) e in tema scuro.
 - [ ] Test: acquisto senza account, con email già registrata, pagamento annullato.
 - [ ] **Tag Versione:** `v0.7.0`.
