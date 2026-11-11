@@ -16,8 +16,10 @@ const LARGHEZZA_MAX = 900;
 type Props = {
   /** Route protetta che restituisce il PDF. */
   url: string;
-  /** Testo della filigrana disegnata su ogni pagina. */
+  /** Testo principale della filigrana disegnata su ogni pagina. */
   filigrana: string;
+  /** Seconda riga, in piccolo (es. email dell'utente, per risalire a copie diffuse). */
+  filigranaDettaglio?: string;
 };
 
 /**
@@ -38,7 +40,7 @@ async function caricaPdfjs() {
  * né lettore nativo del browser), con la filigrana disegnata dentro l'immagine.
  * Non è una protezione assoluta, ma scoraggia copia e diffusione.
  */
-export function LettorePdf({ url, filigrana }: Props) {
+export function LettorePdf({ url, filigrana, filigranaDettaglio }: Props) {
   const contenitore = useRef<HTMLDivElement>(null);
   const [documento, setDocumento] = useState<PDFDocumentProxy | null>(null);
   const [rapporto, setRapporto] = useState(1.414); // altezza/larghezza (A4)
@@ -164,6 +166,7 @@ export function LettorePdf({ url, filigrana }: Props) {
                 larghezza={larghezzaPagina}
                 altezzaStimata={Math.round(larghezzaPagina * rapporto)}
                 filigrana={filigrana}
+                filigranaDettaglio={filigranaDettaglio}
                 onVisibile={setPaginaCorrente}
               />
             ))}
@@ -188,6 +191,7 @@ function PaginaPdf({
   larghezza,
   altezzaStimata,
   filigrana,
+  filigranaDettaglio,
   onVisibile,
 }: {
   documento: PDFDocumentProxy;
@@ -195,6 +199,7 @@ function PaginaPdf({
   larghezza: number;
   altezzaStimata: number;
   filigrana: string;
+  filigranaDettaglio?: string;
   onVisibile: (numero: number) => void;
 }) {
   const riquadro = useRef<HTMLDivElement>(null);
@@ -250,7 +255,7 @@ function PaginaPdf({
         return; // render annullato (zoom o scroll veloce)
       }
       if (annullato) return;
-      disegnaFiligrana(canvas, filigrana, dpr);
+      disegnaFiligrana(canvas, dpr, filigrana, filigranaDettaglio);
       setPronta(true);
     })();
 
@@ -258,7 +263,7 @@ function PaginaPdf({
       annullato = true;
       compito?.cancel();
     };
-  }, [vicina, documento, numero, larghezza, filigrana]);
+  }, [vicina, documento, numero, larghezza, filigrana, filigranaDettaglio]);
 
   return (
     <div
@@ -283,25 +288,44 @@ function PaginaPdf({
   );
 }
 
-/** Filigrana diagonale ripetuta, disegnata nel canvas (non rimovibile dal DOM). */
-function disegnaFiligrana(canvas: HTMLCanvasElement, testo: string, dpr: number) {
+/**
+ * Filigrana diagonale ripetuta, disegnata nel canvas (non rimovibile dal DOM):
+ * testo principale e, sotto, una riga di dettaglio più piccola.
+ */
+function disegnaFiligrana(
+  canvas: HTMLCanvasElement,
+  dpr: number,
+  testo: string,
+  dettaglio?: string,
+) {
   const ctx = canvas.getContext("2d");
   if (!ctx) return;
   const dimensione = Math.max(11, canvas.width / dpr / 42) * dpr;
+  const dimensioneDettaglio = Math.max(8, dimensione / dpr * 0.55) * dpr;
+  const fontPrincipale = `600 ${dimensione}px system-ui, sans-serif`;
+  const fontDettaglio = `500 ${dimensioneDettaglio}px system-ui, sans-serif`;
+
   ctx.save();
   // Grigio medio: si legge sia sulle pagine chiare sia su quelle scure (copertina).
   ctx.globalAlpha = 0.14;
   ctx.fillStyle = "#7c8799";
-  ctx.font = `600 ${dimensione}px system-ui, sans-serif`;
+  ctx.textAlign = "center";
   ctx.translate(canvas.width / 2, canvas.height / 2);
   ctx.rotate(-Math.PI / 6);
+
+  ctx.font = fontPrincipale;
   const passoX = ctx.measureText(testo).width + dimensione * 4;
   const passoY = dimensione * 7;
   const diagonale = Math.hypot(canvas.width, canvas.height);
   for (let y = -diagonale / 2; y < diagonale / 2; y += passoY) {
     const sfasamento = (Math.round(y / passoY) % 2) * (passoX / 2);
     for (let x = -diagonale / 2; x < diagonale / 2; x += passoX) {
+      ctx.font = fontPrincipale;
       ctx.fillText(testo, x + sfasamento, y);
+      if (dettaglio) {
+        ctx.font = fontDettaglio;
+        ctx.fillText(dettaglio, x + sfasamento, y + dimensione * 0.95);
+      }
     }
   }
   ctx.restore();

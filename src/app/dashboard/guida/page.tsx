@@ -5,6 +5,7 @@ import { ArrowLeftIcon, BookOpenIcon, ClockIcon, LockIcon } from "lucide-react";
 
 import { LettorePdf } from "@/components/guida/lettore-pdf";
 import { Button } from "@/components/ui/button";
+import { leggiProfiloCorrente } from "@/lib/auth/utente";
 import { leggiStatoGuida } from "@/lib/guida";
 
 /** Testo della filigrana disegnata su ogni pagina della guida. */
@@ -36,7 +37,7 @@ export default function PaginaGuida() {
 }
 
 async function ContenutoGuida() {
-  const stato = await leggiStatoGuida();
+  const [stato, profilo] = await Promise.all([leggiStatoGuida(), leggiProfiloCorrente()]);
 
   if (stato.stato === "non-abilitata") {
     return (
@@ -71,7 +72,11 @@ async function ContenutoGuida() {
           </p>
         )}
       </header>
-      <LettorePdf url="/dashboard/guida/file" filigrana={FILIGRANA} />
+      <LettorePdf
+        url="/dashboard/guida/file"
+        filigrana={FILIGRANA}
+        filigranaDettaglio={profilo.email}
+      />
     </>
   );
 }
