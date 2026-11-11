@@ -51,6 +51,7 @@
 - [x] Creazione utenti dall'area admin (account già confermato, guida e ruolo admin opzionali, email con link di accesso via Resend; al primo accesso l'utente accetta la privacy con i dati precompilati).
 - [x] Gestione Guida PDF: upload del file su Supabase Storage e aggiornamento dettagli.
 - [x] Prendi spunto dalla sezione id="hero" del sito a questo link https://finorio.demo.nextjstemplates.com/ e ricomponi la pagina iniziale dell'app. Non ho bisogno di pulsanti particolari o header / footer, ma semplicemente contenuti e bottone che rimanda alla pagina di accesso / login
+- [x] Pagina 404 con lo stile della pagina iniziale (sfondo condiviso in `SfondoHero`).
 
 ### Fase 5: Pagamento base con Stripe (Target: v0.5.0)
 > ⏸️ **Stripe rinviato** (account Stripe del cliente non ancora disponibile). Ordine di lavoro nel frattempo:

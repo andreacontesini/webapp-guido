@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowRightIcon, BookOpenIcon, LockIcon, PlayCircleIcon } from "lucide-react";
 
+import { SfondoHero } from "@/components/layout/sfondo-hero";
 import { Button } from "@/components/ui/button";
 import { PERCORSO_ACCESSO } from "@/lib/auth/percorsi";
 
@@ -17,18 +18,7 @@ const punti = [
 export default function Home() {
   return (
     <main className="relative isolate flex flex-1 items-center overflow-hidden">
-      {/* Sfondo: alone blu e griglia leggera che sfuma verso i bordi. */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-40 left-1/2 size-[42rem] -translate-x-1/2 rounded-full bg-primary/15 blur-3xl lg:left-[70%]" />
-        <div
-          className="absolute inset-0 opacity-[0.35] [mask-image:radial-gradient(ellipse_at_center,black_30%,transparent_75%)]"
-          style={{
-            backgroundImage:
-              "linear-gradient(to right, var(--border) 1px, transparent 1px), linear-gradient(to bottom, var(--border) 1px, transparent 1px)",
-            backgroundSize: "3.5rem 3.5rem",
-          }}
-        />
-      </div>
+      <SfondoHero />
 
       <div className="mx-auto grid w-full max-w-6xl items-center gap-14 px-4 py-16 sm:px-6 lg:grid-cols-[1.1fr_1fr] lg:gap-16 lg:px-8 lg:py-24">
         <div className="space-y-8 text-center lg:text-left">
