@@ -72,7 +72,9 @@
 - [ ] Area download documenti per le singole lezioni.
 
 ### Fase 9: Automazione Pagamenti (v1.3.0)
-- [ ] Integrazione Stripe Checkout.
+- [ ] Pagina **Acquista** (`/acquista`): prodotti "Solo Guida" e "Videocorso completo" con prezzo, cosa include e pulsante di acquisto; raggiungibile da home, guida bloccata e banner di upgrade.
+- [ ] Integrazione Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica.
+- [ ] Pagine di ritorno: **conferma** (`/acquista/conferma`, attende lo sblocco dal webhook e porta al contenuto) e **annullato** (`/acquista/annullato`, torna alla pagina Acquista).
 - [ ] Webhook Stripe (`/api/webhooks/stripe`) per creazione/aggiornamento utenti e sblocco permessi.
 - [ ] Sblocco automatico di guida/corso solo a pagamento confermato (mai lato client), con revoca in caso di rimborso.
 - [ ] Banner e flussi di upgrade (es. da "Solo Guida" a "Videocorso Completo") interni all'app.
