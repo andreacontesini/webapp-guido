@@ -33,6 +33,25 @@ export type ImpostazioniGuida = {
   updated_by: string | null;
 };
 
+export type StatoAcquisto = "in_attesa" | "pagato" | "rimborsato" | "contestato";
+
+/** Acquisto tramite Stripe Checkout: scritto solo dal webhook (service role). */
+export type Acquisto = {
+  id: string;
+  user_id: string | null;
+  email: string;
+  product: "guida" | "videocorso";
+  status: StatoAcquisto;
+  /** Importo in centesimi. */
+  amount_total: number | null;
+  currency: string;
+  stripe_checkout_session_id: string | null;
+  stripe_payment_intent_id: string | null;
+  paid_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
 /** Campi del profilo che l'utente può modificare (vedi grant nella migrazione RLS). */
 type ProfiloModificabile = Partial<
   Pick<
@@ -61,6 +80,12 @@ export type Database = {
         Update: Partial<ImpostazioniGuida>;
         Relationships: [];
       };
+      purchases: {
+        Row: Acquisto;
+        Insert: Pick<Acquisto, "email" | "product"> & Partial<Acquisto>;
+        Update: Partial<Acquisto>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -70,7 +95,7 @@ export type Database = {
         Returns: undefined;
       };
     };
-    Enums: { ruolo_utente: RuoloUtente };
+    Enums: { ruolo_utente: RuoloUtente; stato_acquisto: StatoAcquisto };
     CompositeTypes: Record<string, never>;
   };
 };

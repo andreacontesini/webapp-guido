@@ -57,7 +57,7 @@
 > 2. Fase 8 e Fase 9 (landing ed editor): il pulsante "Acquista" usa per ora il popup di acquisto esistente e verrà collegato a Stripe Checkout in seguito.
 > 3. Le voci Stripe di Fase 5, 6 e 7, appena l'account è disponibile.
 - [ ] Prezzo della guida definito e prodotto/prezzo creati su Stripe (account del cliente), in Test Mode.
-- [ ] Tabella `purchases` (acquisti: utente, prodotto, sessione Stripe, importo, stato) con RLS: l'utente vede solo i propri acquisti.
+- [x] Tabella `purchases` (acquisti: utente, prodotto, sessione Stripe, importo, stato) con RLS: l'utente vede solo i propri acquisti.
 - [ ] Popup "Acquista la guida": prezzo reale e pulsante che apre Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica.
 - [ ] Aspetto della pagina di pagamento Stripe vicino allo stile dell'app (logo, colori, font e angoli dalle impostazioni di branding dell'account Stripe).
 - [ ] Webhook Stripe (`/api/webhooks/stripe`): a pagamento confermato registra l'acquisto e sblocca `guide_access` (mai lato client), gestendo gli eventi duplicati.

@@ -23,6 +23,7 @@ Apri **SQL Editor** ed esegui **in ordine** il contenuto dei file in `supabase/m
 3. `20261111120000_ping.sql`: funzione di keep-alive per la GitHub Action.
 4. `20261112090000_storage_guida.sql`: bucket privato `guida` per il PDF.
 5. `20261113090000_accesso_guida.sql`: i nuovi utenti non hanno la guida finché non la assegna l'admin (o il pagamento).
+6. `20261114090000_acquisti.sql`: tabella `purchases` degli acquisti Stripe (scritta solo dal webhook; ogni utente legge solo i propri).
 
 In alternativa, con la Supabase CLI: `supabase link --project-ref <ref>` e poi `supabase db push`. Le migrazioni applicate sono registrate in `supabase_migrations.schema_migrations`, la stessa tabella usata dalla CLI.
 
