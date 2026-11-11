@@ -1,6 +1,6 @@
 {
   "name": "webapp-guido",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "private": true,
   "scripts": {
     "predev": "sh scripts/libera-porta.sh 3000",

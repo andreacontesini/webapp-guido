@@ -38,6 +38,10 @@
 - [x] **Guida PDF:**
   - Sviluppare visualizzatore PDF in-app protetto.
   - Logica di accesso (abilitata di default per gli utenti beta o sbloccabile manualmente da admin).
+- [x] Guida "Una vendita buona e giusta" (v1.0, 18 pagine) caricata nel bucket privato `guida` e attiva per gli utenti.
+- [x] Filigrana su ogni pagina: "Guido Contesini - Mediatore immobiliare" con l'email dell'utente in piccolo, leggera e poco fitta.
+- [x] Lettore compatibile anche con browser meno recenti (build legacy di pdf.js).
+- [x] Pagine di ritorno da Stripe Checkout (anticipate dalla Fase 9, solo grafica): conferma e annullato, con email di assistenza `info@guidocontesini.it`.
 
 ### Fase 4: Area Amministrazione Base
 - [ ] **Accesso solo per chi ha diritto:** chi si registra liberamente non deve vedere guida né corso. `guide_access` di default `false`; in beta l'accesso lo assegna l'admin (o un elenco di email beta), poi lo sblocca il pagamento (Fase 9).
