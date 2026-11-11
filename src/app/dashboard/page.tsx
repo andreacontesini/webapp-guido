@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 
 import { PopupAcquisto } from "@/components/acquisto/popup-acquisto";
+import { acquistoDisponibile } from "@/lib/stripe";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { leggiProfiloCorrente } from "@/lib/auth/utente";
@@ -163,7 +164,7 @@ async function AzioneGuida() {
           <ArrowRightIcon aria-hidden />
         </Button>
       ) : stato === "non-abilitata" ? (
-        <PopupAcquisto prodotto="guida" />
+        <PopupAcquisto prodotto="guida" pagamentoAttivo={acquistoDisponibile("guida")} />
       ) : (
         <Button size="lg" disabled>
           Apri la guida

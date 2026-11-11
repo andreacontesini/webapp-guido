@@ -13,6 +13,7 @@ import {
 } from "react-email";
 
 import { EMAIL_ASSISTENZA } from "@/lib/prodotti";
+import { urlApp } from "@/lib/url";
 
 /**
  * Layout comune a tutte le email (Supabase Auth e Resend).
@@ -36,10 +37,7 @@ export const coloriEmail = {
 const font =
   "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif";
 
-/** Indirizzo pubblico dell'app, per logo e link assoluti. */
-export function urlApp() {
-  return (process.env.NEXT_PUBLIC_APP_URL ?? "https://app.guidocontesini.it").replace(/\/$/, "");
-}
+export { urlApp };
 
 const stileTemaScuro = `
   :root { color-scheme: light dark; supported-color-schemes: light dark; }

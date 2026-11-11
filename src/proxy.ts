@@ -8,8 +8,8 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    // Tutte le pagine, esclusi asset statici, immagini e route di autenticazione
-    // (che gestiscono la sessione da sole).
-    "/((?!_next/static|_next/image|favicon.ico|auth/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+    // Tutte le pagine, esclusi asset statici, immagini, route di autenticazione
+    // (che gestiscono la sessione da sole) e webhook (chiamati da Stripe, senza sessione).
+    "/((?!_next/static|_next/image|favicon.ico|auth/|api/webhooks/|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
   ],
 };

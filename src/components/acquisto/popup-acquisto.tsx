@@ -1,6 +1,9 @@
 "use client";
 
-import { CheckIcon, ShoppingCartIcon } from "lucide-react";
+import { useActionState } from "react";
+import { CheckIcon, LockIcon, ShoppingCartIcon } from "lucide-react";
+
+import { avviaCheckout, type EsitoCheckout } from "@/app/dashboard/acquisto/azioni";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -21,18 +24,25 @@ import {
 
 /**
  * Pulsante "Acquista" che apre il popup con descrizione e prezzo del prodotto.
- * Il pulsante del popup porterà a Stripe Checkout con la Fase 5: fino ad
- * allora è disattivato e indica come ottenere l'accesso.
+ * Con `pagamentoAttivo` (Stripe configurato e prezzo definito, vedi
+ * `acquistoDisponibile`) il pulsante del popup apre Stripe Checkout;
+ * altrimenti è disattivato e indica come ottenere l'accesso.
  */
 export function PopupAcquisto({
   prodotto,
+  pagamentoAttivo,
   size = "lg",
 }: {
   prodotto: CodiceProdotto;
+  pagamentoAttivo: boolean;
   size?: "default" | "lg";
 }) {
   const scheda = prodotti[prodotto];
   const prezzo: number | null = scheda.prezzo;
+  const [esito, paga, inCorso] = useActionState<EsitoCheckout>(
+    () => avviaCheckout(prodotto),
+    {},
+  );
 
   return (
     <Dialog>
@@ -79,22 +89,50 @@ export function PopupAcquisto({
           </span>
         </div>
 
-        <p className="text-muted-foreground">
-          Il pagamento online sarà attivo a breve. Per avere subito l&apos;accesso
-          scrivici a{" "}
-          <a
-            href={`mailto:${EMAIL_ASSISTENZA}`}
-            className="font-medium text-foreground underline underline-offset-4"
-          >
-            {EMAIL_ASSISTENZA}
-          </a>
-          .
-        </p>
+        {pagamentoAttivo ? (
+          <p className="flex gap-2 text-sm text-muted-foreground">
+            <LockIcon className="mt-0.5 size-4 shrink-0" aria-hidden />
+            <span>
+              Pagamento sicuro su Stripe: i dati della carta non passano da noi. Ricevi la
+              ricevuta via email e l&apos;accesso è immediato.
+            </span>
+          </p>
+        ) : (
+          <p className="text-muted-foreground">
+            Il pagamento online sarà attivo a breve. Per avere subito l&apos;accesso
+            scrivici a{" "}
+            <a
+              href={`mailto:${EMAIL_ASSISTENZA}`}
+              className="font-medium text-foreground underline underline-offset-4"
+            >
+              {EMAIL_ASSISTENZA}
+            </a>
+            .
+          </p>
+        )}
+
+        {esito.errore && (
+          <p role="alert" className="text-sm text-destructive">
+            {esito.errore}
+          </p>
+        )}
 
         <DialogFooter>
-          <Button size="lg" disabled>
-            Acquista
-          </Button>
+          {pagamentoAttivo ? (
+            <form action={paga}>
+              <Button type="submit" size="lg" className="w-full sm:w-auto" disabled={inCorso}>
+                {inCorso
+                  ? "Apertura del pagamento…"
+                  : prezzo === null
+                    ? "Acquista"
+                    : `Acquista a ${formattaPrezzo(prezzo)}`}
+              </Button>
+            </form>
+          ) : (
+            <Button size="lg" disabled>
+              Acquista
+            </Button>
+          )}
         </DialogFooter>
       </DialogContent>
     </Dialog>

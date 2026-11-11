@@ -4,6 +4,7 @@ import { Suspense } from "react";
 import { ArrowLeftIcon, BookOpenIcon, ClockIcon, LockIcon } from "lucide-react";
 
 import { PopupAcquisto } from "@/components/acquisto/popup-acquisto";
+import { acquistoDisponibile } from "@/lib/stripe";
 import { LettorePdf } from "@/components/guida/lettore-pdf";
 import { Button } from "@/components/ui/button";
 import { leggiProfiloCorrente } from "@/lib/auth/utente";
@@ -47,7 +48,7 @@ async function ContenutoGuida() {
         titolo="La guida non è ancora sul tuo account"
         testo="Acquistala per leggerla qui, da qualsiasi dispositivo. Se l'hai già acquistata, scrivici e la attiviamo."
       >
-        <PopupAcquisto prodotto="guida" />
+        <PopupAcquisto prodotto="guida" pagamentoAttivo={acquistoDisponibile("guida")} />
       </Avviso>
     );
   }

@@ -4,9 +4,9 @@ import { revalidatePath } from "next/cache";
 import { createElement } from "react";
 
 import EmailAccountCreato from "@/emails/account-creato";
-import { urlApp } from "@/emails/componenti/layout-email";
 import { richiediAdmin } from "@/lib/auth/admin";
 import { inviaEmail } from "@/lib/email/invia";
+import { urlApp } from "@/lib/url";
 import { creaClientAdmin } from "@/lib/supabase/admin";
 import type { Profilo, RuoloUtente } from "@/lib/supabase/tipi";
 
