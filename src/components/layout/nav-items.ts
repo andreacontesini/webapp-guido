@@ -44,7 +44,6 @@ export const navigazioneAdmin: VoceNavigazione[] = [
     titolo: "Utenti",
     href: "/admin/utenti",
     icona: UsersIcon,
-    disabilitata: true,
   },
   {
     titolo: "Guida PDF",
