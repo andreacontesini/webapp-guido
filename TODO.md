@@ -27,7 +27,7 @@
 - [x] Implementare Row Level Security (RLS) protettiva.
 - [x] Implementare Login/Registrazione con Magic Link via Supabase Auth + Resend.
 - [x] Se al login il cliente è nuovo, richiedi i dati di base per riempire l'account. Il resto dei dati potrà inserirli in futuro nell'area Profilo.
-- [ ] Blocco sessioni simultanee (tracciamento `current_session_id`).
+- [x] Blocco sessioni simultanee (tracciamento `current_session_id`): vince l'ultimo accesso, le altre sessioni vengono revocate e chiuse dal proxy.
 
 ### Fase 3: Area Riservata Cliente (Beta UI)
 - [ ] Sviluppare Home utente con 2 sezioni principali: "La tua guida" e "Il tuo videocorso".
