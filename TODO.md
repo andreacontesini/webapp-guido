@@ -71,6 +71,10 @@
 - [ ] Stripe Checkout apribile anche senza login: Stripe chiede l'email del cliente.
 - [ ] Il webhook crea l'account e sblocca la guida; se l'email appartiene a un account già esistente, sblocca la guida su quello invece di crearne uno nuovo.
 - [ ] Accesso immediato all'app dalla pagina di conferma (link di accesso generato dopo la verifica del pagamento) e, in ogni caso, email con il link di accesso.
+- [ ] **Restyle delle email** con uno stile moderno e professionale, coerente con l'app (logo, colori, tipografia, pulsante ben visibile, piè di pagina con contatti e assistenza):
+  - Modelli di Supabase Auth (link di accesso, conferma e cambio email) salvati nel repository e copiati nel pannello Supabase.
+  - Email inviate dall'app con Resend (accesso dopo l'acquisto, conferma acquisto) costruite con React Email.
+  - Controllo dell'aspetto nei principali client (Gmail, Apple Mail, Outlook, smartphone) e in tema scuro.
 - [ ] Test: acquisto senza account, con email già registrata, pagamento annullato.
 - [ ] **Tag Versione:** `v0.7.0`.
 
