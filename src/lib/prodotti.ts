@@ -31,4 +31,4 @@ export function isCodiceProdotto(valore: unknown): valore is CodiceProdotto {
 }
 
 /** Contatto per problemi con un pagamento. */
-export const EMAIL_ASSISTENZA = "g.contesini@edilfin.com";
+export const EMAIL_ASSISTENZA = "info@guidocontesini.it";
