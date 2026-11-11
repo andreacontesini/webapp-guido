@@ -2,12 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { HouseIcon } from "lucide-react";
+import { HouseIcon, LogOutIcon } from "lucide-react";
 
 import { aree, isVoceAttiva, type Area } from "@/components/layout/nav-items";
 import { SelettoreTema } from "@/components/tema/selettore-tema";
+import { Button } from "@/components/ui/button";
+import { PERCORSO_ESCI } from "@/lib/auth/percorsi";
 
-/** Barra in alto: titolo della sezione corrente e selettore del tema. */
+/** Barra in alto: titolo della sezione corrente, selettore del tema e uscita. */
 export function BarraSuperiore({ area }: { area: Area }) {
   const pathname = usePathname();
   const { voci, radice, nome } = aree[area];
@@ -31,7 +33,14 @@ export function BarraSuperiore({ area }: { area: Area }) {
           </p>
         </div>
       </div>
-      <SelettoreTema />
+      <div className="flex shrink-0 items-center gap-2">
+        <SelettoreTema />
+        <form action={PERCORSO_ESCI} method="post">
+          <Button type="submit" variant="ghost" size="icon-lg" aria-label="Esci" title="Esci">
+            <LogOutIcon aria-hidden />
+          </Button>
+        </form>
+      </div>
     </header>
   );
 }

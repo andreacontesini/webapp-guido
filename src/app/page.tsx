@@ -17,8 +17,8 @@ export default function Home() {
           videocorso.
         </p>
       </div>
-      <Button size="lg" render={<Link href="/dashboard" />} nativeButton={false}>
-        Vai alla tua area
+      <Button size="lg" render={<Link href="/accesso" />} nativeButton={false}>
+        Accedi alla tua area
       </Button>
     </main>
   );

@@ -25,7 +25,7 @@
 - [ ] Fix npm warn Unknown env config "cache-dir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
 - [x] Configurare schema base su Supabase (`profiles`, `guide_settings`).
 - [x] Implementare Row Level Security (RLS) protettiva.
-- [ ] Implementare Login/Registrazione con Magic Link via Supabase Auth + Resend.
+- [x] Implementare Login/Registrazione con Magic Link via Supabase Auth + Resend.
 - [ ] Se al login il cliente è nuovo, richiedi i dati di base per riempire l'account. Il resto dei dati potrà inserirli in futuro nell'area Profilo.
 - [ ] Blocco sessioni simultanee (tracciamento `current_session_id`).
 

@@ -1,0 +1,76 @@
+/**
+ * Tipi del database Supabase (schema `public`).
+ * Allineati alle migrazioni in `supabase/migrations/`: se cambi lo schema,
+ * aggiorna anche questo file (oppure rigeneralo con `supabase gen types`).
+ */
+
+export type RuoloUtente = "cliente" | "admin";
+
+export type Profilo = {
+  id: string;
+  email: string;
+  first_name: string | null;
+  last_name: string | null;
+  phone: string | null;
+  role: RuoloUtente;
+  is_blocked: boolean;
+  guide_access: boolean;
+  privacy_accepted_at: string | null;
+  marketing_consent: boolean;
+  onboarded_at: string | null;
+  current_session_id: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type ImpostazioniGuida = {
+  id: number;
+  title: string;
+  description: string | null;
+  file_path: string | null;
+  version: string | null;
+  updated_at: string;
+  updated_by: string | null;
+};
+
+/** Campi del profilo che l'utente può modificare (vedi grant nella migrazione RLS). */
+type ProfiloModificabile = Partial<
+  Pick<
+    Profilo,
+    | "first_name"
+    | "last_name"
+    | "phone"
+    | "privacy_accepted_at"
+    | "marketing_consent"
+    | "onboarded_at"
+  >
+>;
+
+export type Database = {
+  public: {
+    Tables: {
+      profiles: {
+        Row: Profilo;
+        Insert: Pick<Profilo, "id" | "email"> & Partial<Profilo>;
+        Update: ProfiloModificabile & Partial<Profilo>;
+        Relationships: [];
+      };
+      guide_settings: {
+        Row: ImpostazioniGuida;
+        Insert: Partial<ImpostazioniGuida>;
+        Update: Partial<ImpostazioniGuida>;
+        Relationships: [];
+      };
+    };
+    Views: Record<string, never>;
+    Functions: {
+      is_admin: { Args: Record<string, never>; Returns: boolean };
+      registra_sessione_corrente: {
+        Args: Record<string, never>;
+        Returns: undefined;
+      };
+    };
+    Enums: { ruolo_utente: RuoloUtente };
+    CompositeTypes: Record<string, never>;
+  };
+};
