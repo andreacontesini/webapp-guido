@@ -289,8 +289,9 @@ function disegnaFiligrana(canvas: HTMLCanvasElement, testo: string, dpr: number)
   if (!ctx) return;
   const dimensione = Math.max(11, canvas.width / dpr / 42) * dpr;
   ctx.save();
-  ctx.globalAlpha = 0.08;
-  ctx.fillStyle = "#1e293b";
+  // Grigio medio: si legge sia sulle pagine chiare sia su quelle scure (copertina).
+  ctx.globalAlpha = 0.14;
+  ctx.fillStyle = "#7c8799";
   ctx.font = `600 ${dimensione}px system-ui, sans-serif`;
   ctx.translate(canvas.width / 2, canvas.height / 2);
   ctx.rotate(-Math.PI / 6);
