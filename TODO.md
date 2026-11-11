@@ -22,7 +22,7 @@
 
 
 ### Fase 2: Database & Autenticazione Core
-- [ ] Fix npm warn Unknown env config "cache-dir". This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+- [x] Fix npm warn Unknown env config "cache-dir" (variabile `npm_config_cache_dir` iniettata da Vercel: rimossa in `vercel.json`). This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
 - [x] Configurare schema base su Supabase (`profiles`, `guide_settings`).
 - [x] Implementare Row Level Security (RLS) protettiva.
 - [x] Implementare Login/Registrazione con Magic Link via Supabase Auth + Resend.
