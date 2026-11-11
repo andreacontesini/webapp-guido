@@ -54,7 +54,6 @@ export default function Home() {
           <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
             <Button
               size="lg"
-              className="h-11 px-5 text-base"
               render={<Link href={PERCORSO_ACCESSO} />}
               nativeButton={false}
             >

@@ -46,7 +46,6 @@ export function ModuloBenvenuto() {
             autoComplete="given-name"
             defaultValue={valori.nome}
             required
-            className="h-10"
             {...aria("nome")}
           />
           <Errore id="errore-nome" testo={errori.nome} />
@@ -59,7 +58,6 @@ export function ModuloBenvenuto() {
             autoComplete="family-name"
             defaultValue={valori.cognome}
             required
-            className="h-10"
             {...aria("cognome")}
           />
           <Errore id="errore-cognome" testo={errori.cognome} />
@@ -77,7 +75,6 @@ export function ModuloBenvenuto() {
           inputMode="tel"
           autoComplete="tel"
           defaultValue={valori.telefono}
-          className="h-10"
           {...aria("telefono")}
         />
         <Errore id="errore-telefono" testo={errori.telefono} />

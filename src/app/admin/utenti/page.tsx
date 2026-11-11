@@ -77,7 +77,6 @@ async function ElencoUtenti({ searchParams }: Pick<PageProps<"/admin/utenti">, "
           type="search"
           placeholder="Cerca per nome o email"
           defaultValue={ricerca}
-          className="h-9"
         />
         <Button type="submit" variant="outline" size="lg">
           <SearchIcon aria-hidden />

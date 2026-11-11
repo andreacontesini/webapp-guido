@@ -39,7 +39,6 @@ export function ModuloDettagli({ valoriIniziali }: { valoriIniziali: StatoDettag
           defaultValue={valori.titolo}
           required
           maxLength={120}
-          className="h-10"
           {...aria("titolo")}
         />
         <Errore id="errore-titolo" testo={errori.titolo} />
@@ -55,7 +54,7 @@ export function ModuloDettagli({ valoriIniziali }: { valoriIniziali: StatoDettag
           rows={3}
           maxLength={300}
           defaultValue={valori.descrizione}
-          className="w-full min-w-0 rounded-md border border-input bg-transparent px-2.5 py-2 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive md:text-sm dark:bg-input/30"
+          className="w-full min-w-0 rounded-lg border border-input bg-transparent px-3.5 py-2.5 text-base transition-colors outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 aria-invalid:border-destructive dark:bg-input/30"
           {...aria("descrizione")}
         />
         <Errore id="errore-descrizione" testo={errori.descrizione} />
@@ -71,7 +70,7 @@ export function ModuloDettagli({ valoriIniziali }: { valoriIniziali: StatoDettag
           placeholder="es. 1.0"
           defaultValue={valori.versione}
           maxLength={20}
-          className="h-10 max-w-40"
+          className="max-w-40"
           {...aria("versione")}
         />
         <Errore id="errore-versione" testo={errori.versione} />

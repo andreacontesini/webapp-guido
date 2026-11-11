@@ -48,7 +48,6 @@ export function ModuloAccesso({ prossimo }: { prossimo: string }) {
           aria-invalid={errore ? true : undefined}
           aria-describedby={errore ? "errore-email" : undefined}
           required
-          className="h-10"
         />
         {errore && (
           <p id="errore-email" className="text-sm text-destructive">
