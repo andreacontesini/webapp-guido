@@ -307,15 +307,16 @@ function disegnaFiligrana(
 
   ctx.save();
   // Grigio medio: si legge sia sulle pagine chiare sia su quelle scure (copertina).
-  ctx.globalAlpha = 0.14;
+  ctx.globalAlpha = 0.08;
   ctx.fillStyle = "#7c8799";
   ctx.textAlign = "center";
   ctx.translate(canvas.width / 2, canvas.height / 2);
   ctx.rotate(-Math.PI / 6);
 
   ctx.font = fontPrincipale;
-  const passoX = ctx.measureText(testo).width + dimensione * 4;
-  const passoY = dimensione * 7;
+  // Spaziatura ampia: poche ripetizioni per pagina, senza coprire il testo.
+  const passoX = ctx.measureText(testo).width + dimensione * 12;
+  const passoY = dimensione * 16;
   const diagonale = Math.hypot(canvas.width, canvas.height);
   for (let y = -diagonale / 2; y < diagonale / 2; y += passoY) {
     const sfasamento = (Math.round(y / passoY) % 2) * (passoX / 2);
