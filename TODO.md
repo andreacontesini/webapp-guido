@@ -168,6 +168,8 @@
 ## ⚪ IN FUTURO: Landing sul dominio principale
 Quando il sito WordPress su `guidocontesini.it` verrà dismesso.
 - [ ] **Scelta del dominio per ogni landing:** permettere all'admin di decidere su quale dominio pubblicare ciascuna landing (es. `guidocontesini.it` o `app.guidocontesini.it`), con URL canonico, sitemap e smistamento nel proxy coerenti. Oggi tutte le landing stanno sul dominio dell'app (o su quello di `NEXT_PUBLIC_LANDING_URL`, uguale per tutte).
+  - [x] Select «Pubblica su» nell'editor della landing (App / Dominio principale), salvata nella colonna `landing_pages.domain` (enum `dominio_landing`, predefinito `app`). L'opzione «Dominio principale» è visibile ma disattivata e il server la rifiuta.
+  - [ ] Attivare l'opzione «Dominio principale» (`attivo: true` in `src/lib/landing/domini.ts`) e usare `domain` di ogni landing per URL canonico, sitemap, link nell'admin e smistamento nel proxy (una landing risponde solo sul suo dominio).
 - [ ] Aggiungere `guidocontesini.it` e `www` al progetto Vercel (record A su DNS Aruba) e aggiornare la variabile d'ambiente con l'indirizzo delle landing.
 - [ ] Smistamento per dominio nel proxy: sul dominio principale solo le landing, il resto (`/login`, `/admin`, area riservata) rimandato su `app.guidocontesini.it`.
 - [ ] Redirect 301 dalle vecchie pagine WordPress che hanno traffico o posizionamento.

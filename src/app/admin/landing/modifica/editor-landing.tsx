@@ -22,6 +22,8 @@ import { CampoImmagine } from "@/app/admin/landing/campo-immagine";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SelectNativa } from "@/components/ui/select-nativa";
+import { DOMINI_LANDING } from "@/lib/landing/domini";
 import { isBloccoValido, NOMI_BLOCCHI, type TipoBlocco } from "@/lib/landing/blocchi";
 import {
   BLOCCHI_NUOVI,
@@ -36,6 +38,7 @@ export type LandingDaModificare = {
   id: string;
   titolo: string;
   slug: string;
+  dominio: string;
   seoTitolo: string;
   seoDescrizione: string;
   immagineAnteprima: string;
@@ -59,6 +62,7 @@ export function EditorLanding({ iniziale, base }: { iniziale: LandingDaModificar
   const [impostazioni, setImpostazioni] = useState({
     titolo: iniziale.titolo,
     slug: iniziale.slug,
+    dominio: iniziale.dominio,
     seoTitolo: iniziale.seoTitolo,
     seoDescrizione: iniziale.seoDescrizione,
     immagineAnteprima: iniziale.immagineAnteprima,
@@ -145,6 +149,26 @@ export function EditorLanding({ iniziale, base }: { iniziale: LandingDaModificar
             {erroreCampo("titolo")}
           </div>
           <div className="space-y-1.5">
+            <label className="text-sm font-medium" htmlFor="dominio">
+              Pubblica su
+            </label>
+            <SelectNativa
+              id="dominio"
+              value={impostazioni.dominio}
+              onChange={(e) => cambiaImpostazione("dominio", e.target.value)}
+            >
+              {DOMINI_LANDING.map((d) => (
+                <option key={d.valore} value={d.valore} disabled={!d.attivo}>
+                  {d.etichetta} ({d.host}){d.attivo ? "" : " · presto disponibile"}
+                </option>
+              ))}
+            </SelectNativa>
+            <p className="text-xs text-muted-foreground">
+              Per ora le landing si pubblicano solo sul dominio dell&apos;app.
+            </p>
+            {erroreCampo("dominio")}
+          </div>
+          <div className="space-y-1.5 md:col-span-2">
             <label className="text-sm font-medium" htmlFor={idSlug}>
               Indirizzo <span className="text-destructive">*</span>
             </label>
@@ -319,9 +343,9 @@ export function EditorLanding({ iniziale, base }: { iniziale: LandingDaModificar
           <label htmlFor="nuovo-blocco" className="sr-only">
             Tipo di blocco da aggiungere
           </label>
-          <select
+          <SelectNativa
             id="nuovo-blocco"
-            className="h-10 min-w-0 flex-1 rounded-md border border-input bg-transparent px-3 text-sm dark:bg-input/30 [&>option]:bg-popover"
+            className="min-w-0 flex-1"
             value={daAggiungere}
             onChange={(e) => setDaAggiungere(e.target.value as TipoBlocco)}
           >
@@ -330,7 +354,7 @@ export function EditorLanding({ iniziale, base }: { iniziale: LandingDaModificar
                 {NOMI_BLOCCHI[tipo]}
               </option>
             ))}
-          </select>
+          </SelectNativa>
           <Button type="button" variant="outline" onClick={aggiungi}>
             <PlusIcon aria-hidden />
             Aggiungi blocco

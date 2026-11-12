@@ -54,6 +54,9 @@ export type Acquisto = {
 
 export type StatoLanding = "bozza" | "pubblicata";
 
+/** Dominio di pubblicazione di una landing (per ora solo `app` è attivo). */
+export type DominioLanding = "app" | "principale";
+
 /** Landing di vendita: `blocks` ha il formato di `src/lib/landing/blocchi.ts`. */
 export type LandingPage = {
   id: string;
@@ -65,6 +68,7 @@ export type LandingPage = {
   blocks: unknown;
   status: StatoLanding;
   is_home: boolean;
+  domain: DominioLanding;
   published_at: string | null;
   created_at: string;
   updated_at: string;
@@ -148,6 +152,7 @@ export type Database = {
       ruolo_utente: RuoloUtente;
       stato_acquisto: StatoAcquisto;
       stato_landing: StatoLanding;
+      dominio_landing: DominioLanding;
       tipo_evento_landing: TipoEventoLanding;
     };
     CompositeTypes: Record<string, never>;

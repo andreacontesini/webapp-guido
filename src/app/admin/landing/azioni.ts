@@ -8,6 +8,7 @@ import { BUCKET_LANDING } from "@/lib/bucket";
 import { isBloccoValido, NOMI_BLOCCHI, type TipoBlocco } from "@/lib/landing/blocchi";
 import { TAG_LANDING } from "@/lib/landing/dati";
 import { BLOCCHI_NUOVI, nuovoIdBlocco, slugDaTitolo } from "@/lib/landing/editor";
+import { isDominioAttivo } from "@/lib/landing/domini";
 import { isSlugValido } from "@/lib/landing/slug";
 import { creaClientAdmin } from "@/lib/supabase/admin";
 import { creaClientServer } from "@/lib/supabase/server";
@@ -138,7 +139,7 @@ export async function duplicaLanding(id: string): Promise<EsitoAzione> {
   const supabase = await creaClientServer();
   const { data: originale } = await supabase
     .from("landing_pages")
-    .select("slug, title, seo_title, seo_description, og_image_url, blocks")
+    .select("slug, title, seo_title, seo_description, og_image_url, domain, blocks")
     .eq("id", id)
     .maybeSingle();
   if (!originale) return { errore: "Landing non trovata." };
@@ -151,6 +152,7 @@ export async function duplicaLanding(id: string): Promise<EsitoAzione> {
       slug,
       title: `${originale.title} (copia)`.slice(0, 120),
       seo_title: originale.seo_title,
+      domain: originale.domain,
       seo_description: originale.seo_description,
       og_image_url: originale.og_image_url,
       blocks: originale.blocks,
@@ -193,12 +195,15 @@ export type DatiLanding = {
   seoTitolo: string;
   seoDescrizione: string;
   immagineAnteprima: string;
+  dominio: string;
   blocchi: unknown[];
 };
 
 export type EsitoSalvataggio = {
   errore?: string;
-  errori?: Partial<Record<"titolo" | "slug" | "seoTitolo" | "seoDescrizione" | "immagineAnteprima", string>>;
+  errori?: Partial<
+    Record<"titolo" | "slug" | "dominio" | "seoTitolo" | "seoDescrizione" | "immagineAnteprima", string>
+  >;
   /** Posizioni (da 0) dei blocchi incompleti: salvati, ma nascosti nella pagina. */
   incompleti?: number[];
 };
@@ -220,6 +225,8 @@ export async function salvaLanding(id: string, dati: DatiLanding): Promise<Esito
   const errori: NonNullable<EsitoSalvataggio["errori"]> = {};
   if (titolo.length < 2 || titolo.length > 120) errori.titolo = "Inserisci un nome tra 2 e 120 caratteri.";
   if (!isSlugValido(slug)) errori.slug = "Usa solo lettere minuscole, numeri e trattini.";
+  // Per ora si pubblica solo sul dominio dell'app.
+  if (!isDominioAttivo(dati.dominio)) errori.dominio = "Questo dominio non è ancora disponibile.";
   if (seoTitolo.length > 120) errori.seoTitolo = "Massimo 120 caratteri (meglio sotto i 60).";
   if (seoDescrizione.length > 300) errori.seoDescrizione = "Massimo 300 caratteri (meglio sotto i 160).";
   if (immagineAnteprima && !immagineAnteprima.startsWith("https://")) {
@@ -251,6 +258,7 @@ export async function salvaLanding(id: string, dati: DatiLanding): Promise<Esito
       seo_title: seoTitolo || null,
       seo_description: seoDescrizione || null,
       og_image_url: immagineAnteprima || null,
+      domain: isDominioAttivo(dati.dominio) ? dati.dominio : "app",
       blocks: blocchi,
       updated_by: admin.id,
     })

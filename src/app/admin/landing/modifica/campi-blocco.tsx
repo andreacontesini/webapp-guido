@@ -7,6 +7,7 @@ import { cn } from "cn";
 import { CampoImmagine } from "@/app/admin/landing/campo-immagine";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { SelectNativa } from "@/components/ui/select-nativa";
 import { analizzaVideo } from "@/lib/landing/blocchi";
 import { elementoVuoto, type Campo } from "@/lib/landing/editor";
 
@@ -14,9 +15,6 @@ type Dati = Record<string, unknown>;
 
 export const classiTextarea =
   "min-h-24 w-full rounded-md border border-input bg-transparent px-3 py-2 text-base shadow-xs outline-none placeholder:text-muted-foreground focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm dark:bg-input/30";
-
-const classiSelect =
-  "h-10 w-full rounded-md border border-input bg-transparent px-3 text-base shadow-xs outline-none focus-visible:border-ring focus-visible:ring-3 focus-visible:ring-ring/50 md:text-sm dark:bg-input/30 [&>option]:bg-popover";
 
 /** Sposta l'elemento `da` di un elenco nella posizione `a`. */
 export function sposta<T>(elenco: T[], da: number, a: number) {
@@ -179,9 +177,8 @@ export function CampoModulo({
       return (
         <div className="space-y-1.5">
           <Etichetta campo={campo} htmlFor={id} />
-          <select
+          <SelectNativa
             id={id}
-            className={classiSelect}
             value={testo || String(campo.opzioni[0]?.valore ?? "")}
             onChange={(e) => {
               const opzione = campo.opzioni.find((o) => String(o.valore) === e.target.value);
@@ -193,7 +190,7 @@ export function CampoModulo({
                 {o.etichetta}
               </option>
             ))}
-          </select>
+          </SelectNativa>
           <Aiuto testo={campo.aiuto} />
         </div>
       );

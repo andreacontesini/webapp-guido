@@ -47,7 +47,7 @@ async function Editor({
   const supabase = await creaClientServer();
   const { data: landing } = await supabase
     .from("landing_pages")
-    .select("id, slug, title, seo_title, seo_description, og_image_url, blocks, status, is_home")
+    .select("id, slug, title, seo_title, seo_description, og_image_url, domain, blocks, status, is_home")
     .eq("id", id)
     .maybeSingle();
   if (!landing) notFound();
@@ -87,6 +87,7 @@ async function Editor({
           id: landing.id,
           titolo: landing.title,
           slug: landing.slug,
+          dominio: landing.domain,
           seoTitolo: landing.seo_title ?? "",
           seoDescrizione: landing.seo_description ?? "",
           immagineAnteprima: landing.og_image_url ?? "",
