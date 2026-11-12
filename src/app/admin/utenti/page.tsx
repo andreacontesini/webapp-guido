@@ -5,13 +5,14 @@ import { SearchIcon } from "lucide-react";
 
 import { AcquistiUtente, type RigaAcquisto } from "@/app/admin/utenti/acquisti-utente";
 import { AzioniUtente, InterruttoreGuida } from "@/app/admin/utenti/azioni-utente";
+import { ProfiloUtente } from "@/app/admin/utenti/profilo-utente";
 import { NuovoUtente } from "@/app/admin/utenti/nuovo-utente";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { richiediAdmin } from "@/lib/auth/admin";
 import { creaClientServer } from "@/lib/supabase/server";
-import type { Profilo } from "@/lib/supabase/tipi";
+import type { Immobile, Profilo } from "@/lib/supabase/tipi";
 
 export const metadata: Metadata = {
   title: "Utenti",
@@ -55,7 +56,7 @@ async function ElencoUtenti({ searchParams }: Pick<PageProps<"/admin/utenti">, "
   const supabase = await creaClientServer();
   let query = supabase
     .from("profiles")
-    .select("id, email, first_name, last_name, role, is_blocked, guide_access, created_at")
+    .select("*")
     .order("created_at", { ascending: false })
     .limit(500);
   if (ricerca) {
@@ -86,6 +87,17 @@ async function ElencoUtenti({ searchParams }: Pick<PageProps<"/admin/utenti">, "
       acquistiPerUtente.set(user_id, [...(acquistiPerUtente.get(user_id) ?? []), acquisto]);
     }
   }
+  // Immobili dei clienti in elenco, per completamento e popup del profilo.
+  const immobili = new Map<string, Immobile>();
+  if (utenti.length > 0) {
+    const { data, error: erroreImmobili } = await supabase
+      .from("properties")
+      .select("*")
+      .in("user_id", utenti.map((u) => u.id));
+    if (erroreImmobili) console.error("Lettura immobili non riuscita", erroreImmobili);
+    for (const immobile of data ?? []) immobili.set(immobile.user_id, immobile);
+  }
+
   const urlPagamentiStripe = process.env.STRIPE_SECRET_KEY?.startsWith("sk_live_")
     ? "https://dashboard.stripe.com/payments"
     : "https://dashboard.stripe.com/test/payments";
@@ -124,13 +136,14 @@ async function ElencoUtenti({ searchParams }: Pick<PageProps<"/admin/utenti">, "
 
       {utenti.length > 0 && (
         <div className="overflow-x-auto rounded-xl border bg-card">
-          <table className="w-full min-w-[52rem] text-sm">
+          <table className="w-full min-w-[60rem] text-sm">
             <thead className="border-b text-left text-xs text-muted-foreground">
               <tr>
                 <th scope="col" className="px-4 py-3 font-medium">Utente</th>
                 <th scope="col" className="px-4 py-3 font-medium">Registrato</th>
                 <th scope="col" className="px-4 py-3 font-medium">Guida</th>
                 <th scope="col" className="px-4 py-3 font-medium">Acquisti</th>
+                <th scope="col" className="px-4 py-3 font-medium">Profilo</th>
                 <th scope="col" className="px-4 py-3 font-medium">Stato</th>
                 <th scope="col" className="px-4 py-3 text-right font-medium">Azioni</th>
               </tr>
@@ -142,6 +155,7 @@ async function ElencoUtenti({ searchParams }: Pick<PageProps<"/admin/utenti">, "
                   utente={utente}
                   seiTu={utente.id === admin.id}
                   acquisti={acquistiPerUtente.get(utente.id) ?? []}
+                  immobile={immobili.get(utente.id) ?? null}
                   urlPagamentiStripe={urlPagamentiStripe}
                 />
               ))}
@@ -157,14 +171,13 @@ function RigaUtente({
   utente,
   seiTu,
   acquisti,
+  immobile,
   urlPagamentiStripe,
 }: {
-  utente: Pick<
-    Profilo,
-    "id" | "email" | "first_name" | "last_name" | "role" | "is_blocked" | "guide_access" | "created_at"
-  >;
+  utente: Profilo;
   seiTu: boolean;
   acquisti: RigaAcquisto[];
+  immobile: Immobile | null;
   urlPagamentiStripe: string;
 }) {
   const nomeCompleto = [utente.first_name, utente.last_name].filter(Boolean).join(" ");
@@ -186,6 +199,9 @@ function RigaUtente({
           acquisti={acquisti}
           urlPagamentiStripe={urlPagamentiStripe}
         />
+      </td>
+      <td className="px-4 py-3">
+        <ProfiloUtente profilo={utente} immobile={immobile} />
       </td>
       <td className="px-4 py-3">
         <div className="flex flex-wrap gap-1">
