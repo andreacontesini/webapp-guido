@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   partialPrefetching: true,
   outputFileTracingRoot: radiceProgetto,
+  // Il logo della scheda cliente in PDF viene letto dal disco nella funzione.
+  outputFileTracingIncludes: { "/admin/utenti/[id]/scheda.pdf": ["./public/email/logo.png"] },
   // In basso a sinistra coprirebbe il piede della sidebar.
   devIndicators: { position: "bottom-right" },
   turbopack: {
