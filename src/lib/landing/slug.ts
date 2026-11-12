@@ -7,6 +7,7 @@
 export const PERCORSI_RISERVATI = [
   "accesso",
   "admin",
+  "anteprima",
   "api",
   "auth",
   "benvenuto",

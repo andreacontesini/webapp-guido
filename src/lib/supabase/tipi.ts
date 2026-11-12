@@ -71,6 +71,16 @@ export type LandingPage = {
   updated_by: string | null;
 };
 
+export type TipoEventoLanding = "visita" | "checkout" | "acquisto";
+
+/** Evento anonimo di conversione di una landing (scritto solo dal server). */
+export type EventoLanding = {
+  id: number;
+  landing_id: string;
+  type: TipoEventoLanding;
+  created_at: string;
+};
+
 /** Campi del profilo che l'utente può modificare (vedi grant nella migrazione RLS). */
 type ProfiloModificabile = Partial<
   Pick<
@@ -111,6 +121,12 @@ export type Database = {
         Update: Partial<LandingPage>;
         Relationships: [];
       };
+      landing_events: {
+        Row: EventoLanding;
+        Insert: Pick<EventoLanding, "landing_id" | "type"> & Partial<EventoLanding>;
+        Update: Partial<EventoLanding>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -123,11 +139,16 @@ export type Database = {
         Args: { landing_id: string | null };
         Returns: undefined;
       };
+      statistiche_landing: {
+        Args: { giorni?: number };
+        Returns: { landing_id: string; visite: number; checkout: number; acquisti: number }[];
+      };
     };
     Enums: {
       ruolo_utente: RuoloUtente;
       stato_acquisto: StatoAcquisto;
       stato_landing: StatoLanding;
+      tipo_evento_landing: TipoEventoLanding;
     };
     CompositeTypes: Record<string, never>;
   };
