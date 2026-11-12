@@ -11,7 +11,8 @@ Il codice dei pagamenti è pronto: si attiva da solo appena in `.env.local` (e s
    - registra l'acquisto in `purchases`. La sessione di checkout è unica, quindi un evento ricevuto due volte non crea un secondo acquisto;
    - sblocca `guide_access` sul profilo;
    - invia l'email di conferma (Resend), una sola volta per acquisto.
-4. L'utente torna su `/dashboard/acquisto/conferma`, che attende lo sblocco e mostra la conferma.
+4. Rimborsi e contestazioni (eventi `charge.*`): rimborso totale → acquisto `rimborsato`; contestazione aperta → `contestato`; contestazione vinta → di nuovo `pagato`. Dopo ogni cambio l'accesso alla guida resta solo se l'utente ha ancora un acquisto della guida pagato. I rimborsi parziali non revocano l'accesso.
+5. L'utente torna su `/dashboard/acquisto/conferma`, che attende lo sblocco e mostra la conferma.
 
 ## 1. Prezzo
 
@@ -34,7 +35,7 @@ Le chiavi vanno in `.env.local` e in Vercel → *Settings → Environment Variab
 **Sviluppatori → Webhook → Aggiungi endpoint**:
 
 - URL: `https://app.guidocontesini.it/api/webhooks/stripe`
-- Eventi: `checkout.session.completed`, `checkout.session.async_payment_succeeded` (con la Fase 6 si aggiungeranno rimborsi e contestazioni)
+- Eventi: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`, `charge.dispute.created`, `charge.dispute.closed`
 - Copia il *Signing secret* in `STRIPE_WEBHOOK_SECRET`.
 
 ### In locale con la Stripe CLI

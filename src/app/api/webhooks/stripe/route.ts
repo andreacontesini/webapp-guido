@@ -15,7 +15,8 @@ import { verificaEventoWebhook } from "@/lib/stripe";
  * creano un secondo acquisto né una seconda email.
  *
  * Eventi da attivare su Stripe: checkout.session.completed,
- * checkout.session.async_payment_succeeded (vedi docs/stripe.md).
+ * checkout.session.async_payment_succeeded, charge.refunded,
+ * charge.dispute.created, charge.dispute.closed (vedi docs/stripe.md).
  */
 export async function POST(request: Request) {
   const firma = request.headers.get("stripe-signature");
@@ -39,8 +40,23 @@ export async function POST(request: Request) {
           await registraPagamento(evento.data.object);
         }
         break;
+      case "charge.refunded":
+        // Arriva anche per i rimborsi parziali: si revoca solo con rimborso totale.
+        if (evento.data.object.refunded) {
+          await cambiaStatoAcquisto(evento.data.object.payment_intent, "rimborsato");
+        }
+        break;
+      case "charge.dispute.created":
+        await cambiaStatoAcquisto(evento.data.object.payment_intent, "contestato");
+        break;
+      case "charge.dispute.closed":
+        // Contestazione vinta (o semplice richiesta di informazioni chiusa):
+        // l'acquisto torna valido. Se persa, resta contestato e senza accesso.
+        if (["won", "warning_closed"].includes(evento.data.object.status)) {
+          await cambiaStatoAcquisto(evento.data.object.payment_intent, "pagato");
+        }
+        break;
       default:
-        // Altri eventi (rimborsi, contestazioni) arriveranno con la Fase 6.
         break;
     }
   } catch (errore) {
@@ -132,4 +148,60 @@ async function registraPagamento(sessione: Stripe.Checkout.Session) {
     // L'acquisto è già registrato e sbloccato: l'email non deve bloccare il webhook.
     console.error(`Webhook Stripe: email di conferma per ${sessione.id} non inviata`, errore);
   }
+}
+
+type StatoAcquisto = "pagato" | "rimborsato" | "contestato";
+
+/**
+ * Aggiorna lo stato dell'acquisto legato a un pagamento (rimborso,
+ * contestazione o contestazione vinta) e allinea l'accesso al prodotto.
+ * Idempotente: ripetere lo stesso evento non cambia nulla.
+ */
+async function cambiaStatoAcquisto(
+  paymentIntent: string | Stripe.PaymentIntent | null,
+  stato: StatoAcquisto,
+) {
+  const idPagamento = typeof paymentIntent === "string" ? paymentIntent : paymentIntent?.id;
+  if (!idPagamento) return;
+
+  const client = creaClientAdmin();
+  const { data: acquisto, error } = await client
+    .from("purchases")
+    .update({ status: stato })
+    .eq("stripe_payment_intent_id", idPagamento)
+    .select("user_id, product")
+    .maybeSingle();
+  if (error) throw error;
+  if (!acquisto) {
+    // Pagamento non fatto dall'app (es. creato a mano nel pannello Stripe).
+    console.warn(`Webhook Stripe: nessun acquisto per il pagamento ${idPagamento}`);
+    return;
+  }
+
+  if (acquisto.user_id && acquisto.product === "guida") {
+    await allineaAccessoGuida(acquisto.user_id);
+  }
+}
+
+/**
+ * L'accesso alla guida resta solo se l'utente ha almeno un acquisto della
+ * guida ancora pagato. Se viene rimborsato o contestato l'unico acquisto,
+ * l'accesso si revoca (anche se in passato era stato assegnato a mano:
+ * l'admin può riassegnarlo dalla scheda utente).
+ */
+async function allineaAccessoGuida(userId: string) {
+  const client = creaClientAdmin();
+  const { count, error } = await client
+    .from("purchases")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", userId)
+    .eq("product", "guida")
+    .eq("status", "pagato");
+  if (error) throw error;
+
+  const { error: erroreAccesso } = await client
+    .from("profiles")
+    .update({ guide_access: (count ?? 0) > 0 })
+    .eq("id", userId);
+  if (erroreAccesso) throw erroreAccesso;
 }

@@ -67,7 +67,7 @@
 - [x] **Tag Versione:** `v0.5.0`.
 
 ### Fase 6: Rimborsi, ritorno da Stripe e acquisti in admin (Target: v0.6.0)
-- [ ] Revoca automatica dell'accesso in caso di rimborso o contestazione del pagamento.
+- [x] Revoca automatica dell'accesso in caso di rimborso o contestazione del pagamento (webhook: `charge.refunded` solo se totale, `charge.dispute.created`, `charge.dispute.closed` con ripristino se vinta). *Provato in locale con eventi firmati.*
 - [ ] Pagine di ritorno (logica): collegare il `session_id` di Stripe alla verifica dello sblocco (l'URL di ritorno lo contiene già).
 - [ ] Pagina "Pagamento annullato": pulsante "Riprova" che riapre il popup di acquisto.
 - [ ] Area admin: elenco acquisti nella scheda utente e assegnazione manuale ancora possibile.
