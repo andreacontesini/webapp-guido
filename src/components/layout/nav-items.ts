@@ -35,7 +35,6 @@ export const navigazioneCliente: VoceNavigazione[] = [
     titolo: "Profilo",
     href: "/dashboard/profilo",
     icona: UserIcon,
-    disabilitata: true,
   },
 ];
 

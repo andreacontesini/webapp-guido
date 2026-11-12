@@ -6,6 +6,7 @@ import {
   BookOpenIcon,
   LockIcon,
   PlayCircleIcon,
+  UserRoundPenIcon,
 } from "lucide-react";
 
 import { PopupAcquisto } from "@/components/acquisto/popup-acquisto";
@@ -14,6 +15,8 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { leggiProfiloCorrente } from "@/lib/auth/utente";
 import { leggiStatoGuida, type StatoGuida } from "@/lib/guida";
+import { calcolaCompletamento } from "@/lib/profilo/completamento";
+import { leggiProfiloCompleto } from "@/lib/profilo/dati";
 
 export const metadata: Metadata = {
   title: "La tua area",
@@ -58,6 +61,10 @@ export default function DashboardPage() {
           volta.
         </p>
       </header>
+
+      <Suspense fallback={null}>
+        <CompletaProfilo />
+      </Suspense>
 
       <div className="grid gap-4 lg:grid-cols-3">
         {/* La tua guida: sezione principale, disponibile in beta. */}
@@ -172,5 +179,45 @@ async function AzioneGuida() {
       )}
       <p className="mt-2 text-sm text-muted-foreground">{nota}</p>
     </>
+  );
+}
+
+/** Invito a completare il profilo, finché non è al 100%. */
+async function CompletaProfilo() {
+  const { profilo, immobile } = await leggiProfiloCompleto();
+  const { percentuale } = calcolaCompletamento(profilo, immobile);
+  if (percentuale >= 100) return null;
+
+  return (
+    <section
+      aria-labelledby="titolo-completa-profilo"
+      className={`${riquadro} flex flex-col gap-4 sm:flex-row sm:items-center`}
+    >
+      <span className="inline-flex size-12 shrink-0 items-center justify-center rounded-lg bg-accent text-accent-foreground">
+        <UserRoundPenIcon className="size-6" aria-hidden />
+      </span>
+      <div className="min-w-0 flex-1 space-y-2">
+        <h2 id="titolo-completa-profilo" className="font-semibold">
+          Completa il tuo profilo · {percentuale}%
+        </h2>
+        <div
+          role="progressbar"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={percentuale}
+          aria-labelledby="titolo-completa-profilo"
+          className="h-1.5 overflow-hidden rounded-full bg-muted"
+        >
+          <div className="h-full rounded-full bg-primary" style={{ width: `${percentuale}%` }} />
+        </div>
+        <p className="text-sm text-muted-foreground">
+          Aiuta Guido a conoscere te e la tua casa: potrà seguirti in modo più concreto.
+        </p>
+      </div>
+      <Button size="lg" variant="outline" render={<Link href="/dashboard/profilo" />} nativeButton={false}>
+        Completa il profilo
+        <ArrowRightIcon aria-hidden />
+      </Button>
+    </section>
   );
 }
