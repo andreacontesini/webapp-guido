@@ -106,6 +106,51 @@ export type BloccoInvito = Base & {
   azione: "acquista" | "accedi";
 };
 
+/** Formati del riquadro video (larghezza:altezza). */
+export const FORMATI_VIDEO = ["16:9", "9:16", "1:1"] as const;
+export type FormatoVideo = (typeof FORMATI_VIDEO)[number];
+
+export type BloccoVideo = Base & {
+  tipo: "video";
+  titolo?: string;
+  testo?: string;
+  /**
+   * Indirizzo del video: Bunny Stream (link di embed o di riproduzione),
+   * YouTube, Vimeo o file MP4/WebM in https. La sorgente si riconosce da qui.
+   */
+  indirizzo: string;
+  /** Immagine mostrata prima della riproduzione (consigliata, 16:9 o come il formato). */
+  copertinaUrl?: string;
+  formato: FormatoVideo;
+  /** Parte da solo quando entra nello schermo (sempre senza audio, regola dei browser). */
+  avvioAutomatico: boolean;
+  /** Audio disattivato all'avvio. */
+  muto: boolean;
+  ripeti: boolean;
+  /** Controlli del player visibili. */
+  controlli: boolean;
+  /** Sottotitoli attivi se il video li ha. */
+  sottotitoli: boolean;
+  /** Secondo da cui parte la riproduzione. */
+  inizio?: number;
+  /** Pulsante "Acquista" sotto il video. */
+  pulsanteAcquisto: boolean;
+};
+
+export const MODALITA_GALLERIA = ["griglia", "carosello"] as const;
+export type ModalitaGalleria = (typeof MODALITA_GALLERIA)[number];
+
+export type BloccoGalleria = Base & {
+  tipo: "galleria";
+  titolo?: string;
+  modalita: ModalitaGalleria;
+  /** Colonne della griglia su desktop (una sola su smartphone). */
+  colonne: 2 | 3 | 4;
+  /** Solo carosello: scorre da solo ogni pochi secondi. */
+  scorrimentoAutomatico: boolean;
+  immagini: { url: string; alt: string; didascalia?: string }[];
+};
+
 export type Blocco =
   | BloccoHero
   | BloccoPuntiChiave
@@ -116,7 +161,9 @@ export type Blocco =
   | BloccoAutore
   | BloccoFaq
   | BloccoPrezzo
-  | BloccoInvito;
+  | BloccoInvito
+  | BloccoVideo
+  | BloccoGalleria;
 
 export type TipoBlocco = Blocco["tipo"];
 
@@ -132,6 +179,8 @@ export const NOMI_BLOCCHI: Record<TipoBlocco, string> = {
   faq: "Domande frequenti",
   prezzo: "Prezzo e acquisto",
   invito: "Invito (acquisto o accesso)",
+  video: "Video",
+  galleria: "Galleria immagini",
 };
 
 // -------------------------------------------------------------
@@ -277,9 +326,116 @@ function normalizzaBlocco(o: Oggetto): Blocco | null {
       if (!titolo || (o.azione !== "acquista" && o.azione !== "accedi")) return null;
       return { tipo: "invito", id, titolo, testo: testo(o.testo), azione: o.azione };
     }
+    case "video": {
+      const indirizzo = testo(o.indirizzo);
+      if (!indirizzo || !analizzaVideo(indirizzo)) return null;
+      const formato = (FORMATI_VIDEO as readonly unknown[]).includes(o.formato)
+        ? (o.formato as FormatoVideo)
+        : "16:9";
+      const inizio = Number(o.inizio);
+      const avvioAutomatico = o.avvioAutomatico === true;
+      return {
+        tipo: "video",
+        id,
+        titolo: testo(o.titolo),
+        testo: testo(o.testo),
+        indirizzo,
+        copertinaUrl: url(o.copertinaUrl),
+        formato,
+        avvioAutomatico,
+        // L'avvio automatico funziona solo senza audio.
+        muto: avvioAutomatico || o.muto === true,
+        ripeti: o.ripeti === true,
+        controlli: o.controlli !== false,
+        sottotitoli: o.sottotitoli === true,
+        inizio: Number.isFinite(inizio) && inizio > 0 ? Math.floor(inizio) : undefined,
+        pulsanteAcquisto: o.pulsanteAcquisto === true,
+      };
+    }
+    case "galleria": {
+      const immagini = elenco(o.immagini, (i) => {
+        const indirizzo = url(i.url);
+        const alt = testo(i.alt);
+        return indirizzo && alt ? { url: indirizzo, alt, didascalia: testo(i.didascalia) } : null;
+      });
+      if (immagini.length === 0) return null;
+      const colonne = Number(o.colonne);
+      return {
+        tipo: "galleria",
+        id,
+        titolo: testo(o.titolo),
+        modalita: o.modalita === "carosello" ? "carosello" : "griglia",
+        colonne: colonne === 2 || colonne === 4 ? colonne : 3,
+        scorrimentoAutomatico: o.scorrimentoAutomatico === true,
+        immagini,
+      };
+    }
     default:
       return null;
   }
+}
+
+/** True se il blocco (JSON grezzo) è completo e verrà mostrato nella pagina. */
+export function isBloccoValido(valore: unknown) {
+  return isOggetto(valore) && normalizzaBlocco(valore) !== null;
+}
+
+// -------------------------------------------------------------
+// Video: riconoscimento della sorgente dall'indirizzo
+// -------------------------------------------------------------
+
+export type SorgenteVideo =
+  | { tipo: "bunny"; libreria: string; video: string }
+  | { tipo: "youtube"; video: string }
+  | { tipo: "vimeo"; video: string; hash?: string }
+  | { tipo: "file"; url: string };
+
+/** Riconosce la sorgente di un video dal suo indirizzo; `null` se non supportata. */
+export function analizzaVideo(indirizzo: string): SorgenteVideo | null {
+  let u: URL;
+  try {
+    u = new URL(indirizzo);
+  } catch {
+    return null;
+  }
+  if (u.protocol !== "https:") return null;
+  const host = u.hostname.replace(/^www\./, "");
+  const parti = u.pathname.split("/").filter(Boolean);
+
+  // Bunny Stream: iframe.mediadelivery.net/{embed|play}/<libreria>/<video>
+  if (host === "iframe.mediadelivery.net" || host === "player.mediadelivery.net") {
+    const [modo, libreria, video] = parti;
+    if ((modo === "embed" || modo === "play") && /^\d+$/.test(libreria ?? "") && video) {
+      return { tipo: "bunny", libreria, video };
+    }
+    return null;
+  }
+
+  // YouTube: watch?v=, youtu.be/, /shorts/, /embed/
+  if (host === "youtube.com" || host === "m.youtube.com" || host === "youtube-nocookie.com") {
+    const video =
+      u.searchParams.get("v") ??
+      (["shorts", "embed", "live"].includes(parti[0] ?? "") ? parti[1] : undefined);
+    return video && /^[\w-]{6,20}$/.test(video) ? { tipo: "youtube", video } : null;
+  }
+  if (host === "youtu.be") {
+    const video = parti[0];
+    return video && /^[\w-]{6,20}$/.test(video) ? { tipo: "youtube", video } : null;
+  }
+
+  // Vimeo: vimeo.com/<id>[/<hash>] o player.vimeo.com/video/<id>?h=<hash>
+  if (host === "vimeo.com" || host === "player.vimeo.com") {
+    const indice = parti[0] === "video" ? 1 : 0;
+    const video = parti[indice];
+    if (!video || !/^\d+$/.test(video)) return null;
+    const hash = u.searchParams.get("h") ?? parti[indice + 1];
+    return { tipo: "vimeo", video, hash: hash && /^[\da-f]+$/i.test(hash) ? hash : undefined };
+  }
+
+  // File video diretto (es. Storage o CDN).
+  if (/\.(mp4|webm|m4v)$/i.test(u.pathname)) return { tipo: "file", url: u.toString() };
+
+  return null;
 }
 
 /** Blocchi validi di una landing, nell'ordine salvato. */

@@ -10,6 +10,8 @@ import {
 import { cn } from "cn";
 
 import { PopupAcquisto } from "@/components/acquisto/popup-acquisto";
+import { Galleria as GalleriaImmagini } from "@/components/landing/galleria";
+import { PlayerVideo } from "@/components/landing/player-video";
 import { SfondoHero } from "@/components/layout/sfondo-hero";
 import { iconePunti } from "@/components/landing/icone";
 import { Button } from "@/components/ui/button";
@@ -18,6 +20,7 @@ import type {
   Blocco,
   BloccoAutore,
   BloccoFaq,
+  BloccoGalleria,
   BloccoHero,
   BloccoImmagine,
   BloccoInvito,
@@ -26,6 +29,7 @@ import type {
   BloccoTappe,
   BloccoTestimonianze,
   BloccoTesto,
+  BloccoVideo,
 } from "@/lib/landing/blocchi";
 import { formattaPrezzo, prodotti } from "@/lib/prodotti";
 import { linkApp } from "@/lib/url";
@@ -36,6 +40,8 @@ export type ContestoLanding = {
   pagamentoAttivo: boolean;
   /** Ancora della sezione con le tappe, per il link "Scopri cosa contiene". */
   ancoraContenuti?: string;
+  /** Id della landing, per attribuirle i checkout (misurazione conversioni). */
+  origine?: string;
 };
 
 const guida = prodotti.guida;
@@ -98,6 +104,7 @@ function PulsanteAcquisto({
       pagamentoAttivo={contesto.pagamentoAttivo}
       etichetta={etichetta}
       className={className}
+      origine={contesto.origine}
     />
   );
 }
@@ -495,6 +502,49 @@ function Invito({ blocco, contesto }: { blocco: BloccoInvito; contesto: Contesto
   );
 }
 
+function Video({ blocco, contesto }: { blocco: BloccoVideo; contesto: ContestoLanding }) {
+  return (
+    <Sezione id={blocco.id}>
+      <TitoloSezione titolo={blocco.titolo} sottotitolo={blocco.testo} />
+      <div className="mx-auto max-w-4xl">
+        <PlayerVideo
+          indirizzo={blocco.indirizzo}
+          titolo={blocco.titolo}
+          copertinaUrl={blocco.copertinaUrl}
+          formato={blocco.formato}
+          avvioAutomatico={blocco.avvioAutomatico}
+          muto={blocco.muto}
+          ripeti={blocco.ripeti}
+          controlli={blocco.controlli}
+          sottotitoli={blocco.sottotitoli}
+          inizio={blocco.inizio}
+        />
+      </div>
+      {blocco.pulsanteAcquisto && (
+        <div className="mt-8 flex justify-center">
+          <PulsanteAcquisto contesto={contesto} className="w-full sm:w-auto" />
+        </div>
+      )}
+    </Sezione>
+  );
+}
+
+function Galleria({ blocco }: { blocco: BloccoGalleria }) {
+  return (
+    <Sezione id={blocco.id}>
+      <TitoloSezione titolo={blocco.titolo} />
+      <div className={blocco.modalita === "carosello" ? "mx-auto max-w-4xl" : undefined}>
+        <GalleriaImmagini
+          immagini={blocco.immagini}
+          modalita={blocco.modalita}
+          colonne={blocco.colonne}
+          scorrimentoAutomatico={blocco.scorrimentoAutomatico}
+        />
+      </div>
+    </Sezione>
+  );
+}
+
 // -------------------------------------------------------------
 // Smistamento
 // -------------------------------------------------------------
@@ -527,5 +577,9 @@ export function BloccoLanding({
       return <Prezzo blocco={blocco} contesto={contesto} />;
     case "invito":
       return <Invito blocco={blocco} contesto={contesto} />;
+    case "video":
+      return <Video blocco={blocco} contesto={contesto} />;
+    case "galleria":
+      return <Galleria blocco={blocco} />;
   }
 }
