@@ -14,6 +14,7 @@ import { creaClientPubblico } from "@/lib/supabase/pubblico";
 export const TAG_LANDING = "landing";
 
 export type LandingPubblica = {
+  id: string;
   slug: string;
   titolo: string;
   seoTitolo: string | null;
@@ -25,9 +26,10 @@ export type LandingPubblica = {
 };
 
 const CAMPI =
-  "slug, title, seo_title, seo_description, og_image_url, blocks, is_home, updated_at" as const;
+  "id, slug, title, seo_title, seo_description, og_image_url, blocks, is_home, updated_at" as const;
 
 type RigaLanding = {
+  id: string;
   slug: string;
   title: string;
   seo_title: string | null;
@@ -38,7 +40,8 @@ type RigaLanding = {
   updated_at: string;
 };
 
-const converti = (riga: RigaLanding): LandingPubblica => ({
+export const converti = (riga: RigaLanding): LandingPubblica => ({
+  id: riga.id,
   slug: riga.slug,
   titolo: riga.title,
   seoTitolo: riga.seo_title,

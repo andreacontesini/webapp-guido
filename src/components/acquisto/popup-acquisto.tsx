@@ -34,6 +34,7 @@ export function PopupAcquisto({
   size = "lg",
   etichetta,
   className,
+  origine,
 }: {
   prodotto: CodiceProdotto;
   pagamentoAttivo: boolean;
@@ -41,11 +42,13 @@ export function PopupAcquisto({
   /** Testo del pulsante; di default "Acquista la guida" (o il videocorso). */
   etichetta?: string;
   className?: string;
+  /** Id della landing da cui parte l'acquisto (misurazione conversioni). */
+  origine?: string;
 }) {
   const scheda = prodotti[prodotto];
   const prezzo: number | null = scheda.prezzo;
   const [esito, paga, inCorso] = useActionState<EsitoCheckout>(
-    () => avviaCheckout(prodotto),
+    () => avviaCheckout(prodotto, origine),
     {},
   );
 

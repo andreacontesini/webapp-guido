@@ -3,6 +3,7 @@ import { BookOpenIcon, LogInIcon } from "lucide-react";
 
 import { PopupAcquisto } from "@/components/acquisto/popup-acquisto";
 import { BloccoLanding, type ContestoLanding } from "@/components/landing/blocchi";
+import { ContaVisita } from "@/components/landing/conta-visita";
 import { Button } from "@/components/ui/button";
 import { PERCORSO_ACCESSO } from "@/lib/auth/percorsi";
 import { haAcquisto } from "@/lib/landing/blocchi";
@@ -18,10 +19,18 @@ import { linkApp } from "@/lib/url";
  * Il pulsante "Acquista" apre il popup di acquisto (oggi richiede l'accesso);
  * con la Fase 7 porterà direttamente a Stripe Checkout anche senza account.
  */
-export function PaginaLanding({ landing }: { landing: LandingPubblica }) {
+export function PaginaLanding({
+  landing,
+  anteprima = false,
+}: {
+  landing: LandingPubblica;
+  /** Anteprima in admin: nessun conteggio di visite o checkout. */
+  anteprima?: boolean;
+}) {
   const contesto: ContestoLanding = {
     pagamentoAttivo: acquistoDisponibile("guida"),
     ancoraContenuti: landing.blocchi.find((b) => b.tipo === "tappe")?.id,
+    origine: anteprima ? undefined : landing.id,
   };
   const conAcquisto = haAcquisto(landing.blocchi);
 
@@ -34,7 +43,10 @@ export function PaginaLanding({ landing }: { landing: LandingPubblica }) {
         ))}
       </main>
       <PiePagina />
-      {conAcquisto && <BarraAcquisto pagamentoAttivo={contesto.pagamentoAttivo} />}
+      {!anteprima && <ContaVisita landing={landing.id} />}
+      {conAcquisto && (
+        <BarraAcquisto pagamentoAttivo={contesto.pagamentoAttivo} origine={contesto.origine} />
+      )}
     </div>
   );
 }
@@ -90,7 +102,13 @@ function PiePagina() {
 }
 
 /** Barra fissa in basso su smartphone: il pulsante di acquisto resta sempre a portata. */
-function BarraAcquisto({ pagamentoAttivo }: { pagamentoAttivo: boolean }) {
+function BarraAcquisto({
+  pagamentoAttivo,
+  origine,
+}: {
+  pagamentoAttivo: boolean;
+  origine?: string;
+}) {
   const guida = prodotti.guida;
   const prezzo: number | null = guida.prezzo;
   return (
@@ -102,7 +120,12 @@ function BarraAcquisto({ pagamentoAttivo }: { pagamentoAttivo: boolean }) {
             {prezzo === null ? guida.nome : formattaPrezzo(prezzo)}
           </p>
         </div>
-        <PopupAcquisto prodotto="guida" pagamentoAttivo={pagamentoAttivo} etichetta="Acquista" />
+        <PopupAcquisto
+          prodotto="guida"
+          pagamentoAttivo={pagamentoAttivo}
+          etichetta="Acquista"
+          origine={origine}
+        />
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import type Stripe from "stripe";
 
 import EmailConfermaAcquisto from "@/emails/conferma-acquisto";
 import { inviaEmail } from "@/lib/email/invia";
+import { registraEventoLanding } from "@/lib/landing/eventi";
 import { isCodiceProdotto } from "@/lib/prodotti";
 import { creaClientAdmin } from "@/lib/supabase/admin";
 import { verificaEventoWebhook } from "@/lib/stripe";
@@ -87,6 +88,10 @@ async function registraPagamento(sessione: Stripe.Checkout.Session) {
     .select("id");
   if (erroreAcquisto) throw erroreAcquisto;
   const nuovo = (inseriti?.length ?? 0) > 0;
+
+  // Acquisto partito da una landing: conta come conversione (una sola volta).
+  const landingId = sessione.metadata?.landing_id;
+  if (nuovo && landingId) await registraEventoLanding(landingId, "acquisto");
 
   if (!userId) {
     // Acquisto senza account: creazione dell'account con la Fase 7.
