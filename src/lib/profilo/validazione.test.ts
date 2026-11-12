@@ -105,3 +105,11 @@ test("i valori inviati tornano indietro per ricompilare il modulo", () => {
   assert.equal(inviati.surface_sqm, "abc");
   assert.equal(inviati.city, "Brescia");
 });
+
+test("il punto vale come separatore delle migliaia solo nel formato giusto", () => {
+  const casa = validaSezione(sezione("casa"), modulo({ surface_sqm: "85.5", rooms: "1.5" }));
+  assert.ok(casa.errori.surface_sqm, "85.5 non deve diventare 855");
+  assert.ok(casa.errori.rooms, "1.5 non deve diventare 15");
+  const prezzo = validaSezione(sezione("obiettivi"), modulo({ expected_price: "1.200.000" }));
+  assert.equal(prezzo.valori.expected_price, 1200000);
+});

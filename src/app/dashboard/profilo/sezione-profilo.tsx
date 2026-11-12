@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { startTransition, useActionState, useState } from "react";
 import { CheckIcon } from "lucide-react";
 
 import { salvaSezione, type StatoSezione } from "@/app/dashboard/profilo/azioni";
@@ -43,7 +43,20 @@ export function SezioneProfilo({ idSezione, iniziali, completa }: { idSezione: I
           </span>
         )}
       </header>
-      <form action={azione} noValidate className="space-y-6">
+      <form
+        action={azione}
+        // Invio manuale: con `action` da solo React azzera il modulo dopo ogni
+        // invio e select e pulsanti di scelta (controllati) tornerebbero ai
+        // valori iniziali nel DOM, poi riscritti al salvataggio successivo.
+        // `action` resta per chi usa la pagina senza JavaScript.
+        onSubmit={(evento) => {
+          evento.preventDefault();
+          const dati = new FormData(evento.currentTarget);
+          startTransition(() => azione(dati));
+        }}
+        noValidate
+        className="space-y-6"
+      >
         <div className="grid gap-5 sm:grid-cols-2">
           {sezione.campi.filter((c) => isVisibile(c, valori)).map((campo) => (
             <CampoProfilo key={campo.nome} campo={campo} valore={valori[campo.nome] ?? ""} valori={valori} errore={stato.errori[campo.nome]} onCambia={cambia} />

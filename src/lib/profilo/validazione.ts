@@ -38,8 +38,11 @@ function validaCampo(campo: Campo, grezzo: string, inviati: Record<string, strin
       return { valore: testo };
     }
     case "intero": {
-      const pulito = grezzo.replace(/[\s.€]|m²|mq/gi, "");
-      if (!pulito) return { valore: null };
+      const senzaUnita = grezzo.replace(/\s|€|m²|mq/gi, "");
+      if (!senzaUnita) return { valore: null };
+      // Il punto è un separatore delle migliaia solo a gruppi di tre ("250.000"):
+      // "85.5" è un decimale e non deve diventare 855.
+      const pulito = /^-?\d{1,3}(\.\d{3})+$/.test(senzaUnita) ? senzaUnita.replace(/\./g, "") : senzaUnita;
       if (!formatoIntero.test(pulito)) return { valore: null, errore: "Inserisci un numero intero." };
       const numero = Number(pulito);
       if (numero < campo.min || numero > campo.max) {

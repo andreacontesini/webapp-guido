@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { richiediAdmin } from "@/lib/auth/admin";
+import { aBlocchi } from "@/lib/blocchi";
 import { creaClientServer } from "@/lib/supabase/server";
 import type { Immobile, Profilo } from "@/lib/supabase/tipi";
 
@@ -74,26 +75,32 @@ async function ElencoUtenti({ searchParams }: Pick<PageProps<"/admin/utenti">, "
 
   // Acquisti degli utenti in elenco (la RLS consente agli admin di leggerli tutti).
   const acquistiPerUtente = new Map<string, RigaAcquisto[]>();
-  if (utenti.length > 0) {
-    const { data: acquisti, error: erroreAcquisti } = await supabase
-      .from("purchases")
-      .select("id, user_id, product, status, amount_total, currency, stripe_payment_intent_id, paid_at, created_at")
-      .in("user_id", utenti.map((u) => u.id))
-      .neq("status", "in_attesa")
-      .order("created_at", { ascending: false });
+  // Gli id vanno a blocchi: con centinaia di utenti l'URL di `in(...)` sarebbe troppo lungo.
+  const blocchiId = aBlocchi(utenti.map((u) => u.id), 100);
+  const risposteAcquisti = await Promise.all(
+    blocchiId.map((ids) =>
+      supabase
+        .from("purchases")
+        .select("id, user_id, product, status, amount_total, currency, stripe_payment_intent_id, paid_at, created_at")
+        .in("user_id", ids)
+        .neq("status", "in_attesa")
+        .order("created_at", { ascending: false }),
+    ),
+  );
+  for (const { data: acquisti, error: erroreAcquisti } of risposteAcquisti) {
     if (erroreAcquisti) console.error("Lettura acquisti non riuscita", erroreAcquisti);
     for (const { user_id, ...acquisto } of acquisti ?? []) {
       if (!user_id) continue;
       acquistiPerUtente.set(user_id, [...(acquistiPerUtente.get(user_id) ?? []), acquisto]);
     }
   }
+
   // Immobili dei clienti in elenco, per completamento e popup del profilo.
   const immobili = new Map<string, Immobile>();
-  if (utenti.length > 0) {
-    const { data, error: erroreImmobili } = await supabase
-      .from("properties")
-      .select("*")
-      .in("user_id", utenti.map((u) => u.id));
+  const risposteImmobili = await Promise.all(
+    blocchiId.map((ids) => supabase.from("properties").select("*").in("user_id", ids)),
+  );
+  for (const { data, error: erroreImmobili } of risposteImmobili) {
     if (erroreImmobili) console.error("Lettura immobili non riuscita", erroreImmobili);
     for (const immobile of data ?? []) immobili.set(immobile.user_id, immobile);
   }
