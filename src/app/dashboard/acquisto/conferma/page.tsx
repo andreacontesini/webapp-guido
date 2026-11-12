@@ -1,12 +1,14 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import { redirect } from "next/navigation";
-import { CheckIcon, LoaderCircleIcon } from "lucide-react";
+import { CheckIcon, ClockIcon, LoaderCircleIcon } from "lucide-react";
 
 import { AttesaSblocco } from "@/app/dashboard/acquisto/conferma/attesa-sblocco";
 import { EsitoAcquisto } from "@/components/acquisto/esito-acquisto";
+import { verificaSessioneCheckout, type EsitoSessione } from "@/lib/acquisti";
+import { leggiProfiloCorrente } from "@/lib/auth/utente";
 import { leggiStatoGuida } from "@/lib/guida";
-import { isCodiceProdotto, prodotti, type CodiceProdotto } from "@/lib/prodotti";
+import { EMAIL_ASSISTENZA, isCodiceProdotto, prodotti, type CodiceProdotto } from "@/lib/prodotti";
 
 export const metadata: Metadata = {
   title: "Acquisto completato",
@@ -15,8 +17,10 @@ export const metadata: Metadata = {
 
 /**
  * Ritorno da Stripe Checkout dopo un pagamento riuscito
- * (`?prodotto=guida|videocorso`, in Fase 6 anche `session_id`).
- * Mostra la conferma quando il contenuto risulta sbloccato, altrimenti attende.
+ * (`?prodotto=guida|videocorso&session_id=cs_…`).
+ * Con `session_id` verifica il pagamento con Stripe e, se confermato, sblocca
+ * subito il contenuto. Senza (o se la verifica non riesce) mostra la conferma
+ * quando il contenuto risulta sbloccato dal webhook, altrimenti attende.
  */
 export default function PaginaConferma({ searchParams }: PageProps<"/dashboard/acquisto/conferma">) {
   return (
@@ -40,11 +44,51 @@ async function isSbloccato(codice: CodiceProdotto) {
 }
 
 async function Esito({ searchParams }: Pick<PageProps<"/dashboard/acquisto/conferma">, "searchParams">) {
-  const { prodotto } = await searchParams;
+  const { prodotto, session_id: sessionId } = await searchParams;
   if (!isCodiceProdotto(prodotto)) redirect("/dashboard");
 
   const scheda = prodotti[prodotto];
-  if (!(await isSbloccato(prodotto))) {
+  let esito: EsitoSessione = "non-verificata";
+  if (typeof sessionId === "string") {
+    const profilo = await leggiProfiloCorrente();
+    try {
+      esito = await verificaSessioneCheckout(sessionId, profilo.id);
+    } catch (errore) {
+      // Lo sblocco arriverà comunque dal webhook: si ripiega sull'attesa.
+      console.error("Conferma acquisto: verifica della sessione non riuscita", errore);
+    }
+  }
+
+  if (esito === "in-elaborazione") {
+    return (
+      <EsitoAcquisto
+        icona={ClockIcon}
+        tono="neutro"
+        titolo="Pagamento in elaborazione"
+        azionePrincipale={{ etichetta: "Torna alla tua area", href: "/dashboard" }}
+      >
+        <p>
+          Abbiamo ricevuto il tuo ordine. Con il metodo di pagamento scelto la conferma può
+          richiedere qualche giorno: appena arriva attiviamo {scheda.nome.toLowerCase()} e ti
+          avvisiamo via email.
+        </p>
+        <p className="text-sm">
+          Per qualsiasi dubbio scrivici a{" "}
+          <a
+            href={`mailto:${EMAIL_ASSISTENZA}`}
+            className="font-medium text-foreground underline underline-offset-4"
+          >
+            {EMAIL_ASSISTENZA}
+          </a>
+          .
+        </p>
+      </EsitoAcquisto>
+    );
+  }
+
+  // Il profilo letto all'inizio della richiesta non vede lo sblocco appena
+  // fatto: se Stripe ha confermato il pagamento non serve ricontrollarlo.
+  if (esito !== "pagato" && !(await isSbloccato(prodotto))) {
     return <AttesaSblocco nomeProdotto={scheda.nome} delNome={scheda.delNome} />;
   }
 
