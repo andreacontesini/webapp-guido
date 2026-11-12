@@ -88,22 +88,24 @@
 - [ ] **Tag Versione:** `v0.7.0`.
 
 ### Fase 8: Landing di vendita della guida (Target: v0.8.0)
-- [ ] Tabella `landing_pages` (indirizzo/slug, titolo, testi SEO, blocchi di contenuto, stato bozza/pubblicata).
-- [ ] Blocchi predefiniti con lo stile dell'app: hero, punti chiave, contenuti della guida (tappe), testo libero, immagine, testimonianze, domande frequenti, prezzo con pulsante "Acquista", invito all'accesso.
-- [ ] Pagine pubbliche delle landing e scelta della landing da usare come pagina iniziale (al posto di quella attuale in `src/app/page.tsx`).
-- [ ] **Prima landing di vendita**, ottimizzata per la conversione:
+- [x] Tabella `landing_pages` (indirizzo/slug, titolo, testi SEO, blocchi di contenuto, stato bozza/pubblicata, pagina iniziale) con RLS: chiunque legge le landing pubblicate, solo l'admin le bozze e le modifiche.
+- [x] Blocchi predefiniti con lo stile dell'app (`src/lib/landing/blocchi.ts`, `src/components/landing/`): hero, punti chiave, contenuti della guida (tappe), testo libero, immagine, testimonianze, chi è l'autore, domande frequenti, prezzo con pulsante "Acquista", invito all'acquisto o all'accesso.
+- [x] Pagine pubbliche delle landing (`/<slug>`, in cache e aggiornate subito dalle azioni admin) e scelta della landing da usare come pagina iniziale in `/admin/landing` (insieme a pubblica/ritira). Senza landing scelta resta la pagina iniziale predefinita.
+  - [ ] Scegliere in `/admin/landing` se usare la prima landing come pagina iniziale.
+- [x] **Prima landing di vendita** (`/guida-vendere-casa-da-privato`), ottimizzata per la conversione:
   - Hero con promessa chiara e pulsante "Acquista la guida" ben visibile (ripetuto lungo la pagina e fisso in basso su smartphone).
-  - Vantaggi dell'acquisto (perché vendere da privato con la guida: risparmio, sicurezza, metodo).
-  - Elenco brevissimo dei temi trattati (le tappe della guida, una riga ciascuna).
-  - Chi è l'autore, testimonianze (solo se reali), domande frequenti, prezzo e garanzie (pagamento sicuro Stripe, accesso immediato).
-  - Il pulsante porta direttamente a Stripe Checkout senza passare dal login (flusso della Fase 7).
-- [ ] Contenuti con dati reali (tappe, pagine, ecc.); dati come utenti o valutazioni solo se veri.
-- [ ] SEO e condivisione: titolo, descrizione e immagine di anteprima per ogni landing; sitemap.
-- [ ] Landing pronte a spostarsi sul dominio principale: per ora vivono su `app.guidocontesini.it` (il dominio principale ospita il sito WordPress, da non toccare), ma URL canonici, sitemap, link di ritorno da Stripe e link verso l'area riservata usano due variabili d'ambiente separate (indirizzo delle landing e indirizzo dell'app) invece di indirizzi scritti nel codice.
-- [ ] **Tag Versione:** `v0.8.0`.
+  - Vantaggi dell'acquisto (niente sorprese, prezzo giusto, metodo, incasso netto).
+  - Elenco brevissimo dei temi trattati (le 7 tappe della guida, una riga ciascuna).
+  - Chi è l'autore, domande frequenti, prezzo e garanzie (pagamento sicuro Stripe, accesso immediato). Testimonianze non inserite: non ce ne sono ancora di reali.
+  - [ ] Il pulsante porta direttamente a Stripe Checkout senza passare dal login (flusso della Fase 7): oggi apre il popup di acquisto, che con i pagamenti attivi chiede l'accesso.
+- [x] Contenuti con dati reali presi dalla guida v1.0 (7 tappe, 8 controlli, 18 pagine, presentazione dell'autore); nessun numero di utenti o valutazione.
+  - [ ] Aggiungere il prezzo quando definito (il blocco prezzo lo legge da `src/lib/prodotti.ts`) ed eventualmente una foto dell'autore e testimonianze vere.
+- [x] SEO e condivisione: titolo, descrizione, URL canonico e immagine di anteprima per ogni landing (generata dall'app se manca), `sitemap.xml` e `robots.txt`.
+- [x] Landing pronte a spostarsi sul dominio principale: per ora vivono su `app.guidocontesini.it` (il dominio principale ospita il sito WordPress, da non toccare), ma URL canonici, sitemap e link verso l'area riservata usano due variabili d'ambiente separate (`NEXT_PUBLIC_LANDING_URL`, facoltativa, e `NEXT_PUBLIC_APP_URL`) invece di indirizzi scritti nel codice. I link di ritorno da Stripe restano sull'app.
+- [ ] **Tag Versione:** `v0.8.0` (dopo le Fasi 5-7).
 
 ### Fase 9: Editor delle landing in admin (Target: v0.9.0)
-- [ ] Elenco landing in admin: crea, duplica, elimina, pubblica/ritira.
+- [ ] Elenco landing in admin: crea, duplica, elimina (pubblica/ritira e scelta della pagina iniziale già fatti in Fase 8).
 - [ ] Editor dei blocchi: aggiungi, modifica e riordina; anteprima prima della pubblicazione.
 - [ ] Caricamento immagini per le landing (bucket pubblico su Supabase Storage).
 - [ ] Misurazione delle conversioni (visite landing → checkout → acquisti), nel rispetto della privacy/cookie.
@@ -153,6 +155,7 @@
 
 ## ⚪ IN FUTURO: Landing sul dominio principale
 Quando il sito WordPress su `guidocontesini.it` verrà dismesso.
+- [ ] **Scelta del dominio per ogni landing:** permettere all'admin di decidere su quale dominio pubblicare ciascuna landing (es. `guidocontesini.it` o `app.guidocontesini.it`), con URL canonico, sitemap e smistamento nel proxy coerenti. Oggi tutte le landing stanno sul dominio dell'app (o su quello di `NEXT_PUBLIC_LANDING_URL`, uguale per tutte).
 - [ ] Aggiungere `guidocontesini.it` e `www` al progetto Vercel (record A su DNS Aruba) e aggiornare la variabile d'ambiente con l'indirizzo delle landing.
 - [ ] Smistamento per dominio nel proxy: sul dominio principale solo le landing, il resto (`/login`, `/admin`, area riservata) rimandato su `app.guidocontesini.it`.
 - [ ] Redirect 301 dalle vecchie pagine WordPress che hanno traffico o posizionamento.
