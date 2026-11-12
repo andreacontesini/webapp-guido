@@ -71,8 +71,8 @@
 - [x] Pagine di ritorno (logica): la conferma verifica il `session_id` con Stripe lato server (solo se la sessione è dell'utente collegato) e, se pagata, registra e sblocca subito senza aspettare il webhook; pagamenti differiti mostrano "Pagamento in elaborazione". Lo sblocco non ridà mai l'accesso a un acquisto rimborsato o contestato.
 - [x] Pagina "Pagamento annullato": pulsante "Riprova" che riapre il popup di acquisto (non mostrato se il prodotto è già attivo; mantiene la landing di origine per le statistiche).
 - [x] Area admin: colonna "Acquisti" nella tabella utenti (numero e stato dell'ultimo, popup con data, importo, stato e link al pagamento su Stripe); l'interruttore della guida resta per l'assegnazione manuale.
-- [ ] Test in Test Mode di pagamento annullato, rimborso e contestazione.
-- [ ] **Tag Versione:** `v0.6.0`.
+- [x] Test in Test Mode di pagamento annullato, rimborso e contestazione (aperta con la carta `4000 0000 0000 0259`, poi vinta con la prova `winning_evidence`: accesso revocato e ripristinato) (12/11/2026).
+- [x] **Tag Versione:** `v0.6.0`.
 
 ### Fase 7: Acquisto senza account (Target: v0.7.0)
 - [ ] Stripe Checkout apribile anche senza login: Stripe chiede l'email del cliente.
