@@ -90,15 +90,16 @@
 
 ### Fase 8: Profilo del cliente (Target: v0.10.0)
 > Pagina "Profilo" nell'area riservata: serve a Guido per conoscere il potenziale cliente, il cliente la compila quando vuole. Tutto facoltativo tranne i dati base del primo accesso, con un messaggio che spiega che completarla aiuta Guido. Design: `docs/superpowers/specs/2026-11-12-profilo-cliente-design.md`.
-- [ ] Migrazione: nuove colonne in `profiles` (residenza, contatto preferito e orario) e tabella `properties` (un immobile per cliente) con RLS: il cliente vede e modifica solo i propri dati, l'admin legge tutto.
-- [ ] Pagina `/dashboard/profilo` a sezioni, ciascuna con il proprio "Salva", e riquadro "Profilo completo al N%":
-  - [ ] **Dati personali**: nome, cognome, telefono, residenza, contatto preferito (telefono, WhatsApp, email) e orario. L'email non è modificabile.
-  - [ ] **La tua casa**: comune, provincia, zona e via (facoltativa, "serve solo a Guido per una valutazione più precisa"); tipologia, uso, m², locali, camere, bagni, piano e ascensore, anno, stato, classe energetica, pertinenze, riscaldamento, spese condominiali.
-  - [ ] **Situazione e documenti**: proprietà (cointestata, tutti d'accordo), eredità e successione, mutuo o ipoteca, occupazione (fine affitto), dubbi di conformità, bonus edilizi; documenti da spuntare (ce l'ho / non ce l'ho / non so), senza caricamento di file.
-  - [ ] **Obiettivi di vendita**: tempistiche, motivo, vendita legata a un altro acquisto, prezzo in mente, valutazione già fatta, portali o agenzie.
-  - [ ] **Note per Guido**.
-- [ ] Riquadro "Completa il tuo profilo" in dashboard finché il profilo non è al 100%.
-- [ ] Admin: colonna "Profilo" nella tabella utenti con popup di sola lettura e pulsante **"Scarica scheda cliente"** (PDF per Guido).
+- [x] Migrazione: nuove colonne in `profiles` (residenza, contatto preferito e orario) e tabella `properties` (un immobile per cliente) con RLS: il cliente vede e modifica solo i propri dati, l'admin legge tutto.
+- [x] Pagina `/dashboard/profilo` a sezioni, ciascuna con il proprio "Salva", e riquadro "Profilo completo al N%":
+  - [x] **Dati personali**: nome, cognome, telefono, residenza, contatto preferito (telefono, WhatsApp, email) e orario. L'email non è modificabile.
+  - [x] **La tua casa**: comune, provincia, zona e via (facoltativa, "serve solo a Guido per una valutazione più precisa"); tipologia, uso, m², locali, camere, bagni, piano e ascensore, anno, stato, classe energetica, pertinenze, riscaldamento, spese condominiali.
+  - [x] **Situazione e documenti**: proprietà (cointestata, tutti d'accordo), eredità e successione, mutuo o ipoteca, occupazione (fine affitto), dubbi di conformità, bonus edilizi; documenti da spuntare (ce l'ho / non ce l'ho / non so), senza caricamento di file.
+  - [x] **Obiettivi di vendita**: tempistiche, motivo, vendita legata a un altro acquisto, prezzo in mente, valutazione già fatta, portali o agenzie.
+  - [x] **Note per Guido**.
+- [x] Riquadro "Completa il tuo profilo" in dashboard finché il profilo non è al 100%.
+- [x] Admin: colonna "Profilo" nella tabella utenti con popup di sola lettura e pulsante **"Scarica scheda cliente"** (PDF per Guido).
+  - [ ] Prova online: compilazione da smartphone (pillole, domande condizionali, "Salvato"), popup e PDF in admin.
 - [ ] GDPR: scaricamento dei propri dati ed eliminazione dell'account (parte successiva).
 - [ ] **Tag Versione:** `v0.10.0`.
 
