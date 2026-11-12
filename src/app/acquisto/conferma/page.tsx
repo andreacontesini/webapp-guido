@@ -3,7 +3,6 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { CheckIcon, ClockIcon, LoaderCircleIcon, TriangleAlertIcon } from "lucide-react";
 
-import { entraDopoAcquisto } from "@/app/acquisto/azioni";
 import { EsitoAcquisto } from "@/components/acquisto/esito-acquisto";
 import { Button } from "@/components/ui/button";
 import { verificaSessioneOspite, type EsitoSessioneOspite } from "@/lib/acquisti";
@@ -104,7 +103,9 @@ async function Esito({ searchParams }: Pick<PageProps<"/acquisto/conferma">, "se
       titolo="Acquisto completato!"
       pulsantePrincipale={
         verifica.accessoImmediato ? (
-          <form action={entraDopoAcquisto.bind(null, sessionId as string)}>
+          // Modulo HTML classico: il browser segue davvero il redirect al link di accesso.
+          <form method="post" action="/acquisto/entra">
+            <input type="hidden" name="session_id" value={sessionId as string} />
             <Button type="submit" size="lg" className="w-full sm:w-auto">
               Entra e leggi la guida
             </Button>
