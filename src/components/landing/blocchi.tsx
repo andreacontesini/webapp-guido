@@ -296,7 +296,7 @@ function Immagine({ blocco }: { blocco: BloccoImmagine }) {
   return (
     <Sezione id={blocco.id}>
       <figure className="mx-auto max-w-4xl space-y-3">
-        {/* Immagini da indirizzi esterni (Storage pubblico, Fase 9): niente next/image. */}
+        {/* Immagini da indirizzi esterni (Storage pubblico, Fase 11): niente next/image. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={blocco.url}

@@ -22,7 +22,7 @@ export const ICONE_PUNTI = [
 export type IconaPunto = (typeof ICONE_PUNTI)[number];
 
 type Base = {
-  /** Identificativo stabile del blocco (serve all'editor della Fase 9). */
+  /** Identificativo stabile del blocco (serve all'editor della Fase 11). */
   id?: string;
 };
 

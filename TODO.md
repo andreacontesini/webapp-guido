@@ -60,7 +60,7 @@
 - [x] Endpoint webhook di test creato nel pannello Stripe (`/api/webhooks/stripe`, eventi `checkout.session.completed` e `checkout.session.async_payment_succeeded`) e `STRIPE_WEBHOOK_SECRET` su Vercel.
 - [x] Tabella `purchases` (acquisti: utente, prodotto, sessione Stripe, importo, stato) con RLS: l'utente vede solo i propri acquisti.
 - [x] Popup "Acquista la guida": prezzo reale e pulsante che apre Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica. *Provato online in Test Mode.*
-- [x] Aspetto della pagina di pagamento Stripe vicino allo stile dell'app (logo, colori, font e angoli dalle impostazioni di branding dell'account Stripe). *Colori impostati in sandbox; logo, icona, nome pubblico ed email di assistenza da completare nell'account live (Fase 11).*
+- [x] Aspetto della pagina di pagamento Stripe vicino allo stile dell'app (logo, colori, font e angoli dalle impostazioni di branding dell'account Stripe). *Colori impostati in sandbox; logo, icona, nome pubblico ed email di assistenza da completare nell'account live (Fase 12).*
 - [x] Webhook Stripe (`/api/webhooks/stripe`): a pagamento confermato registra l'acquisto e sblocca `guide_access` (mai lato client), gestendo gli eventi duplicati. *Provato in locale con eventi firmati: firma non valida, pagamento, duplicato, non pagato.*
 - [x] ~~Test di un acquisto completo in locale (carte di prova, webhook con Stripe CLI): popup con pulsante attivo, pagina Stripe, ritorno, sblocco, email di conferma, riga in `purchases`.~~ *Superato dal test online: la Stripe CLI non si installa (Command Line Tools non compatibili con macOS 26).*
 - [x] Stesso test online su `app.guidocontesini.it` in Test Mode: popup a 89 €, pagina Stripe, ritorno alla conferma, webhook, riga in `purchases`, sblocco ed email di conferma (12/11/2026).
@@ -86,44 +86,10 @@
 - [ ] Test: acquisto senza account, con email già registrata, pagamento annullato.
 - [ ] **Tag Versione:** `v0.7.0`.
 
-### Fase 8: Landing di vendita della guida (Target: v0.8.0)
-- [x] Tabella `landing_pages` (indirizzo/slug, titolo, testi SEO, blocchi di contenuto, stato bozza/pubblicata, pagina iniziale) con RLS: chiunque legge le landing pubblicate, solo l'admin le bozze e le modifiche.
-- [x] Blocchi predefiniti con lo stile dell'app (`src/lib/landing/blocchi.ts`, `src/components/landing/`): hero, punti chiave, contenuti della guida (tappe), testo libero, immagine, testimonianze, chi è l'autore, domande frequenti, prezzo con pulsante "Acquista", invito all'acquisto o all'accesso.
-- [x] Pagine pubbliche delle landing (`/<slug>`, in cache e aggiornate subito dalle azioni admin) e scelta della landing da usare come pagina iniziale in `/admin/landing` (insieme a pubblica/ritira). Senza landing scelta resta la pagina iniziale predefinita.
-  - [ ] Scegliere in `/admin/landing` se usare la prima landing come pagina iniziale.
-- [x] **Prima landing di vendita** (`/guida-vendere-casa-da-privato`), ottimizzata per la conversione:
-  - Hero con promessa chiara e pulsante "Acquista la guida" ben visibile (ripetuto lungo la pagina e fisso in basso su smartphone).
-  - Vantaggi dell'acquisto (niente sorprese, prezzo giusto, metodo, incasso netto).
-  - Elenco brevissimo dei temi trattati (le 7 tappe della guida, una riga ciascuna).
-  - Chi è l'autore, domande frequenti, prezzo e garanzie (pagamento sicuro Stripe, accesso immediato). Testimonianze non inserite: non ce ne sono ancora di reali.
-  - [x] Il pulsante porta direttamente a Stripe Checkout senza passare dal login (flusso della Fase 7).
-- [x] Contenuti con dati reali presi dalla guida v1.0 (7 tappe, 8 controlli, 18 pagine, presentazione dell'autore); nessun numero di utenti o valutazione.
-  - [ ] Aggiungere il prezzo quando definito (il blocco prezzo lo legge da `src/lib/prodotti.ts`) ed eventualmente una foto dell'autore e testimonianze vere.
-- [x] SEO e condivisione: titolo, descrizione, URL canonico e immagine di anteprima per ogni landing (generata dall'app se manca), `sitemap.xml` e `robots.txt`.
-- [x] Landing pronte a spostarsi sul dominio principale: per ora vivono su `app.guidocontesini.it` (il dominio principale ospita il sito WordPress, da non toccare), ma URL canonici, sitemap e link verso l'area riservata usano due variabili d'ambiente separate (`NEXT_PUBLIC_LANDING_URL`, facoltativa, e `NEXT_PUBLIC_APP_URL`) invece di indirizzi scritti nel codice. I link di ritorno da Stripe restano sull'app.
-- [ ] **Tag Versione:** `v0.8.0` (dopo le Fasi 5-7).
+> 📌 **Ordine di lavoro:** dopo la Fase 7 vengono la Fase 8 (Profilo) e la Fase 9 (Notifiche admin). Le Fasi 10 e 11 (landing) sono già sviluppate: restano solo le voci aperte e i tag `v0.8.0` / `v0.9.0`, da creare dopo la chiusura della Fase 7.
 
-### Fase 9: Editor delle landing in admin (Target: v0.9.0)
-- [x] Elenco landing in admin (`/admin/landing`): crea (nasce in bozza con apertura e prezzo), modifica, anteprima, duplica, elimina con conferma, pubblica/ritira, pagina iniziale.
-- [x] Editor dei blocchi (`/admin/landing/modifica?id=…`): impostazioni (nome, indirizzo, titolo e descrizione SEO, immagine di anteprima), aggiungi/modifica/duplica/elimina/riordina i blocchi, avviso per i blocchi incompleti (salvati ma nascosti nella pagina) e per le modifiche non salvate.
-- [x] Anteprima prima della pubblicazione (`/anteprima/<id>`, solo admin, non indicizzata): mostra l'ultima versione salvata anche delle bozze, senza contare visite.
-- [x] Caricamento immagini per le landing: bucket pubblico `landing` su Supabase Storage (max 10 MB, JPG/PNG/WebP/AVIF/GIF), caricamento diretto dal browser con URL firmato, oppure indirizzo incollato.
-  - [ ] Pulizia delle immagini non più usate (oggi restano nel bucket anche dopo l'eliminazione di una landing).
-- [x] Misurazione delle conversioni (visite landing → checkout avviati → acquisti), anonima e senza cookie: tabella `landing_events` (solo landing, tipo e data), visite inviate dalla pagina, checkout dal popup di acquisto, acquisti dal webhook Stripe. Statistiche degli ultimi 30 giorni nell'elenco admin.
-  - [ ] Verificare le statistiche di checkout e acquisto con Stripe attivo (Fase 5) e con l'acquisto senza account (Fase 7, il checkout dovrà portarsi dietro la landing di origine).
-- [x] **Nuovo blocco Video**:
-  - Sorgente riconosciuta dall'indirizzo: Bunny Stream (link di embed o di riproduzione), YouTube (dominio senza cookie), Vimeo, file MP4/WebM.
-  - Impostazioni: titolo e testo, copertina, formato (16:9, 9:16, 1:1), avvio automatico (sempre senza audio), audio disattivato, ripetizione, controlli, sottotitoli, secondo di partenza, pulsante "Acquista" sotto il video.
-  - Player per smartphone: copertina leggera al posto del player, caricamento al tocco o quando il video entra nello schermo, riproduzione nella pagina (`playsinline`), pulsante play da 80 px, spazio riservato dal formato (nessun salto del layout); streaming adattivo dai player di Bunny/YouTube/Vimeo.
-  - [ ] Nascondere i controlli funziona con YouTube, Vimeo e file diretti; con Bunny dipende dalle impostazioni del player nella libreria Bunny.
-- [x] **Nuovo blocco Galleria immagini**:
-  - Griglia (2-4 colonne, una su smartphone) con ingrandimento a schermo intero, frecce e tasti freccia.
-  - Carosello a scorrimento nativo: trascinamento su smartphone, frecce su desktop, indicatori di posizione, scorrimento automatico facoltativo (si ferma al tocco, al passaggio del mouse e con "riduci animazioni").
-  - Testo alternativo e didascalia per ogni immagine; caricamento differito.
-- [ ] **Tag Versione:** `v0.9.0` (dopo le Fasi 5-7).
-
-### Fase 10: Profilo del cliente (Target: v0.10.0)
-> Pagina "Profilo" nell'area riservata, dove il cliente completa e aggiorna i propri dati. Tutto facoltativo tranne i dati base del primo accesso. I dati sull'immobile servono a Guido per capire la situazione e proporre una consulenza: vanno chiesti con una spiegazione chiara del perché, e citati nell'informativa privacy (da verificare con il cliente, Fase 11).
+### Fase 8: Profilo del cliente (Target: v0.10.0)
+> Pagina "Profilo" nell'area riservata, dove il cliente completa e aggiorna i propri dati. Tutto facoltativo tranne i dati base del primo accesso. I dati sull'immobile servono a Guido per capire la situazione e proporre una consulenza: vanno chiesti con una spiegazione chiara del perché, e citati nell'informativa privacy (da verificare con il cliente, Fase 12).
 - [ ] **Dati personali e contatto**: nome, cognome, telefono, comune/provincia di residenza, modalità di contatto preferita (telefono, WhatsApp, email) e fascia oraria in cui essere ricontattato.
 - [ ] **Account**: cambio email (con conferma sul nuovo indirizzo), consenso marketing modificabile, data di accettazione privacy visibile, richiesta di eliminazione dell'account e scaricamento dei propri dati (GDPR).
 - [ ] **L'immobile da vendere** (scheda singola, in futuro più immobili):
@@ -143,12 +109,70 @@
   - Prezzo che si ha in mente e se è già stata fatta una valutazione (da chi).
   - Immobile già pubblicato su portali o già affidato ad agenzie in passato (incarico ancora in corso?).
 - [ ] **A che punto sei**: tappa della guida in cui si trova il cliente (dalle 7 tappe), con indicazione di completamento del profilo (es. "Profilo completo al 60%").
-- [ ] **Richiesta di contatto a Guido**: casella "Vorrei essere ricontattato per una consulenza" con note libere; avviso email a Guido quando un cliente la attiva.
+- [ ] **Richiesta di contatto a Guido**: casella "Vorrei essere ricontattato per una consulenza" con note libere; avviso agli admin quando un cliente la attiva (vedi Fase 9).
 - [ ] **Area admin**: scheda del cliente con tutti i dati del profilo e dell'immobile, filtri (es. comune, tempistiche, richiesta di consulenza) ed esportazione CSV.
 - [ ] Tabelle Supabase (`properties` o campi aggiuntivi su `profiles`) con RLS: il cliente vede e modifica solo i propri dati, l'admin legge tutto.
 - [ ] **Tag Versione:** `v0.10.0`.
 
-### Fase 11: Lancio della Guida (Target: v1.0.0)
+### Fase 9: Notifiche agli admin (Target: v0.11.0)
+> Gli admin ricevono via email (Resend) gli eventi importanti dell'app. Ogni notifica ha il "Rispondi a" impostato sull'email del cliente, così si può rispondere direttamente.
+- [ ] **Eventi notificati** (ognuno attivabile o disattivabile):
+  - Nuovo account: registrazione autonoma, account creato da un acquisto senza account, account creato da un admin.
+  - Primo accesso completato (dati base e privacy accettata).
+  - Acquisto completato: prodotto, importo, cliente, landing di provenienza.
+  - Pagamento in elaborazione o non andato a buon fine (metodi differiti).
+  - Rimborso emesso e accesso revocato.
+  - Contestazione aperta (urgente: va gestita su Stripe entro la scadenza indicata) e contestazione chiusa (vinta o persa).
+  - Richiesta di ricontatto per una consulenza dal profilo (Fase 8) e profilo/immobile compilato o aggiornato.
+  - Richiesta di eliminazione dell'account o di scaricamento dei dati (GDPR).
+  - Problemi tecnici: email al cliente non partita, errore del webhook Stripe.
+- [ ] **Riepilogo periodico** facoltativo (giornaliero o settimanale): nuovi account, acquisti e incassi, visite/checkout/acquisti per landing.
+- [ ] **Sezione "Notifiche" in admin**:
+  - Elenco dei destinatari (email anche esterne all'app, es. commercialista solo per gli acquisti), con aggiunta, rimozione e pausa.
+  - Per ogni destinatario, scelta degli eventi da ricevere e della modalità (immediata o solo nel riepilogo).
+  - Pulsante "Invia notifica di prova".
+  - Storico degli invii degli ultimi 30 giorni (evento, destinatari, esito).
+- [ ] Tabelle Supabase `admin_notification_recipients` e `admin_notification_log` con RLS solo admin; invio centralizzato in `src/lib/notifiche/` chiamato da webhook, registrazione, primo accesso e profilo, senza bloccare l'operazione principale se l'email non parte.
+- [ ] Email di notifica con React Email nello stile delle altre, brevi e con il pulsante per aprire la scheda del cliente in admin.
+- [ ] **Tag Versione:** `v0.11.0`.
+
+### Fase 10: Landing di vendita della guida (Target: v0.8.0)
+- [x] Tabella `landing_pages` (indirizzo/slug, titolo, testi SEO, blocchi di contenuto, stato bozza/pubblicata, pagina iniziale) con RLS: chiunque legge le landing pubblicate, solo l'admin le bozze e le modifiche.
+- [x] Blocchi predefiniti con lo stile dell'app (`src/lib/landing/blocchi.ts`, `src/components/landing/`): hero, punti chiave, contenuti della guida (tappe), testo libero, immagine, testimonianze, chi è l'autore, domande frequenti, prezzo con pulsante "Acquista", invito all'acquisto o all'accesso.
+- [x] Pagine pubbliche delle landing (`/<slug>`, in cache e aggiornate subito dalle azioni admin) e scelta della landing da usare come pagina iniziale in `/admin/landing` (insieme a pubblica/ritira). Senza landing scelta resta la pagina iniziale predefinita.
+  - [ ] Scegliere in `/admin/landing` se usare la prima landing come pagina iniziale.
+- [x] **Prima landing di vendita** (`/guida-vendere-casa-da-privato`), ottimizzata per la conversione:
+  - Hero con promessa chiara e pulsante "Acquista la guida" ben visibile (ripetuto lungo la pagina e fisso in basso su smartphone).
+  - Vantaggi dell'acquisto (niente sorprese, prezzo giusto, metodo, incasso netto).
+  - Elenco brevissimo dei temi trattati (le 7 tappe della guida, una riga ciascuna).
+  - Chi è l'autore, domande frequenti, prezzo e garanzie (pagamento sicuro Stripe, accesso immediato). Testimonianze non inserite: non ce ne sono ancora di reali.
+  - [x] Il pulsante porta direttamente a Stripe Checkout senza passare dal login (flusso della Fase 7).
+- [x] Contenuti con dati reali presi dalla guida v1.0 (7 tappe, 8 controlli, 18 pagine, presentazione dell'autore); nessun numero di utenti o valutazione.
+  - [ ] Aggiungere il prezzo quando definito (il blocco prezzo lo legge da `src/lib/prodotti.ts`) ed eventualmente una foto dell'autore e testimonianze vere.
+- [x] SEO e condivisione: titolo, descrizione, URL canonico e immagine di anteprima per ogni landing (generata dall'app se manca), `sitemap.xml` e `robots.txt`.
+- [x] Landing pronte a spostarsi sul dominio principale: per ora vivono su `app.guidocontesini.it` (il dominio principale ospita il sito WordPress, da non toccare), ma URL canonici, sitemap e link verso l'area riservata usano due variabili d'ambiente separate (`NEXT_PUBLIC_LANDING_URL`, facoltativa, e `NEXT_PUBLIC_APP_URL`) invece di indirizzi scritti nel codice. I link di ritorno da Stripe restano sull'app.
+- [ ] **Tag Versione:** `v0.8.0` (dopo le Fasi 5-7).
+
+### Fase 11: Editor delle landing in admin (Target: v0.9.0)
+- [x] Elenco landing in admin (`/admin/landing`): crea (nasce in bozza con apertura e prezzo), modifica, anteprima, duplica, elimina con conferma, pubblica/ritira, pagina iniziale.
+- [x] Editor dei blocchi (`/admin/landing/modifica?id=…`): impostazioni (nome, indirizzo, titolo e descrizione SEO, immagine di anteprima), aggiungi/modifica/duplica/elimina/riordina i blocchi, avviso per i blocchi incompleti (salvati ma nascosti nella pagina) e per le modifiche non salvate.
+- [x] Anteprima prima della pubblicazione (`/anteprima/<id>`, solo admin, non indicizzata): mostra l'ultima versione salvata anche delle bozze, senza contare visite.
+- [x] Caricamento immagini per le landing: bucket pubblico `landing` su Supabase Storage (max 10 MB, JPG/PNG/WebP/AVIF/GIF), caricamento diretto dal browser con URL firmato, oppure indirizzo incollato.
+  - [ ] Pulizia delle immagini non più usate (oggi restano nel bucket anche dopo l'eliminazione di una landing).
+- [x] Misurazione delle conversioni (visite landing → checkout avviati → acquisti), anonima e senza cookie: tabella `landing_events` (solo landing, tipo e data), visite inviate dalla pagina, checkout dal popup di acquisto, acquisti dal webhook Stripe. Statistiche degli ultimi 30 giorni nell'elenco admin.
+  - [ ] Verificare le statistiche di checkout e acquisto con Stripe attivo (Fase 5) e con l'acquisto senza account (Fase 7, il checkout dovrà portarsi dietro la landing di origine).
+- [x] **Nuovo blocco Video**:
+  - Sorgente riconosciuta dall'indirizzo: Bunny Stream (link di embed o di riproduzione), YouTube (dominio senza cookie), Vimeo, file MP4/WebM.
+  - Impostazioni: titolo e testo, copertina, formato (16:9, 9:16, 1:1), avvio automatico (sempre senza audio), audio disattivato, ripetizione, controlli, sottotitoli, secondo di partenza, pulsante "Acquista" sotto il video.
+  - Player per smartphone: copertina leggera al posto del player, caricamento al tocco o quando il video entra nello schermo, riproduzione nella pagina (`playsinline`), pulsante play da 80 px, spazio riservato dal formato (nessun salto del layout); streaming adattivo dai player di Bunny/YouTube/Vimeo.
+  - [ ] Nascondere i controlli funziona con YouTube, Vimeo e file diretti; con Bunny dipende dalle impostazioni del player nella libreria Bunny.
+- [x] **Nuovo blocco Galleria immagini**:
+  - Griglia (2-4 colonne, una su smartphone) con ingrandimento a schermo intero, frecce e tasti freccia.
+  - Carosello a scorrimento nativo: trascinamento su smartphone, frecce su desktop, indicatori di posizione, scorrimento automatico facoltativo (si ferma al tocco, al passaggio del mouse e con "riduci animazioni").
+  - Testo alternativo e didascalia per ogni immagine; caricamento differito.
+- [ ] **Tag Versione:** `v0.9.0` (dopo le Fasi 5-7).
+
+### Fase 12: Lancio della Guida (Target: v1.0.0)
 - [ ] Aspetti legali e fiscali da verificare con il cliente/commercialista: condizioni di vendita, rinuncia al recesso per contenuti digitali (casella nel checkout), emissione della fattura (la ricevuta Stripe non è una fattura), privacy e cookie.
 - [ ] Test end-to-end: Magic Link, permessi PDF, redirect, acquisto, rimborso, acquisto da landing senza account.
 - [ ] Passaggio di Stripe alle chiavi live e webhook di produzione.
@@ -161,30 +185,30 @@
 ## 🔵 VERSIONE 2.x (Focus: Videocorso)
 **Sviluppo su un branch separato (`videocorso`), unito a `main` solo a corso completo e testato.** Fino ad allora in app il videocorso resta "In arrivo".
 
-### Fase 12: Database Videocorso
+### Fase 13: Database Videocorso
 - [ ] Estendere DB: tabelle `modules`, `lessons`, `attachments`; prodotto videocorso in `purchases`.
 - [ ] Configurare RLS per i nuovi contenuti (accesso legato allo stato di acquisto).
 
-### Fase 13: Admin Videocorso - Moduli e video
+### Fase 14: Admin Videocorso - Moduli e video
 - [ ] Integrazione Bunny Stream API nel back office.
 - [ ] Interfaccia per creazione moduli e lezioni.
 - [ ] "Direct Upload" dei video dall'app verso Bunny.net.
 
-### Fase 14: Admin Videocorso - Allegati
+### Fase 15: Admin Videocorso - Allegati
 - [ ] Upload di file allegati (modelli/documenti) associati alle lezioni.
 
-### Fase 15: Area Cliente - Sblocco Video
+### Fase 16: Area Cliente - Sblocco Video
 - [ ] Rimuovere "Coming Soon" e attivare la lista moduli/lezioni.
 - [ ] Lezione 1: preview gratuita accessibile a chi possiede solo la guida.
 - [ ] Player video integrato (Bunny Stream) con logiche di protezione.
 - [ ] Area download documenti per le singole lezioni.
 
-### Fase 16: Pagamenti Videocorso & Upgrade
+### Fase 17: Pagamenti Videocorso & Upgrade
 - [ ] Acquisto del videocorso (stesso flusso Stripe della guida).
 - [ ] Banner e flussi di upgrade (es. da "Solo Guida" a "Videocorso Completo") interni all'app.
 - [ ] Blocchi landing dedicati al videocorso.
 
-### Fase 17: Lancio Videocorso (Target: v2.0.0)
+### Fase 18: Lancio Videocorso (Target: v2.0.0)
 - [ ] Configurazione PWA (manifest, icone).
 - [ ] Test end-to-end del videocorso e dei pagamenti.
 - [ ] Merge del branch `videocorso` in `main` e rilascio `v2.0.0`.

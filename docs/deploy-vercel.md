@@ -29,7 +29,7 @@ Sono le stesse di `.env.local` (l'elenco completo è in `.env.example`). Vanno i
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | dal progetto Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY` | solo server: non deve mai avere il prefisso `NEXT_PUBLIC_` |
 | `RESEND_API_KEY`, `EMAIL_FROM` | da Resend |
-| `STRIPE_*` | per ora le chiavi **di test**; le live si inseriscono al lancio (Fase 11) |
+| `STRIPE_*` | per ora le chiavi **di test**; le live si inseriscono al lancio (Fase 12) |
 | `BUNNY_*` | da Bunny.net |
 
 Note:
@@ -50,5 +50,5 @@ Note:
 
 - **Deploy automatici:** ogni push su `main` va in produzione; ogni altro branch o pull request genera un'anteprima con un URL dedicato.
 - **Supabase (dalla Fase 2):** in *Authentication → URL Configuration* imposta *Site URL* a `https://app.guidocontesini.it` e aggiungi gli URL di redirect, altrimenti i Magic Link riportano a `localhost`.
-- **Stripe (Fase 9):** il webhook di produzione punterà a `https://app.guidocontesini.it/api/webhooks/stripe`.
+- **Stripe (Fase 5):** il webhook di produzione punta a `https://app.guidocontesini.it/api/webhooks/stripe`.
 - **Resend:** per inviare da `@guidocontesini.it` va verificato il dominio su Resend (record DNS SPF/DKIM).
