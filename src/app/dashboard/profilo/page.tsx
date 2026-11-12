@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 
+import { DatiAccount } from "@/app/dashboard/profilo/dati-account";
 import { RiepilogoCompletamento } from "@/app/dashboard/profilo/riepilogo-completamento";
 import { SezioneProfilo } from "@/app/dashboard/profilo/sezione-profilo";
 import { sezioni } from "@/lib/profilo/campi";
@@ -40,6 +41,7 @@ async function Contenuto() {
           completa={completamento.sezioni.find((s) => s.id === sezione.id)?.completa ?? false}
         />
       ))}
+      <DatiAccount admin={profilo.role === "admin"} />
     </>
   );
 }

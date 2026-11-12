@@ -1,10 +1,18 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
+import { createElement } from "react";
 
+import EmailAccountEliminato from "@/emails/account-eliminato";
+
+import { PERCORSO_ACCESSO } from "@/lib/auth/percorsi";
 import { leggiProfiloCorrente } from "@/lib/auth/utente";
+import { inviaEmail } from "@/lib/email/invia";
+import { isConfermaEliminazione, PAROLA_CONFERMA } from "@/lib/profilo/account";
 import { sezionePerId, type IdSezione } from "@/lib/profilo/campi";
 import { validaSezione } from "@/lib/profilo/validazione";
+import { creaClientAdmin } from "@/lib/supabase/admin";
 import { creaClientServer } from "@/lib/supabase/server";
 import type { Database, Profilo } from "@/lib/supabase/tipi";
 
@@ -46,4 +54,45 @@ export async function salvaSezione(idSezione: IdSezione, _stato: StatoSezione, f
   revalidatePath("/dashboard/profilo");
   revalidatePath("/dashboard");
   return { errori: {}, salvatoIl: Date.now() };
+}
+
+export type StatoEliminazione = { errore?: string };
+
+/**
+ * Eliminazione dell'account da parte del cliente (GDPR art. 17), dopo aver
+ * scritto ELIMINA. Si cancellano account, profilo e immobile (cascade); gli
+ * acquisti restano senza collegamento all'utente per gli obblighi fiscali.
+ * Gli admin non si eliminano da qui, per non lasciare l'app senza amministratori.
+ */
+export async function eliminaAccount(_stato: StatoEliminazione, formData: FormData): Promise<StatoEliminazione> {
+  if (!isConfermaEliminazione(formData.get("conferma"))) {
+    return { errore: `Per confermare scrivi ${PAROLA_CONFERMA}.` };
+  }
+
+  const profilo = await leggiProfiloCorrente();
+  if (profilo.role === "admin") {
+    return { errore: "Gli account amministratore non si eliminano da qui: chiedi a un altro admin." };
+  }
+
+  const { error } = await creaClientAdmin().auth.admin.deleteUser(profilo.id);
+  if (error) {
+    console.error("Eliminazione dell'account da parte del cliente non riuscita", error);
+    return { errore: "Non siamo riusciti a eliminare l'account. Riprova o scrivici." };
+  }
+
+  try {
+    await inviaEmail({
+      a: profilo.email,
+      oggetto: "Il tuo account è stato eliminato",
+      email: createElement(EmailAccountEliminato, { nome: profilo.first_name }),
+    });
+  } catch (errore) {
+    // L'account è già eliminato: l'email di conferma non deve bloccare l'uscita.
+    console.error("Email di conferma dell'eliminazione non inviata", errore);
+  }
+
+  // Toglie i cookie di una sessione che non esiste più.
+  const supabase = await creaClientServer();
+  await supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
+  redirect(`${PERCORSO_ACCESSO}?motivo=account-eliminato`);
 }

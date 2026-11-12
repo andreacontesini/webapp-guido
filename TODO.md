@@ -99,9 +99,9 @@
   - [x] **Note per Guido**.
 - [x] Riquadro "Completa il tuo profilo" in dashboard finché il profilo non è al 100%.
 - [x] Admin: colonna "Profilo" nella tabella utenti con popup di sola lettura e pulsante **"Scarica scheda cliente"** (PDF per Guido).
-  - [ ] Prova online: compilazione da smartphone (pillole, domande condizionali, "Salvato"), popup e PDF in admin.
-- [ ] GDPR: scaricamento dei propri dati ed eliminazione dell'account (parte successiva).
-- [ ] **Tag Versione:** `v0.10.0`.
+  - [x] Prova online: compilazione da smartphone (pillole, domande condizionali, "Salvato"), popup e PDF in admin.
+- [x] GDPR: "Scarica i tuoi dati" (file JSON con account, immobile e acquisti) ed "Elimina account" con conferma scrivendo ELIMINA: cancella account, profilo e immobile, conserva gli acquisti senza collegamento all'utente (obblighi fiscali), email di conferma; gli admin non si eliminano da qui. *Provato in locale con utenti di prova.*
+- [x] **Tag Versione:** `v0.10.0`.
 
 ### Fase 9: Notifiche agli admin (Target: v0.11.0)
 > Gli admin ricevono via email (Resend) gli eventi importanti dell'app. Ogni notifica ha il "Rispondi a" impostato sull'email del cliente, così si può rispondere direttamente.

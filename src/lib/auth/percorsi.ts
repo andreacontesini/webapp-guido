@@ -32,6 +32,8 @@ export const motiviUscita = {
   "link-non-valido":
     "Il link di accesso non è valido o è scaduto. Richiedine uno nuovo.",
   errore: "Si è verificato un problema con il tuo account. Riprova ad accedere.",
+  "account-eliminato":
+    "Il tuo account è stato eliminato. Ti abbiamo inviato un'email di conferma.",
 } as const;
 
 export type MotivoUscita = keyof typeof motiviUscita;
