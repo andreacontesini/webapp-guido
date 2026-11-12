@@ -6,7 +6,8 @@ import type Stripe from "stripe";
 import EmailConfermaAcquisto from "@/emails/conferma-acquisto";
 import { inviaEmail } from "@/lib/email/invia";
 import { registraEventoLanding } from "@/lib/landing/eventi";
-import { isCodiceProdotto } from "@/lib/prodotti";
+import { generaLinkAccesso } from "@/lib/auth/link-accesso";
+import { isCodiceProdotto, prodotti } from "@/lib/prodotti";
 import { stripe } from "@/lib/stripe";
 import { creaClientAdmin } from "@/lib/supabase/admin";
 
@@ -26,9 +27,17 @@ export async function registraPagamento(sessione: Stripe.Checkout.Session) {
   if (!isCodiceProdotto(prodotto)) {
     throw new Error(`Prodotto non riconosciuto nella sessione ${sessione.id}`);
   }
-  const userId = sessione.metadata?.user_id ?? sessione.client_reference_id ?? null;
-  const email = sessione.customer_details?.email ?? sessione.customer_email;
-  if (!email) throw new Error(`Email mancante nella sessione ${sessione.id}`);
+  const emailStripe = sessione.customer_details?.email ?? sessione.customer_email;
+  if (!emailStripe) throw new Error(`Email mancante nella sessione ${sessione.id}`);
+  const email = emailStripe.trim().toLowerCase();
+
+  // Acquisto senza account (Fase 7): l'account si trova o si crea dall'email
+  // inserita su Stripe, prima di registrare l'acquisto.
+  const ospite = isSessioneOspite(sessione);
+  const userId =
+    sessione.metadata?.user_id ??
+    sessione.client_reference_id ??
+    (ospite ? await trovaOCreaAccount(email, sessione.customer_details?.name) : null);
 
   const client = creaClientAdmin();
   const pagatoIl = new Date().toISOString();
@@ -63,7 +72,6 @@ export async function registraPagamento(sessione: Stripe.Checkout.Session) {
   if (nuovo && landingId) await registraEventoLanding(landingId, "acquisto");
 
   if (!userId) {
-    // Acquisto senza account: creazione dell'account con la Fase 7.
     console.warn(`Webhook Stripe: acquisto ${sessione.id} senza utente, registrato senza sblocco`);
     return;
   }
@@ -82,6 +90,8 @@ export async function registraPagamento(sessione: Stripe.Checkout.Session) {
     .maybeSingle();
 
   try {
+    // Chi ha acquistato senza account riceve un link che lo fa entrare subito.
+    const urlAccesso = ospite ? await generaLinkAccesso(email, prodotti[prodotto].href) : undefined;
     await inviaEmail({
       a: email,
       oggetto: "Grazie per l'acquisto: la tua guida è pronta",
@@ -89,6 +99,7 @@ export async function registraPagamento(sessione: Stripe.Checkout.Session) {
         prodotto,
         importoCentesimi: importo,
         pagatoIl,
+        urlAccesso,
         nome: profilo?.first_name ?? null,
       }),
       chiaveIdempotenza: `conferma-acquisto-${sessione.id}`,
@@ -200,4 +211,115 @@ export async function verificaSessioneCheckout(
     .eq("stripe_checkout_session_id", sessione.id)
     .maybeSingle();
   return acquisto?.status === "pagato" ? "pagato" : "non-verificata";
+}
+
+/** Sessione di Checkout aperta senza login (dalle landing o senza sessione). */
+export function isSessioneOspite(sessione: Stripe.Checkout.Session) {
+  return sessione.metadata?.ospite === "1";
+}
+
+/**
+ * Account per l'email inserita su Stripe: quello esistente se c'è, altrimenti
+ * uno nuovo già confermato (il profilo nasce dal trigger del database).
+ * Privacy e dati personali si completano al primo accesso (/benvenuto).
+ * Webhook e pagina di conferma possono arrivare insieme: se l'altro ha appena
+ * creato l'account, lo si rilegge.
+ */
+async function trovaOCreaAccount(email: string, nomeCompleto?: string | null) {
+  const client = creaClientAdmin();
+  const cerca = async () => {
+    const { data, error } = await client
+      .from("profiles")
+      .select("id")
+      .eq("email", email)
+      .maybeSingle();
+    if (error) throw error;
+    return data?.id ?? null;
+  };
+
+  const esistente = await cerca();
+  if (esistente) return esistente;
+
+  const { data: creazione, error } = await client.auth.admin.createUser({
+    email,
+    email_confirm: true,
+  });
+  if (error || !creazione.user) {
+    // Con due creazioni simultanee Supabase può rispondere "email_exists" o un
+    // generico errore del database: in entrambi i casi l'account c'è già.
+    const id = await cerca();
+    if (id) return id;
+    throw error ?? new Error(`Creazione dell'account per l'acquisto non riuscita`);
+  }
+
+  // Nome e cognome da Stripe (se presenti) per precompilare il primo accesso.
+  const [nome, ...cognome] = (nomeCompleto ?? "").trim().split(/\s+/);
+  if (nome) {
+    await client
+      .from("profiles")
+      .update({ first_name: nome.slice(0, 80), last_name: cognome.join(" ").slice(0, 80) || null })
+      .eq("id", creazione.user.id);
+  }
+  return creazione.user.id;
+}
+
+export type EsitoSessioneOspite =
+  | { esito: "pagato"; email: string; accessoImmediato: boolean }
+  | { esito: "in-elaborazione"; email: string | null }
+  | { esito: "non-verificata" };
+
+/** Entro quanto tempo dal pagamento la pagina di conferma può far entrare direttamente. */
+const FINESTRA_ACCESSO_IMMEDIATO_MS = 2 * 60 * 60 * 1000;
+
+/**
+ * Verifica con Stripe una sessione di acquisto senza account e la registra
+ * subito se pagata. `accessoImmediato` è vero solo se l'account è nato da
+ * questo acquisto e non è mai stato usato (privacy non ancora accettata):
+ * chi conosce il `session_id` non può così entrare in un account esistente
+ * di cui ha solo digitato l'email. In quel caso l'accesso passa dal link
+ * inviato via email.
+ */
+export async function verificaSessioneOspite(sessionId: string): Promise<EsitoSessioneOspite> {
+  if (!/^cs_(test|live)_[A-Za-z0-9]+$/.test(sessionId)) return { esito: "non-verificata" };
+
+  let sessione: Stripe.Checkout.Session;
+  try {
+    sessione = await stripe().checkout.sessions.retrieve(sessionId);
+  } catch (errore) {
+    console.error(`Conferma acquisto: sessione ${sessionId} non leggibile`, errore);
+    return { esito: "non-verificata" };
+  }
+  if (!isSessioneOspite(sessione)) return { esito: "non-verificata" };
+
+  const email = sessione.customer_details?.email?.trim().toLowerCase() ?? null;
+  if (sessione.status === "complete" && sessione.payment_status === "unpaid") {
+    return { esito: "in-elaborazione", email };
+  }
+  if (sessione.payment_status !== "paid" || !email) return { esito: "non-verificata" };
+
+  await registraPagamento(sessione);
+
+  const client = creaClientAdmin();
+  const { data: acquisto } = await client
+    .from("purchases")
+    .select("status, user_id")
+    .eq("stripe_checkout_session_id", sessione.id)
+    .maybeSingle();
+  if (acquisto?.status !== "pagato" || !acquisto.user_id) return { esito: "non-verificata" };
+
+  const { data: profilo } = await client
+    .from("profiles")
+    .select("created_at, privacy_accepted_at, is_blocked")
+    .eq("id", acquisto.user_id)
+    .maybeSingle();
+
+  const inizioSessione = sessione.created * 1000;
+  const accessoImmediato =
+    !!profilo &&
+    !profilo.is_blocked &&
+    !profilo.privacy_accepted_at &&
+    new Date(profilo.created_at).getTime() >= inizioSessione &&
+    Date.now() - inizioSessione < FINESTRA_ACCESSO_IMMEDIATO_MS;
+
+  return { esito: "pagato", email, accessoImmediato };
 }

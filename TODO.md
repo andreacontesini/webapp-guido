@@ -75,9 +75,9 @@
 - [x] **Tag Versione:** `v0.6.0`.
 
 ### Fase 7: Acquisto senza account (Target: v0.7.0)
-- [ ] Stripe Checkout apribile anche senza login: Stripe chiede l'email del cliente.
-- [ ] Il webhook crea l'account e sblocca la guida; se l'email appartiene a un account già esistente, sblocca la guida su quello invece di crearne uno nuovo.
-- [ ] Accesso immediato all'app dalla pagina di conferma (link di accesso generato dopo la verifica del pagamento) e, in ogni caso, email con il link di accesso.
+- [x] Stripe Checkout apribile anche senza login: Stripe chiede l'email del cliente (ritorno sulle pagine pubbliche `/acquisto/conferma` e `/acquisto/annullato`).
+- [x] Il webhook crea l'account e sblocca la guida; se l'email appartiene a un account già esistente, sblocca la guida su quello invece di crearne uno nuovo. Nome e cognome inseriti su Stripe precompilano il primo accesso. *Provato con eventi simulati, anche con webhook e pagina di conferma in contemporanea.*
+- [x] Accesso immediato all'app dalla pagina di conferma (link di accesso generato dopo la verifica del pagamento) e, in ogni caso, email con il link di accesso. L'accesso immediato vale solo per un account nato da quell'acquisto e mai usato, entro 2 ore: chi digita l'email di un account esistente non può entrarci, riceve il link via email.
 - [ ] **Restyle delle email** con uno stile moderno e professionale, coerente con l'app (logo, colori, tipografia, pulsante ben visibile, piè di pagina con contatti e assistenza):
   - [x] Modelli di Supabase Auth (link di accesso, conferma registrazione, cambio email) generati da React Email in `supabase/templates/` con `npm run email:supabase`.
   - [ ] Modelli copiati nel pannello Supabase (Authentication → Emails → Templates, vedi `docs/supabase-auth.md`) e provati con un accesso reale.
@@ -96,7 +96,7 @@
   - Vantaggi dell'acquisto (niente sorprese, prezzo giusto, metodo, incasso netto).
   - Elenco brevissimo dei temi trattati (le 7 tappe della guida, una riga ciascuna).
   - Chi è l'autore, domande frequenti, prezzo e garanzie (pagamento sicuro Stripe, accesso immediato). Testimonianze non inserite: non ce ne sono ancora di reali.
-  - [ ] Il pulsante porta direttamente a Stripe Checkout senza passare dal login (flusso della Fase 7): oggi apre il popup di acquisto, che con i pagamenti attivi chiede l'accesso.
+  - [x] Il pulsante porta direttamente a Stripe Checkout senza passare dal login (flusso della Fase 7).
 - [x] Contenuti con dati reali presi dalla guida v1.0 (7 tappe, 8 controlli, 18 pagine, presentazione dell'autore); nessun numero di utenti o valutazione.
   - [ ] Aggiungere il prezzo quando definito (il blocco prezzo lo legge da `src/lib/prodotti.ts`) ed eventualmente una foto dell'autore e testimonianze vere.
 - [x] SEO e condivisione: titolo, descrizione, URL canonico e immagine di anteprima per ogni landing (generata dall'app se manca), `sitemap.xml` e `robots.txt`.

@@ -105,6 +105,7 @@ function PulsanteAcquisto({
       etichetta={etichetta}
       className={className}
       origine={contesto.origine}
+      diretto
     />
   );
 }

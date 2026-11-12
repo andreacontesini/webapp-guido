@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { CheckIcon, LockIcon, ShoppingCartIcon } from "lucide-react";
+import { CheckIcon, LoaderCircleIcon, LockIcon, ShoppingCartIcon } from "lucide-react";
 
 import { avviaCheckout, type EsitoCheckout } from "@/app/dashboard/acquisto/azioni";
 
@@ -27,6 +27,9 @@ import {
  * Con `pagamentoAttivo` (Stripe configurato e prezzo definito, vedi
  * `acquistoDisponibile`) il pulsante del popup apre Stripe Checkout;
  * altrimenti è disattivato e indica come ottenere l'accesso.
+ *
+ * Con `diretto` (landing, pagina di pagamento annullato) il pulsante porta
+ * subito a Stripe Checkout senza popup: la pagina ha già spiegato il prodotto.
  */
 export function PopupAcquisto({
   prodotto,
@@ -35,6 +38,7 @@ export function PopupAcquisto({
   etichetta,
   className,
   origine,
+  diretto = false,
 }: {
   prodotto: CodiceProdotto;
   pagamentoAttivo: boolean;
@@ -44,6 +48,8 @@ export function PopupAcquisto({
   className?: string;
   /** Id della landing da cui parte l'acquisto (misurazione conversioni). */
   origine?: string;
+  /** Va direttamente a Stripe Checkout (solo con `pagamentoAttivo`). */
+  diretto?: boolean;
 }) {
   const scheda = prodotti[prodotto];
   const prezzo: number | null = scheda.prezzo;
@@ -51,6 +57,26 @@ export function PopupAcquisto({
     () => avviaCheckout(prodotto, origine),
     {},
   );
+
+  if (diretto && pagamentoAttivo) {
+    return (
+      <form action={paga} className="contents">
+        <Button type="submit" size={size} className={className} disabled={inCorso}>
+          {inCorso ? (
+            <LoaderCircleIcon className="animate-spin" aria-hidden />
+          ) : (
+            <ShoppingCartIcon aria-hidden />
+          )}
+          {inCorso ? "Apertura del pagamento…" : (etichetta ?? scheda.etichettaAcquista)}
+        </Button>
+        {esito.errore && (
+          <p role="alert" className="text-sm text-destructive">
+            {esito.errore}
+          </p>
+        )}
+      </form>
+    );
+  }
 
   return (
     <Dialog>

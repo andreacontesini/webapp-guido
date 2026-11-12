@@ -16,8 +16,8 @@ import { linkApp } from "@/lib/url";
  * Pagina pubblica di una landing: intestazione essenziale, blocchi nell'ordine
  * salvato, piè di pagina e, su smartphone, barra di acquisto fissa in basso.
  *
- * Il pulsante "Acquista" apre il popup di acquisto (oggi richiede l'accesso);
- * con la Fase 7 porterà direttamente a Stripe Checkout anche senza account.
+ * Il pulsante "Acquista" porta direttamente a Stripe Checkout, anche senza
+ * account (l'account si crea dall'email inserita su Stripe, vedi Fase 7).
  */
 export function PaginaLanding({
   landing,
@@ -125,6 +125,7 @@ function BarraAcquisto({
           pagamentoAttivo={pagamentoAttivo}
           etichetta="Acquista"
           origine={origine}
+          diretto
         />
       </div>
     </div>

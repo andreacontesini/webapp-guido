@@ -6,7 +6,7 @@ import { createElement } from "react";
 import EmailAccountCreato from "@/emails/account-creato";
 import { richiediAdmin } from "@/lib/auth/admin";
 import { inviaEmail } from "@/lib/email/invia";
-import { urlApp } from "@/lib/url";
+import { generaLinkAccesso } from "@/lib/auth/link-accesso";
 import { creaClientAdmin } from "@/lib/supabase/admin";
 import type { Profilo, RuoloUtente } from "@/lib/supabase/tipi";
 
@@ -184,22 +184,12 @@ export async function creaUtente(
   let avviso: string | undefined;
   if (valori.invia) {
     try {
-      const { data: link, error: erroreLink } = await client.auth.admin.generateLink({
-        type: "magiclink",
-        email: valori.email,
-      });
-      if (erroreLink || !link.properties?.hashed_token) throw erroreLink ?? new Error("Link mancante");
-
-      const url = new URL("/auth/conferma", urlApp());
-      url.searchParams.set("token_hash", link.properties.hashed_token);
-      url.searchParams.set("type", "email");
-      url.searchParams.set("next", "/dashboard");
-
+      const urlAccesso = await generaLinkAccesso(valori.email);
       await inviaEmail({
         a: valori.email,
         oggetto: "Il tuo account è pronto",
         email: createElement(EmailAccountCreato, {
-          urlAccesso: url.toString(),
+          urlAccesso,
           nome: valori.nome || null,
           guidaAttiva: valori.guida,
         }),
