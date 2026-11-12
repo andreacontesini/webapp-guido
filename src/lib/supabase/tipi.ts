@@ -52,6 +52,25 @@ export type Acquisto = {
   updated_at: string;
 };
 
+export type StatoLanding = "bozza" | "pubblicata";
+
+/** Landing di vendita: `blocks` ha il formato di `src/lib/landing/blocchi.ts`. */
+export type LandingPage = {
+  id: string;
+  slug: string;
+  title: string;
+  seo_title: string | null;
+  seo_description: string | null;
+  og_image_url: string | null;
+  blocks: unknown;
+  status: StatoLanding;
+  is_home: boolean;
+  published_at: string | null;
+  created_at: string;
+  updated_at: string;
+  updated_by: string | null;
+};
+
 /** Campi del profilo che l'utente può modificare (vedi grant nella migrazione RLS). */
 type ProfiloModificabile = Partial<
   Pick<
@@ -86,6 +105,12 @@ export type Database = {
         Update: Partial<Acquisto>;
         Relationships: [];
       };
+      landing_pages: {
+        Row: LandingPage;
+        Insert: Pick<LandingPage, "slug" | "title"> & Partial<LandingPage>;
+        Update: Partial<LandingPage>;
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -94,8 +119,16 @@ export type Database = {
         Args: Record<string, never>;
         Returns: undefined;
       };
+      imposta_landing_iniziale: {
+        Args: { landing_id: string | null };
+        Returns: undefined;
+      };
     };
-    Enums: { ruolo_utente: RuoloUtente; stato_acquisto: StatoAcquisto };
+    Enums: {
+      ruolo_utente: RuoloUtente;
+      stato_acquisto: StatoAcquisto;
+      stato_landing: StatoLanding;
+    };
     CompositeTypes: Record<string, never>;
   };
 };
