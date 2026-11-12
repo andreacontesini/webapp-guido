@@ -78,13 +78,13 @@
 - [x] Stripe Checkout apribile anche senza login: Stripe chiede l'email del cliente (ritorno sulle pagine pubbliche `/acquisto/conferma` e `/acquisto/annullato`).
 - [x] Il webhook crea l'account e sblocca la guida; se l'email appartiene a un account già esistente, sblocca la guida su quello invece di crearne uno nuovo. Nome e cognome inseriti su Stripe precompilano il primo accesso. *Provato con eventi simulati, anche con webhook e pagina di conferma in contemporanea.*
 - [x] Accesso immediato all'app dalla pagina di conferma (link di accesso generato dopo la verifica del pagamento) e, in ogni caso, email con il link di accesso. Account nuovo: dopo Stripe entra in automatico (`/acquisto/entra`), compila i dati base in /benvenuto e arriva in dashboard. Account esistente: guida sbloccata subito, si entra dal link inviato via email (scelta di sicurezza: su Stripe l'email non è verificata, pagando non si deve entrare in un account altrui).
-- [ ] **Restyle delle email** con uno stile moderno e professionale, coerente con l'app (logo, colori, tipografia, pulsante ben visibile, piè di pagina con contatti e assistenza):
+- [x] **Restyle delle email** con uno stile moderno e professionale, coerente con l'app (logo, colori, tipografia, pulsante ben visibile, piè di pagina con contatti e assistenza):
   - [x] Modelli di Supabase Auth (link di accesso, conferma registrazione, cambio email) generati da React Email in `supabase/templates/` con `npm run email:supabase`.
-  - [ ] Modelli copiati nel pannello Supabase (Authentication → Emails → Templates, vedi `docs/supabase-auth.md`) e provati con un accesso reale.
+  - [ ] ➡️ Spostato nella Fase 12: modelli copiati nel pannello Supabase e provati con un accesso reale.
   - [x] Email inviate dall'app con Resend costruite con React Email (`src/emails/`, invio con `src/lib/email/invia.ts`): conferma acquisto (già inviata dal webhook), account creato dall'admin. La variante con link di accesso per l'acquisto senza account si collega con questa fase.
-  - [ ] Controllo dell'aspetto nei principali client (Gmail, Apple Mail, Outlook, smartphone) e in tema scuro.
-- [ ] Test: acquisto senza account, con email già registrata, pagamento annullato.
-- [ ] **Tag Versione:** `v0.7.0`.
+  - [ ] ➡️ Spostato nella Fase 12: controllo dell'aspetto nei principali client e in tema scuro.
+- [x] Test: acquisto senza account provato online il 12/11/2026 (account creato, guida sbloccata, conversione registrata sulla landing). *Restano da provare online, nel test end-to-end della Fase 12: ingresso automatico dopo Stripe, email già registrata, pagamento annullato senza account.*
+- [x] **Tag Versione:** `v0.7.0`.
 
 > 📌 **Ordine di lavoro:** dopo la Fase 7 vengono la Fase 8 (Profilo) e la Fase 9 (Notifiche admin). Le Fasi 10 e 11 (landing) sono già sviluppate: restano solo le voci aperte e i tag `v0.8.0` / `v0.9.0`, da creare dopo la chiusura della Fase 7.
 
@@ -160,7 +160,7 @@
 - [x] Caricamento immagini per le landing: bucket pubblico `landing` su Supabase Storage (max 10 MB, JPG/PNG/WebP/AVIF/GIF), caricamento diretto dal browser con URL firmato, oppure indirizzo incollato.
   - [ ] Pulizia delle immagini non più usate (oggi restano nel bucket anche dopo l'eliminazione di una landing).
 - [x] Misurazione delle conversioni (visite landing → checkout avviati → acquisti), anonima e senza cookie: tabella `landing_events` (solo landing, tipo e data), visite inviate dalla pagina, checkout dal popup di acquisto, acquisti dal webhook Stripe. Statistiche degli ultimi 30 giorni nell'elenco admin.
-  - [ ] Verificare le statistiche di checkout e acquisto con Stripe attivo (Fase 5) e con l'acquisto senza account (Fase 7, il checkout dovrà portarsi dietro la landing di origine).
+  - [x] Verificare le statistiche di checkout e acquisto con Stripe attivo (Fase 5) e con l'acquisto senza account (Fase 7): visita, checkout e acquisto registrati per la landing il 12/11/2026.
 - [x] **Nuovo blocco Video**:
   - Sorgente riconosciuta dall'indirizzo: Bunny Stream (link di embed o di riproduzione), YouTube (dominio senza cookie), Vimeo, file MP4/WebM.
   - Impostazioni: titolo e testo, copertina, formato (16:9, 9:16, 1:1), avvio automatico (sempre senza audio), audio disattivato, ripetizione, controlli, sottotitoli, secondo di partenza, pulsante "Acquista" sotto il video.
@@ -175,6 +175,8 @@
 ### Fase 12: Lancio della Guida (Target: v1.0.0)
 - [ ] Aspetti legali e fiscali da verificare con il cliente/commercialista: condizioni di vendita, rinuncia al recesso per contenuti digitali (casella nel checkout), emissione della fattura (la ricevuta Stripe non è una fattura), privacy e cookie.
 - [ ] Test end-to-end: Magic Link, permessi PDF, redirect, acquisto, rimborso, acquisto da landing senza account.
+  - [ ] Acquisto senza account: ingresso automatico dopo Stripe con email nuova, email già registrata (link via email), pagamento annullato con "Riprova".
+- [ ] Email (dalla Fase 7): modelli di Supabase Auth copiati nel pannello (Authentication → Emails → Templates, vedi `docs/supabase-auth.md`) e provati con un accesso reale; controllo dell'aspetto nei principali client (Gmail, Apple Mail, Outlook, smartphone) e in tema scuro.
 - [ ] Passaggio di Stripe alle chiavi live e webhook di produzione.
   - [ ] Branding nell'account live: logo e icona (`public/email/logo.png`), colori `#2b5bd7` / `#0f1e33`, nome pubblico ed email di assistenza `contesiniconsulenze@gmail.com`.
 - [ ] Deploy su Vercel (app.guidocontesini.it) e controllo finale su smartphone e desktop.
