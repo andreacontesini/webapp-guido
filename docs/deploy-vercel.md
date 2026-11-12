@@ -29,7 +29,7 @@ Sono le stesse di `.env.local` (l'elenco completo è in `.env.example`). Vanno i
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | dal progetto Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY` | solo server: non deve mai avere il prefisso `NEXT_PUBLIC_` |
 | `RESEND_API_KEY`, `EMAIL_FROM` | da Resend |
-| `STRIPE_*` | per ora le chiavi **di test**; le live si inseriscono al lancio (Fase 10) |
+| `STRIPE_*` | per ora le chiavi **di test**; le live si inseriscono al lancio (Fase 11) |
 | `BUNNY_*` | da Bunny.net |
 
 Note:

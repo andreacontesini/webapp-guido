@@ -43,7 +43,7 @@ export function verificaEventoWebhook(corpo: string, firma: string) {
 
 /**
  * True se il prodotto si può acquistare online: Stripe configurato e prezzo
- * definito. Il videocorso diventerà acquistabile con la Fase 15.
+ * definito. Il videocorso diventerà acquistabile con la Fase 16.
  */
 export function acquistoDisponibile(prodotto: CodiceProdotto) {
   return prodotto === "guida" && prodotti[prodotto].prezzo !== null && pagamentiAttivi();

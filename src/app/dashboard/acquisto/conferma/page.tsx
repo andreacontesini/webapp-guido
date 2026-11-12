@@ -39,7 +39,7 @@ export default function PaginaConferma({ searchParams }: PageProps<"/dashboard/a
 /** True se l'utente ha già accesso al prodotto acquistato. */
 async function isSbloccato(codice: CodiceProdotto) {
   if (codice === "guida") return (await leggiStatoGuida()).stato !== "non-abilitata";
-  // Il permesso per il videocorso arriverà con la Fase 11 (prodotto videocorso in purchases).
+  // Il permesso per il videocorso arriverà con la Fase 12 (prodotto videocorso in purchases).
   return false;
 }
 

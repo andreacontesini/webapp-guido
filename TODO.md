@@ -60,7 +60,7 @@
 - [x] Endpoint webhook di test creato nel pannello Stripe (`/api/webhooks/stripe`, eventi `checkout.session.completed` e `checkout.session.async_payment_succeeded`) e `STRIPE_WEBHOOK_SECRET` su Vercel.
 - [x] Tabella `purchases` (acquisti: utente, prodotto, sessione Stripe, importo, stato) con RLS: l'utente vede solo i propri acquisti.
 - [x] Popup "Acquista la guida": prezzo reale e pulsante che apre Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica. *Provato online in Test Mode.*
-- [x] Aspetto della pagina di pagamento Stripe vicino allo stile dell'app (logo, colori, font e angoli dalle impostazioni di branding dell'account Stripe). *Colori impostati in sandbox; logo, icona, nome pubblico ed email di assistenza da completare nell'account live (Fase 10).*
+- [x] Aspetto della pagina di pagamento Stripe vicino allo stile dell'app (logo, colori, font e angoli dalle impostazioni di branding dell'account Stripe). *Colori impostati in sandbox; logo, icona, nome pubblico ed email di assistenza da completare nell'account live (Fase 11).*
 - [x] Webhook Stripe (`/api/webhooks/stripe`): a pagamento confermato registra l'acquisto e sblocca `guide_access` (mai lato client), gestendo gli eventi duplicati. *Provato in locale con eventi firmati: firma non valida, pagamento, duplicato, non pagato.*
 - [x] ~~Test di un acquisto completo in locale (carte di prova, webhook con Stripe CLI): popup con pulsante attivo, pagina Stripe, ritorno, sblocco, email di conferma, riga in `purchases`.~~ *Superato dal test online: la Stripe CLI non si installa (Command Line Tools non compatibili con macOS 26).*
 - [x] Stesso test online su `app.guidocontesini.it` in Test Mode: popup a 89 €, pagina Stripe, ritorno alla conferma, webhook, riga in `purchases`, sblocco ed email di conferma (12/11/2026).
@@ -122,7 +122,33 @@
   - Testo alternativo e didascalia per ogni immagine; caricamento differito.
 - [ ] **Tag Versione:** `v0.9.0` (dopo le Fasi 5-7).
 
-### Fase 10: Lancio della Guida (Target: v1.0.0)
+### Fase 10: Profilo del cliente (Target: v0.10.0)
+> Pagina "Profilo" nell'area riservata, dove il cliente completa e aggiorna i propri dati. Tutto facoltativo tranne i dati base del primo accesso. I dati sull'immobile servono a Guido per capire la situazione e proporre una consulenza: vanno chiesti con una spiegazione chiara del perché, e citati nell'informativa privacy (da verificare con il cliente, Fase 11).
+- [ ] **Dati personali e contatto**: nome, cognome, telefono, comune/provincia di residenza, modalità di contatto preferita (telefono, WhatsApp, email) e fascia oraria in cui essere ricontattato.
+- [ ] **Account**: cambio email (con conferma sul nuovo indirizzo), consenso marketing modificabile, data di accettazione privacy visibile, richiesta di eliminazione dell'account e scaricamento dei propri dati (GDPR).
+- [ ] **L'immobile da vendere** (scheda singola, in futuro più immobili):
+  - Indirizzo o almeno comune, provincia e zona/quartiere.
+  - Tipologia (appartamento, villa/villetta, casa indipendente, rustico, attico, altro) e uso (abitazione principale, seconda casa, investimento).
+  - Superficie commerciale (m²), locali, camere, bagni, piano e ascensore, anno di costruzione (anche indicativo).
+  - Stato (da ristrutturare, buono, ristrutturato, nuovo) e classe energetica, se nota.
+  - Pertinenze: box/posto auto, cantina, giardino, terrazzo/balcone; riscaldamento autonomo o centralizzato; spese condominiali mensili.
+- [ ] **Situazione giuridica e documenti** (le domande che bloccano più spesso una vendita, legate alle tappe della guida):
+  - Proprietà: unico proprietario o cointestata (numero di proprietari, tutti d'accordo a vendere?), immobile ricevuto in eredità (successione già fatta?).
+  - Mutuo residuo o ipoteca da estinguere; immobile libero, abitato dal proprietario o affittato (scadenza del contratto).
+  - Conformità: dubbi su conformità urbanistica o catastale (verande, modifiche interne non dichiarate), lavori con bonus edilizi in corso.
+  - Documenti già disponibili: atto di provenienza, planimetria catastale, visura, APE, certificato di agibilità, regolamento e ultime spese condominiali.
+- [ ] **Obiettivi di vendita**:
+  - Tempistiche desiderate (entro 3 mesi, 6 mesi, 12 mesi, nessuna fretta) e motivo della vendita (acquisto di un'altra casa, trasferimento, eredità, liquidità…).
+  - Vendita legata all'acquisto di un'altra casa (serve coordinare le date?).
+  - Prezzo che si ha in mente e se è già stata fatta una valutazione (da chi).
+  - Immobile già pubblicato su portali o già affidato ad agenzie in passato (incarico ancora in corso?).
+- [ ] **A che punto sei**: tappa della guida in cui si trova il cliente (dalle 7 tappe), con indicazione di completamento del profilo (es. "Profilo completo al 60%").
+- [ ] **Richiesta di contatto a Guido**: casella "Vorrei essere ricontattato per una consulenza" con note libere; avviso email a Guido quando un cliente la attiva.
+- [ ] **Area admin**: scheda del cliente con tutti i dati del profilo e dell'immobile, filtri (es. comune, tempistiche, richiesta di consulenza) ed esportazione CSV.
+- [ ] Tabelle Supabase (`properties` o campi aggiuntivi su `profiles`) con RLS: il cliente vede e modifica solo i propri dati, l'admin legge tutto.
+- [ ] **Tag Versione:** `v0.10.0`.
+
+### Fase 11: Lancio della Guida (Target: v1.0.0)
 - [ ] Aspetti legali e fiscali da verificare con il cliente/commercialista: condizioni di vendita, rinuncia al recesso per contenuti digitali (casella nel checkout), emissione della fattura (la ricevuta Stripe non è una fattura), privacy e cookie.
 - [ ] Test end-to-end: Magic Link, permessi PDF, redirect, acquisto, rimborso, acquisto da landing senza account.
 - [ ] Passaggio di Stripe alle chiavi live e webhook di produzione.
@@ -135,30 +161,30 @@
 ## 🔵 VERSIONE 2.x (Focus: Videocorso)
 **Sviluppo su un branch separato (`videocorso`), unito a `main` solo a corso completo e testato.** Fino ad allora in app il videocorso resta "In arrivo".
 
-### Fase 11: Database Videocorso
+### Fase 12: Database Videocorso
 - [ ] Estendere DB: tabelle `modules`, `lessons`, `attachments`; prodotto videocorso in `purchases`.
 - [ ] Configurare RLS per i nuovi contenuti (accesso legato allo stato di acquisto).
 
-### Fase 12: Admin Videocorso - Moduli e video
+### Fase 13: Admin Videocorso - Moduli e video
 - [ ] Integrazione Bunny Stream API nel back office.
 - [ ] Interfaccia per creazione moduli e lezioni.
 - [ ] "Direct Upload" dei video dall'app verso Bunny.net.
 
-### Fase 13: Admin Videocorso - Allegati
+### Fase 14: Admin Videocorso - Allegati
 - [ ] Upload di file allegati (modelli/documenti) associati alle lezioni.
 
-### Fase 14: Area Cliente - Sblocco Video
+### Fase 15: Area Cliente - Sblocco Video
 - [ ] Rimuovere "Coming Soon" e attivare la lista moduli/lezioni.
 - [ ] Lezione 1: preview gratuita accessibile a chi possiede solo la guida.
 - [ ] Player video integrato (Bunny Stream) con logiche di protezione.
 - [ ] Area download documenti per le singole lezioni.
 
-### Fase 15: Pagamenti Videocorso & Upgrade
+### Fase 16: Pagamenti Videocorso & Upgrade
 - [ ] Acquisto del videocorso (stesso flusso Stripe della guida).
 - [ ] Banner e flussi di upgrade (es. da "Solo Guida" a "Videocorso Completo") interni all'app.
 - [ ] Blocchi landing dedicati al videocorso.
 
-### Fase 16: Lancio Videocorso (Target: v2.0.0)
+### Fase 17: Lancio Videocorso (Target: v2.0.0)
 - [ ] Configurazione PWA (manifest, icone).
 - [ ] Test end-to-end del videocorso e dei pagamenti.
 - [ ] Merge del branch `videocorso` in `main` e rilascio `v2.0.0`.

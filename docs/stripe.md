@@ -63,4 +63,4 @@ In **Impostazioni → Dati pubblici dell'attività** imposta il nome visibile (e
 
 ## 5. Ricevute
 
-**Impostazioni → Email ai clienti**: attiva *Pagamenti riusciti*. In modalità Test Stripe non invia le ricevute, che partono solo in Live. La ricevuta Stripe non è una fattura: vedi la Fase 10 del TODO.
+**Impostazioni → Email ai clienti**: attiva *Pagamenti riusciti*. In modalità Test Stripe non invia le ricevute, che partono solo in Live. La ricevuta Stripe non è una fattura: vedi la Fase 11 del TODO.
