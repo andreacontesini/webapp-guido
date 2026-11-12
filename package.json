@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "email:supabase": "tsx --tsconfig tsconfig.json scripts/genera-template-supabase.tsx",
-    "email:anteprima": "email dev --dir src/emails --port 3001"
+    "email:anteprima": "email dev --dir src/emails --port 3001",
+    "test": "tsx --test 'src/**/*.test.ts'"
   },
   "dependencies": {
     "@base-ui/react": "^1.9.0",
