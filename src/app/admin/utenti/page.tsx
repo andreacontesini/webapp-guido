@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { SearchIcon } from "lucide-react";
 
+import { AcquistiUtente, type RigaAcquisto } from "@/app/admin/utenti/acquisti-utente";
 import { AzioniUtente, InterruttoreGuida } from "@/app/admin/utenti/azioni-utente";
 import { NuovoUtente } from "@/app/admin/utenti/nuovo-utente";
 import { Badge } from "@/components/ui/badge";
@@ -29,8 +30,8 @@ export default function PaginaUtenti({ searchParams }: PageProps<"/admin/utenti"
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Utenti</h1>
           <p className="text-muted-foreground">
-            Crea account, assegna o revoca la guida, blocca gli account e gestisci gli
-            amministratori.
+            Crea account, consulta gli acquisti, assegna o revoca la guida, blocca gli
+            account e gestisci gli amministratori.
           </p>
         </div>
         <NuovoUtente />
@@ -70,6 +71,25 @@ async function ElencoUtenti({ searchParams }: Pick<PageProps<"/admin/utenti">, "
     return <p className="text-destructive">Non siamo riusciti a caricare gli utenti.</p>;
   }
 
+  // Acquisti degli utenti in elenco (la RLS consente agli admin di leggerli tutti).
+  const acquistiPerUtente = new Map<string, RigaAcquisto[]>();
+  if (utenti.length > 0) {
+    const { data: acquisti, error: erroreAcquisti } = await supabase
+      .from("purchases")
+      .select("id, user_id, product, status, amount_total, currency, stripe_payment_intent_id, paid_at, created_at")
+      .in("user_id", utenti.map((u) => u.id))
+      .neq("status", "in_attesa")
+      .order("created_at", { ascending: false });
+    if (erroreAcquisti) console.error("Lettura acquisti non riuscita", erroreAcquisti);
+    for (const { user_id, ...acquisto } of acquisti ?? []) {
+      if (!user_id) continue;
+      acquistiPerUtente.set(user_id, [...(acquistiPerUtente.get(user_id) ?? []), acquisto]);
+    }
+  }
+  const urlPagamentiStripe = process.env.STRIPE_SECRET_KEY?.startsWith("sk_live_")
+    ? "https://dashboard.stripe.com/payments"
+    : "https://dashboard.stripe.com/test/payments";
+
   return (
     <div className="space-y-4">
       <form role="search" className="flex max-w-md gap-2">
@@ -104,19 +124,26 @@ async function ElencoUtenti({ searchParams }: Pick<PageProps<"/admin/utenti">, "
 
       {utenti.length > 0 && (
         <div className="overflow-x-auto rounded-xl border bg-card">
-          <table className="w-full min-w-[44rem] text-sm">
+          <table className="w-full min-w-[52rem] text-sm">
             <thead className="border-b text-left text-xs text-muted-foreground">
               <tr>
                 <th scope="col" className="px-4 py-3 font-medium">Utente</th>
                 <th scope="col" className="px-4 py-3 font-medium">Registrato</th>
                 <th scope="col" className="px-4 py-3 font-medium">Guida</th>
+                <th scope="col" className="px-4 py-3 font-medium">Acquisti</th>
                 <th scope="col" className="px-4 py-3 font-medium">Stato</th>
                 <th scope="col" className="px-4 py-3 text-right font-medium">Azioni</th>
               </tr>
             </thead>
             <tbody className="divide-y">
               {utenti.map((utente) => (
-                <RigaUtente key={utente.id} utente={utente} seiTu={utente.id === admin.id} />
+                <RigaUtente
+                  key={utente.id}
+                  utente={utente}
+                  seiTu={utente.id === admin.id}
+                  acquisti={acquistiPerUtente.get(utente.id) ?? []}
+                  urlPagamentiStripe={urlPagamentiStripe}
+                />
               ))}
             </tbody>
           </table>
@@ -129,12 +156,16 @@ async function ElencoUtenti({ searchParams }: Pick<PageProps<"/admin/utenti">, "
 function RigaUtente({
   utente,
   seiTu,
+  acquisti,
+  urlPagamentiStripe,
 }: {
   utente: Pick<
     Profilo,
     "id" | "email" | "first_name" | "last_name" | "role" | "is_blocked" | "guide_access" | "created_at"
   >;
   seiTu: boolean;
+  acquisti: RigaAcquisto[];
+  urlPagamentiStripe: string;
 }) {
   const nomeCompleto = [utente.first_name, utente.last_name].filter(Boolean).join(" ");
   return (
@@ -148,6 +179,13 @@ function RigaUtente({
       </td>
       <td className="px-4 py-3">
         <InterruttoreGuida id={utente.id} attivo={utente.guide_access} />
+      </td>
+      <td className="px-4 py-3">
+        <AcquistiUtente
+          nome={nomeCompleto || utente.email}
+          acquisti={acquisti}
+          urlPagamentiStripe={urlPagamentiStripe}
+        />
       </td>
       <td className="px-4 py-3">
         <div className="flex flex-wrap gap-1">
