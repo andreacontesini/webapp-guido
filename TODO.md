@@ -55,17 +55,16 @@
 - [x] Pagina 404 con lo stile della pagina iniziale (sfondo condiviso in `SfondoHero`).
 
 ### Fase 5: Pagamento base con Stripe (Target: v0.5.0)
-> ⏸️ **Stripe in attesa dei dati dell'account del cliente** (attesi il 12/11/2026). Già fatto senza account: tabella `purchases`, checkout, webhook (provato con eventi firmati in locale), restyle delle email, guida `docs/stripe.md`.
-> **Prossimo passo:** con i dati Stripe completare le voci aperte di questa fase (chiavi, prezzo, webhook, branding, test), poi Fase 6 e 7. Senza account si può proseguire con Fase 8 e 9: il pulsante "Acquista" delle landing usa il popup di acquisto e passerà a Stripe Checkout diretto con la Fase 7.
-- [x] Prezzo della guida definito (89 €) (in `src/lib/prodotti.ts`, oggi `null`) e chiavi Stripe Test Mode dell'account del cliente in `.env.local` e su Vercel. Prodotto e prezzo non vanno creati a mano: li crea il checkout (vedi `docs/stripe.md`).
+> ✅ Completata il 12/11/2026 con la sandbox Stripe dell'account del cliente.
+- [x] Prezzo della guida definito (89 €, in `src/lib/prodotti.ts`) e chiavi Stripe Test Mode dell'account del cliente in `.env.local` e su Vercel. Prodotto e prezzo non vanno creati a mano: li crea il checkout (vedi `docs/stripe.md`).
 - [x] Endpoint webhook di test creato nel pannello Stripe (`/api/webhooks/stripe`, eventi `checkout.session.completed` e `checkout.session.async_payment_succeeded`) e `STRIPE_WEBHOOK_SECRET` su Vercel.
 - [x] Tabella `purchases` (acquisti: utente, prodotto, sessione Stripe, importo, stato) con RLS: l'utente vede solo i propri acquisti.
 - [x] Popup "Acquista la guida": prezzo reale e pulsante che apre Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica. *Provato online in Test Mode.*
-- [ ] Aspetto della pagina di pagamento Stripe vicino allo stile dell'app (logo, colori, font e angoli dalle impostazioni di branding dell'account Stripe). *Valori pronti in `docs/stripe.md`.*
+- [x] Aspetto della pagina di pagamento Stripe vicino allo stile dell'app (logo, colori, font e angoli dalle impostazioni di branding dell'account Stripe). *Colori impostati in sandbox; logo, icona, nome pubblico ed email di assistenza da completare nell'account live (Fase 10).*
 - [x] Webhook Stripe (`/api/webhooks/stripe`): a pagamento confermato registra l'acquisto e sblocca `guide_access` (mai lato client), gestendo gli eventi duplicati. *Provato in locale con eventi firmati: firma non valida, pagamento, duplicato, non pagato.*
-- [ ] Test di un acquisto completo in locale (carte di prova, webhook con Stripe CLI): popup con pulsante attivo, pagina Stripe, ritorno, sblocco, email di conferma, riga in `purchases`.
+- [x] ~~Test di un acquisto completo in locale (carte di prova, webhook con Stripe CLI): popup con pulsante attivo, pagina Stripe, ritorno, sblocco, email di conferma, riga in `purchases`.~~ *Superato dal test online: la Stripe CLI non si installa (Command Line Tools non compatibili con macOS 26).*
 - [x] Stesso test online su `app.guidocontesini.it` in Test Mode: popup a 89 €, pagina Stripe, ritorno alla conferma, webhook, riga in `purchases`, sblocco ed email di conferma (12/11/2026).
-- [ ] **Tag Versione:** `v0.5.0`.
+- [x] **Tag Versione:** `v0.5.0`.
 
 ### Fase 6: Rimborsi, ritorno da Stripe e acquisti in admin (Target: v0.6.0)
 - [ ] Revoca automatica dell'accesso in caso di rimborso o contestazione del pagamento.
@@ -127,6 +126,7 @@
 - [ ] Aspetti legali e fiscali da verificare con il cliente/commercialista: condizioni di vendita, rinuncia al recesso per contenuti digitali (casella nel checkout), emissione della fattura (la ricevuta Stripe non è una fattura), privacy e cookie.
 - [ ] Test end-to-end: Magic Link, permessi PDF, redirect, acquisto, rimborso, acquisto da landing senza account.
 - [ ] Passaggio di Stripe alle chiavi live e webhook di produzione.
+  - [ ] Branding nell'account live: logo e icona (`public/email/logo.png`), colori `#2b5bd7` / `#0f1e33`, nome pubblico ed email di assistenza `contesiniconsulenze@gmail.com`.
 - [ ] Deploy su Vercel (app.guidocontesini.it) e controllo finale su smartphone e desktop.
 - [ ] **Tag Versione:** rilascio `v1.0.0` (prima versione pubblica, solo guida).
 
