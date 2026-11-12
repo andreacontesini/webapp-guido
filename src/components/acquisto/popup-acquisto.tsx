@@ -32,10 +32,15 @@ export function PopupAcquisto({
   prodotto,
   pagamentoAttivo,
   size = "lg",
+  etichetta,
+  className,
 }: {
   prodotto: CodiceProdotto;
   pagamentoAttivo: boolean;
   size?: "default" | "lg";
+  /** Testo del pulsante; di default "Acquista la guida" (o il videocorso). */
+  etichetta?: string;
+  className?: string;
 }) {
   const scheda = prodotti[prodotto];
   const prezzo: number | null = scheda.prezzo;
@@ -46,9 +51,9 @@ export function PopupAcquisto({
 
   return (
     <Dialog>
-      <DialogTrigger render={<Button size={size} />}>
+      <DialogTrigger render={<Button size={size} className={className} />}>
         <ShoppingCartIcon aria-hidden />
-        {scheda.etichettaAcquista}
+        {etichetta ?? scheda.etichettaAcquista}
       </DialogTrigger>
       <DialogContent className="max-h-[calc(100dvh-2rem)] overflow-y-auto">
         <DialogHeader>

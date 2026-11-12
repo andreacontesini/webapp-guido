@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import { scriptTemaIniziale } from "@/lib/tema";
+import { urlLanding } from "@/lib/url";
 
 const geist = Geist({
   variable: "--font-sans",
@@ -15,6 +16,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
+  // Base degli URL canonici e delle anteprime: l'indirizzo delle landing.
+  metadataBase: new URL(urlLanding()),
   title: {
     default: "Vendere Casa da Privato",
     template: "%s | Vendere Casa da Privato",

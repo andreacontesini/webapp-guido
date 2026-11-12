@@ -5,17 +5,18 @@ import { SfondoHero } from "@/components/layout/sfondo-hero";
 import { Button } from "@/components/ui/button";
 import { PERCORSO_ACCESSO } from "@/lib/auth/percorsi";
 
-/**
- * Numeri chiave mostrati sotto il testo.
- * Da aggiornare periodicamente con dati reali (vedi TODO.md, Fase 8).
- */
+/** Numeri chiave mostrati sotto il testo (dati reali della guida). */
 const punti = [
   { valore: "7", etichetta: "tappe, dai controlli preliminari al rogito" },
   { valore: "18", etichetta: "pagine pratiche, senza giri di parole" },
   { valore: "1", etichetta: "area riservata, da ogni dispositivo" },
 ];
 
-export default function Home() {
+/**
+ * Pagina iniziale mostrata finché in admin non viene scelta una landing come
+ * pagina iniziale (vedi `src/app/page.tsx`).
+ */
+export function PaginaInizialePredefinita() {
   return (
     <main className="relative isolate flex flex-1 items-center overflow-hidden">
       <SfondoHero />

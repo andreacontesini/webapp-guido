@@ -25,6 +25,7 @@ Sono le stesse di `.env.local` (l'elenco completo è in `.env.example`). Vanno i
 | Variabile | Valore in produzione |
 |---|---|
 | `NEXT_PUBLIC_APP_URL` | `https://app.guidocontesini.it` (non `localhost`) |
+| `NEXT_PUBLIC_LANDING_URL` | facoltativa: indirizzo delle landing di vendita se diverso da quello dell'app (oggi non serve) |
 | `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY` | dal progetto Supabase |
 | `SUPABASE_SERVICE_ROLE_KEY` | solo server: non deve mai avere il prefisso `NEXT_PUBLIC_` |
 | `RESEND_API_KEY`, `EMAIL_FROM` | da Resend |
