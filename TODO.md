@@ -49,7 +49,7 @@
 - [x] Proteggere la rotta `/admin` (solo `role: admin`).
 - [x] Gestione Utenti: visualizzazione lista, blocco utente, eliminazione, revoca/assegnazione permessi.
 - [x] Creazione utenti dall'area admin (account già confermato, guida e ruolo admin opzionali, email con link di accesso via Resend; al primo accesso l'utente accetta la privacy con i dati precompilati).
-  - [ ] Verificare che su Vercel ci siano `RESEND_API_KEY` ed `EMAIL_FROM` (formato `Nome <indirizzo>`), poi provare una creazione con invio dell'email.
+  - [x] Verificare che su Vercel ci siano `RESEND_API_KEY` ed `EMAIL_FROM` (formato `Nome <indirizzo>`), poi provare una creazione con invio dell'email.
 - [x] Gestione Guida PDF: upload del file su Supabase Storage e aggiornamento dettagli.
 - [x] Prendi spunto dalla sezione id="hero" del sito a questo link https://finorio.demo.nextjstemplates.com/ e ricomponi la pagina iniziale dell'app. Non ho bisogno di pulsanti particolari o header / footer, ma semplicemente contenuti e bottone che rimanda alla pagina di accesso / login
 - [x] Pagina 404 con lo stile della pagina iniziale (sfondo condiviso in `SfondoHero`).
@@ -60,11 +60,11 @@
 - [x] Prezzo della guida definito (89 €) (in `src/lib/prodotti.ts`, oggi `null`) e chiavi Stripe Test Mode dell'account del cliente in `.env.local` e su Vercel. Prodotto e prezzo non vanno creati a mano: li crea il checkout (vedi `docs/stripe.md`).
 - [x] Endpoint webhook di test creato nel pannello Stripe (`/api/webhooks/stripe`, eventi `checkout.session.completed` e `checkout.session.async_payment_succeeded`) e `STRIPE_WEBHOOK_SECRET` su Vercel.
 - [x] Tabella `purchases` (acquisti: utente, prodotto, sessione Stripe, importo, stato) con RLS: l'utente vede solo i propri acquisti.
-- [x] Popup "Acquista la guida": prezzo reale e pulsante che apre Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica. *Codice pronto, si attiva da solo con chiavi vere e prezzo definito; da provare con l'account.*
+- [x] Popup "Acquista la guida": prezzo reale e pulsante che apre Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica. *Provato online in Test Mode.*
 - [ ] Aspetto della pagina di pagamento Stripe vicino allo stile dell'app (logo, colori, font e angoli dalle impostazioni di branding dell'account Stripe). *Valori pronti in `docs/stripe.md`.*
 - [x] Webhook Stripe (`/api/webhooks/stripe`): a pagamento confermato registra l'acquisto e sblocca `guide_access` (mai lato client), gestendo gli eventi duplicati. *Provato in locale con eventi firmati: firma non valida, pagamento, duplicato, non pagato.*
 - [ ] Test di un acquisto completo in locale (carte di prova, webhook con Stripe CLI): popup con pulsante attivo, pagina Stripe, ritorno, sblocco, email di conferma, riga in `purchases`.
-- [ ] Stesso test online su `app.guidocontesini.it` in Test Mode. *Primo acquisto riuscito (pagamento, webhook, riga in `purchases`, sblocco); ritorno finito su localhost per `NEXT_PUBLIC_APP_URL` errata su Vercel: da ripetere dopo la correzione.*
+- [x] Stesso test online su `app.guidocontesini.it` in Test Mode: popup a 89 €, pagina Stripe, ritorno alla conferma, webhook, riga in `purchases`, sblocco ed email di conferma (12/11/2026).
 - [ ] **Tag Versione:** `v0.5.0`.
 
 ### Fase 6: Rimborsi, ritorno da Stripe e acquisti in admin (Target: v0.6.0)
