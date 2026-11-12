@@ -60,7 +60,7 @@ export async function avviaCheckout(
         cancel_url: `${base}/dashboard/acquisto/annullato?prodotto=${prodotto}${conLanding}`,
       }
     : {
-        success_url: `${base}/acquisto/conferma?session_id={CHECKOUT_SESSION_ID}`,
+        success_url: `${base}/acquisto/entra?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${base}/acquisto/annullato?prodotto=${prodotto}${conLanding}`,
       };
 

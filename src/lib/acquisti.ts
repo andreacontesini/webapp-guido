@@ -7,7 +7,8 @@ import EmailConfermaAcquisto from "@/emails/conferma-acquisto";
 import { inviaEmail } from "@/lib/email/invia";
 import { registraEventoLanding } from "@/lib/landing/eventi";
 import { generaLinkAccesso } from "@/lib/auth/link-accesso";
-import { isCodiceProdotto, prodotti } from "@/lib/prodotti";
+import { PERCORSO_INIZIALE } from "@/lib/auth/percorsi";
+import { isCodiceProdotto } from "@/lib/prodotti";
 import { stripe } from "@/lib/stripe";
 import { creaClientAdmin } from "@/lib/supabase/admin";
 
@@ -91,7 +92,7 @@ export async function registraPagamento(sessione: Stripe.Checkout.Session) {
 
   try {
     // Chi ha acquistato senza account riceve un link che lo fa entrare subito.
-    const urlAccesso = ospite ? await generaLinkAccesso(email, prodotti[prodotto].href) : undefined;
+    const urlAccesso = ospite ? await generaLinkAccesso(email, PERCORSO_INIZIALE) : undefined;
     await inviaEmail({
       a: email,
       oggetto: "Grazie per l'acquisto: la tua guida è pronta",

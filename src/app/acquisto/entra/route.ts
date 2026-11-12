@@ -2,30 +2,33 @@ import { NextResponse, type NextRequest } from "next/server";
 
 import { verificaSessioneOspite } from "@/lib/acquisti";
 import { generaLinkAccesso } from "@/lib/auth/link-accesso";
-import { prodotti } from "@/lib/prodotti";
+import { PERCORSO_INIZIALE } from "@/lib/auth/percorsi";
 
 /**
- * "Entra e leggi la guida" dalla pagina di conferma (modulo POST): ripete la
- * verifica della sessione con Stripe e, solo se l'account è nato da questo
- * acquisto, genera un link di accesso e ci porta il browser. Il primo accesso
- * passa da /benvenuto (privacy e dati), poi alla guida.
+ * Ritorno da Stripe Checkout per chi acquista senza account (`success_url`).
+ * Verifica il pagamento con Stripe e registra l'acquisto, poi:
+ * - account nato da questo acquisto: entra subito con un link di accesso
+ *   generato al volo; il primo accesso passa da /benvenuto (dati base e
+ *   privacy), poi alla dashboard;
+ * - account già esistente (o verifica non riuscita): pagina di conferma, che
+ *   rimanda al link inviato via email. Su Stripe l'email si digita senza
+ *   verifica, quindi pagando non si deve poter entrare in un account altrui.
  *
  * È una route e non un'azione server: il link di accesso vale una sola volta e
- * va aperto con una navigazione vera del browser. Con il redirect di
- * un'azione server il router di Next può richiederlo due volte, e la seconda
- * richiesta lo trova già usato e manda alla pagina di accesso.
+ * va aperto con una navigazione vera del browser.
  */
-export async function POST(request: NextRequest) {
-  const dati = await request.formData();
-  const sessionId = String(dati.get("session_id") ?? "");
+export async function GET(request: NextRequest) {
+  const sessionId = request.nextUrl.searchParams.get("session_id") ?? "";
+  const conferma = new URL("/acquisto/conferma", request.url);
+  conferma.searchParams.set("session_id", sessionId);
 
-  const verifica = await verificaSessioneOspite(sessionId);
-  if (verifica.esito !== "pagato" || !verifica.accessoImmediato) {
-    const conferma = new URL("/acquisto/conferma", request.url);
-    conferma.searchParams.set("session_id", sessionId);
-    return NextResponse.redirect(conferma, 303);
+  try {
+    const verifica = await verificaSessioneOspite(sessionId);
+    if (verifica.esito === "pagato" && verifica.accessoImmediato) {
+      return NextResponse.redirect(await generaLinkAccesso(verifica.email, PERCORSO_INIZIALE));
+    }
+  } catch (errore) {
+    console.error("Accesso dopo l'acquisto non riuscito", errore);
   }
-
-  // 303: il browser segue il redirect con una GET.
-  return NextResponse.redirect(await generaLinkAccesso(verifica.email, prodotti.guida.href), 303);
+  return NextResponse.redirect(conferma);
 }

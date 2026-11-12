@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
-import { CheckIcon, ClockIcon, LoaderCircleIcon, TriangleAlertIcon } from "lucide-react";
+import { CheckIcon, ClockIcon, LoaderCircleIcon, MailIcon, TriangleAlertIcon } from "lucide-react";
 
 import { EsitoAcquisto } from "@/components/acquisto/esito-acquisto";
 import { Button } from "@/components/ui/button";
@@ -16,9 +16,9 @@ export const metadata: Metadata = {
 
 /**
  * Ritorno da Stripe Checkout per chi ha acquistato senza account
- * (`?session_id=cs_…`). Verifica il pagamento con Stripe, registra l'acquisto
- * (account trovato o creato dall'email) e, se l'account è nuovo, permette di
- * entrare subito; in ogni caso arriva anche un'email con il link di accesso.
+ * quando non si entra subito (vedi `/acquisto/entra`): account già esistente,
+ * pagamento in elaborazione o verifica non riuscita. Con un account esistente
+ * la guida è già sbloccata e si entra dal link inviato via email.
  */
 export default function PaginaConfermaOspite({ searchParams }: PageProps<"/acquisto/conferma">) {
   return (
@@ -103,30 +103,40 @@ async function Esito({ searchParams }: Pick<PageProps<"/acquisto/conferma">, "se
       titolo="Acquisto completato!"
       pulsantePrincipale={
         verifica.accessoImmediato ? (
-          // Modulo HTML classico: il browser segue davvero il redirect al link di accesso.
-          <form method="post" action="/acquisto/entra">
-            <input type="hidden" name="session_id" value={sessionId as string} />
-            <Button type="submit" size="lg" className="w-full sm:w-auto">
-              Entra e leggi la guida
-            </Button>
-          </form>
-        ) : (
-          <Button size="lg" render={<Link href={PERCORSO_ACCESSO} />} nativeButton={false}>
-            Accedi
+          // Link HTML classico (niente prefetch): il link di accesso vale una volta sola.
+          <Button
+            size="lg"
+            render={<a href={`/acquisto/entra?session_id=${encodeURIComponent(sessionId as string)}`} />}
+            nativeButton={false}
+          >
+            Entra nella tua area
           </Button>
-        )
+        ) : undefined
       }
     >
       <p>
-        Grazie! <span className="font-medium text-foreground">{scheda.titoloCompleto}</span> è
-        collegata all&apos;account{" "}
+        Grazie! <span className="font-medium text-foreground">{scheda.titoloCompleto}</span> è già
+        sbloccata sull&apos;account{" "}
         <span className="font-medium text-foreground">{verifica.email}</span>.
       </p>
-      <p className="text-sm">
-        {verifica.accessoImmediato
-          ? "Ti abbiamo inviato anche un'email con il link per entrare: le volte successive accedi con questa email."
-          : "Ti abbiamo inviato un'email con il link per entrare. Oppure accedi con questa email: ti mandiamo un nuovo link."}
-      </p>
+      {verifica.accessoImmediato ? (
+        <p className="text-sm">Ti abbiamo inviato anche un&apos;email con il link per entrare.</p>
+      ) : (
+        <div className="space-y-2 rounded-lg border bg-muted/40 p-4 text-left text-sm">
+          <p className="flex items-center gap-2 font-medium text-foreground">
+            <MailIcon className="size-4 shrink-0" aria-hidden />
+            Controlla la tua email
+          </p>
+          <p>
+            Ti abbiamo inviato un link per entrare nella tua area: aprilo da questo dispositivo e
+            trovi la guida pronta nella dashboard. Se non lo trovi, guarda nello spam oppure{" "}
+            <Link href={PERCORSO_ACCESSO} className="font-medium text-foreground underline underline-offset-4">
+              richiedine uno nuovo
+            </Link>
+            .
+          </p>
+        </div>
+      )}
     </EsitoAcquisto>
   );
 }
