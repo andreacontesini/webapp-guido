@@ -5,9 +5,11 @@ export const PERCORSO_ESCI = "/auth/esci";
 export const PERCORSO_CONFERMA = "/auth/conferma";
 export const PERCORSO_INIZIALE = "/dashboard";
 export const PERCORSO_ADMIN = "/admin";
+/** Anteprima delle landing in bozza: fuori da /admin per mostrarle a pagina intera. */
+export const PERCORSO_ANTEPRIMA = "/anteprima";
 
 /** Aree riservate: serve una sessione valida. */
-const PREFISSI_PROTETTI = ["/dashboard", PERCORSO_ADMIN, PERCORSO_BENVENUTO];
+const PREFISSI_PROTETTI = ["/dashboard", PERCORSO_ADMIN, PERCORSO_ANTEPRIMA, PERCORSO_BENVENUTO];
 
 const sottoPercorso = (pathname: string, prefisso: string) =>
   pathname === prefisso || pathname.startsWith(`${prefisso}/`);
@@ -16,9 +18,9 @@ export function isPercorsoProtetto(pathname: string) {
   return PREFISSI_PROTETTI.some((p) => sottoPercorso(pathname, p));
 }
 
-/** Back office: oltre alla sessione serve `role: admin`. */
+/** Back office (e anteprime): oltre alla sessione serve `role: admin`. */
 export function isPercorsoAdmin(pathname: string) {
-  return sottoPercorso(pathname, PERCORSO_ADMIN);
+  return sottoPercorso(pathname, PERCORSO_ADMIN) || sottoPercorso(pathname, PERCORSO_ANTEPRIMA);
 }
 
 /** Motivi per cui un utente viene fatto uscire, mostrati nella pagina di accesso. */
