@@ -57,14 +57,14 @@
 ### Fase 5: Pagamento base con Stripe (Target: v0.5.0)
 > ⏸️ **Stripe in attesa dei dati dell'account del cliente** (attesi il 12/11/2026). Già fatto senza account: tabella `purchases`, checkout, webhook (provato con eventi firmati in locale), restyle delle email, guida `docs/stripe.md`.
 > **Prossimo passo:** con i dati Stripe completare le voci aperte di questa fase (chiavi, prezzo, webhook, branding, test), poi Fase 6 e 7. Senza account si può proseguire con Fase 8 e 9: il pulsante "Acquista" delle landing usa il popup di acquisto e passerà a Stripe Checkout diretto con la Fase 7.
-- [ ] Prezzo della guida definito (in `src/lib/prodotti.ts`, oggi `null`) e chiavi Stripe Test Mode dell'account del cliente in `.env.local` e su Vercel. Prodotto e prezzo non vanno creati a mano: li crea il checkout (vedi `docs/stripe.md`).
-- [ ] Endpoint webhook di test creato nel pannello Stripe (`/api/webhooks/stripe`, eventi `checkout.session.completed` e `checkout.session.async_payment_succeeded`) e `STRIPE_WEBHOOK_SECRET` su Vercel.
+- [x] Prezzo della guida definito (89 €) (in `src/lib/prodotti.ts`, oggi `null`) e chiavi Stripe Test Mode dell'account del cliente in `.env.local` e su Vercel. Prodotto e prezzo non vanno creati a mano: li crea il checkout (vedi `docs/stripe.md`).
+- [x] Endpoint webhook di test creato nel pannello Stripe (`/api/webhooks/stripe`, eventi `checkout.session.completed` e `checkout.session.async_payment_succeeded`) e `STRIPE_WEBHOOK_SECRET` su Vercel.
 - [x] Tabella `purchases` (acquisti: utente, prodotto, sessione Stripe, importo, stato) con RLS: l'utente vede solo i propri acquisti.
 - [x] Popup "Acquista la guida": prezzo reale e pulsante che apre Stripe Checkout (pagamento ospitato da Stripe: i dati della carta non passano dall'app), con email dell'utente precompilata e ricevuta automatica. *Codice pronto, si attiva da solo con chiavi vere e prezzo definito; da provare con l'account.*
 - [ ] Aspetto della pagina di pagamento Stripe vicino allo stile dell'app (logo, colori, font e angoli dalle impostazioni di branding dell'account Stripe). *Valori pronti in `docs/stripe.md`.*
 - [x] Webhook Stripe (`/api/webhooks/stripe`): a pagamento confermato registra l'acquisto e sblocca `guide_access` (mai lato client), gestendo gli eventi duplicati. *Provato in locale con eventi firmati: firma non valida, pagamento, duplicato, non pagato.*
 - [ ] Test di un acquisto completo in locale (carte di prova, webhook con Stripe CLI): popup con pulsante attivo, pagina Stripe, ritorno, sblocco, email di conferma, riga in `purchases`.
-- [ ] Stesso test online su `app.guidocontesini.it` in Test Mode.
+- [ ] Stesso test online su `app.guidocontesini.it` in Test Mode. *Primo acquisto riuscito (pagamento, webhook, riga in `purchases`, sblocco); ritorno finito su localhost per `NEXT_PUBLIC_APP_URL` errata su Vercel: da ripetere dopo la correzione.*
 - [ ] **Tag Versione:** `v0.5.0`.
 
 ### Fase 6: Rimborsi, ritorno da Stripe e acquisti in admin (Target: v0.6.0)
