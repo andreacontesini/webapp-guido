@@ -108,6 +108,14 @@
 - [ ] Elenco landing in admin: crea, duplica, elimina (pubblica/ritira e scelta della pagina iniziale già fatti in Fase 8).
 - [ ] Editor dei blocchi: aggiungi, modifica e riordina; anteprima prima della pubblicazione.
 - [ ] Caricamento immagini per le landing (bucket pubblico su Supabase Storage).
+- [ ] **Nuovo blocco Video** (da aggiungere ai blocchi predefiniti in `src/lib/landing/blocchi.ts` e all'editor):
+  - Sorgente: video caricato su Bunny Stream (preferito) o link YouTube/Vimeo.
+  - Impostazioni personalizzabili: titolo e testo di accompagnamento, immagine di copertina, formato (16:9, 9:16, 1:1), avvio automatico (solo senza audio), audio disattivato all'avvio, ripetizione continua, controlli visibili o nascosti, sottotitoli, punto di inizio, pulsante "Acquista" sotto il video.
+  - Player ottimizzato per smartphone: riproduzione nella pagina senza aprire lo schermo intero (`playsinline`), caricamento solo al tocco o quando il video entra nello schermo (copertina leggera al posto del player), streaming adattivo alla connessione, area di tocco ampia per play/pausa, nessun salto del layout.
+- [ ] **Nuovo blocco Galleria immagini**, con due modalità a scelta:
+  - Griglia (2-4 colonne, una colonna su smartphone) con ingrandimento a schermo intero al tocco.
+  - Carosello a scorrimento (swiper) con trascinamento su smartphone, frecce su desktop, indicatori di posizione e scorrimento automatico facoltativo.
+  - Per ogni immagine testo alternativo e didascalia; immagini ottimizzate e caricate solo quando servono.
 - [ ] Misurazione delle conversioni (visite landing → checkout → acquisti), nel rispetto della privacy/cookie.
 - [ ] **Tag Versione:** `v0.9.0`.
 
