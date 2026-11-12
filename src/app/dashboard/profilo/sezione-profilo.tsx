@@ -7,6 +7,7 @@ import { salvaSezione, type StatoSezione } from "@/app/dashboard/profilo/azioni"
 import { CampoProfilo } from "@/app/dashboard/profilo/campo-profilo";
 import { Button } from "@/components/ui/button";
 import { isVisibile, sezionePerId, type IdSezione } from "@/lib/profilo/campi";
+import { unisciInviati } from "@/lib/profilo/validazione";
 
 export function SezioneProfilo({ idSezione, iniziali, completa }: { idSezione: IdSezione; iniziali: Record<string, string>; completa: boolean }) {
   const sezione = sezionePerId(idSezione)!;
@@ -20,7 +21,8 @@ export function SezioneProfilo({ idSezione, iniziali, completa }: { idSezione: I
   // riparte "pulito" per mostrare "Salvato".
   if (stato !== statoVisto) {
     setStatoVisto(stato);
-    if (stato.inviati) setValori(stato.inviati);
+    const inviati = stato.inviati;
+    if (inviati) setValori((precedenti) => unisciInviati(sezione, precedenti, inviati));
     if (stato.salvatoIl) setModificato(false);
   }
   const salvato = stato.salvatoIl && !modificato ? new Date(stato.salvatoIl) : null;

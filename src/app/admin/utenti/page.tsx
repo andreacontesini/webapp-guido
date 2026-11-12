@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { richiediAdmin } from "@/lib/auth/admin";
 import { aBlocchi } from "@/lib/blocchi";
+import { calcolaCompletamento } from "@/lib/profilo/completamento";
 import { creaClientServer } from "@/lib/supabase/server";
 import type { Immobile, Profilo } from "@/lib/supabase/tipi";
 
@@ -208,7 +209,11 @@ function RigaUtente({
         />
       </td>
       <td className="px-4 py-3">
-        <ProfiloUtente profilo={utente} immobile={immobile} />
+        <ProfiloUtente
+          id={utente.id}
+          nome={nomeCompleto || utente.email}
+          percentuale={calcolaCompletamento(utente, immobile).percentuale}
+        />
       </td>
       <td className="px-4 py-3">
         <div className="flex flex-wrap gap-1">

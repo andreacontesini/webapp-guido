@@ -38,11 +38,12 @@ function validaCampo(campo: Campo, grezzo: string, inviati: Record<string, strin
       return { valore: testo };
     }
     case "intero": {
-      const senzaUnita = grezzo.replace(/\s|€|m²|mq/gi, "");
+      const senzaUnita = grezzo.replace(/\s|€|m²|m2|mq/gi, "");
       if (!senzaUnita) return { valore: null };
       // Il punto è un separatore delle migliaia solo a gruppi di tre ("250.000"):
       // "85.5" è un decimale e non deve diventare 855.
       const pulito = /^-?\d{1,3}(\.\d{3})+$/.test(senzaUnita) ? senzaUnita.replace(/\./g, "") : senzaUnita;
+      if (/^-?\d+[.,]\d+$/.test(pulito)) return { valore: null, errore: "Senza decimali: arrotonda all'intero." };
       if (!formatoIntero.test(pulito)) return { valore: null, errore: "Inserisci un numero intero." };
       const numero = Number(pulito);
       if (numero < campo.min || numero > campo.max) {
@@ -91,9 +92,30 @@ export function validaSezione(sezione: Sezione, formData: FormData): EsitoValida
     }
     const { valore, errore } = validaCampo(campo, inviati[campo.nome] ?? "", inviati);
     if (errore) errori[campo.nome] = errore;
-    else if (campo.obbligatorio && (valore === null || (typeof valore === "string" && valore.length < 2))) {
-      errori[campo.nome] = `Inserisci ${campo.etichetta.toLowerCase()}.`;
+    else if (campo.obbligatorio && valore === null) errori[campo.nome] = `Inserisci ${campo.etichetta.toLowerCase()}.`;
+    else if (campo.obbligatorio && typeof valore === "string" && valore.length < 2) {
+      errori[campo.nome] = "Almeno 2 caratteri.";
     } else valori[campo.nome] = valore;
   }
   return { valori, errori, inviati };
+}
+
+/**
+ * Valori del modulo dopo un errore: i campi visibili prendono il valore
+ * inviato; quelli nascosti (domanda condizionale non applicabile) arrivano
+ * vuoti dal browser e mantengono quanto il cliente aveva già scritto, così
+ * riaprendo la domanda non lo perde.
+ */
+export function unisciInviati(
+  sezione: Sezione,
+  precedenti: Record<string, string>,
+  inviati: Record<string, string>,
+): Record<string, string> {
+  const uniti = { ...precedenti, ...inviati };
+  for (const campo of sezione.campi) {
+    if (!isVisibile(campo, inviati) && precedenti[campo.nome] !== undefined) {
+      uniti[campo.nome] = precedenti[campo.nome];
+    }
+  }
+  return uniti;
 }

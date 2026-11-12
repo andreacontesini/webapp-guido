@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import { sezionePerId } from "./campi";
-import { validaSezione } from "./validazione";
+import { unisciInviati, validaSezione } from "./validazione";
 
 const modulo = (dati: Record<string, string>) => {
   const fd = new FormData();
@@ -112,4 +112,36 @@ test("il punto vale come separatore delle migliaia solo nel formato giusto", () 
   assert.ok(casa.errori.rooms, "1.5 non deve diventare 15");
   const prezzo = validaSezione(sezione("obiettivi"), modulo({ expected_price: "1.200.000" }));
   assert.equal(prezzo.valori.expected_price, 1200000);
+});
+
+test("nome di un solo carattere: messaggio sulla lunghezza", () => {
+  const { errori } = validaSezione(sezione("personali"), modulo({ first_name: "A", last_name: "" }));
+  assert.equal(errori.first_name, "Almeno 2 caratteri.");
+  assert.equal(errori.last_name, "Inserisci cognome.");
+});
+
+test("unità m2 e mq accettate", () => {
+  const { valori, errori } = validaSezione(sezione("casa"), modulo({ surface_sqm: "85 m2", condo_fees_monthly: "90" }));
+  assert.deepEqual(errori, {});
+  assert.equal(valori.surface_sqm, 85);
+  assert.equal(validaSezione(sezione("casa"), modulo({ surface_sqm: "120mq" })).valori.surface_sqm, 120);
+});
+
+test("decimali con virgola o punto: messaggio specifico", () => {
+  assert.equal(validaSezione(sezione("casa"), modulo({ surface_sqm: "85,5" })).errori.surface_sqm, "Senza decimali: arrotonda all'intero.");
+  assert.equal(validaSezione(sezione("casa"), modulo({ surface_sqm: "85.5" })).errori.surface_sqm, "Senza decimali: arrotonda all'intero.");
+});
+
+test("dopo un errore i valori nascosti già scritti restano", () => {
+  const precedenti = { ownership: "unico", owners_count: "3", owners_agree: "si", inherited: "" };
+  const inviati = { ownership: "unico", owners_count: "", owners_agree: "", inherited: "si" };
+  const uniti = unisciInviati(sezione("situazione"), precedenti, inviati);
+  assert.equal(uniti.owners_count, "3");
+  assert.equal(uniti.owners_agree, "si");
+  assert.equal(uniti.inherited, "si");
+});
+
+test("dopo un errore i campi visibili prendono il valore inviato, anche vuoto", () => {
+  const uniti = unisciInviati(sezione("casa"), { city: "Brescia" }, { city: "" });
+  assert.equal(uniti.city, "");
 });

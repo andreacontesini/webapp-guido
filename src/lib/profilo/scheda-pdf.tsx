@@ -5,8 +5,8 @@ import path from "node:path";
 
 import { Document, Image, Page, StyleSheet, Text, View, renderToBuffer } from "@react-pdf/renderer";
 
-import { etichettaValore, sezioni } from "@/lib/profilo/campi";
 import { calcolaCompletamento } from "@/lib/profilo/completamento";
+import { riepilogoProfilo } from "@/lib/profilo/riepilogo";
 import { formattaPrezzo, isCodiceProdotto, prodotti } from "@/lib/prodotti";
 import type { Immobile, Profilo } from "@/lib/supabase/tipi";
 
@@ -51,14 +51,16 @@ function Righe({
   righe,
   vuota = "Non compilata",
 }: {
-  righe: { etichetta: string; valore: string }[];
+  righe: { etichetta: string; valore: string; multilinea?: boolean }[];
   vuota?: string;
 }) {
   if (righe.length === 0) return <Text style={stili.vuota}>{vuota}</Text>;
   return (
     <View>
-      {righe.map(({ etichetta, valore }) => (
-        <View key={etichetta} style={stili.riga} wrap={false}>
+      {righe.map(({ etichetta, valore, multilinea }) => (
+        // Le righe brevi non si spezzano tra due pagine; note e documenti sì,
+        // altrimenti un testo più alto di una pagina non entrerebbe.
+        <View key={etichetta} style={stili.riga} wrap={!!multilinea}>
           <Text style={stili.etichetta}>{etichetta}</Text>
           <Text style={stili.valore}>{valore}</Text>
         </View>
@@ -82,14 +84,11 @@ export async function generaSchedaPdf({
   const nome = [profilo.first_name, profilo.last_name].filter(Boolean).join(" ") || "Cliente senza nome";
   const generataIl = formatoData.format(new Date());
 
-  const gruppi = sezioni.map((sezione) => {
-    const origine = (sezione.tabella === "profiles" ? profilo : (immobile ?? {})) as Record<string, unknown>;
-    const righe = sezione.campi.flatMap((campo) => {
-      const valore = etichettaValore(campo, origine[campo.nome]);
-      return valore ? [{ etichetta: campo.etichetta, valore }] : [];
-    });
-    return { titolo: sezione.titolo, righe };
-  });
+  // Solo i campi compilati (e pertinenti).
+  const gruppi = riepilogoProfilo(profilo, immobile).map(({ titolo, righe }) => ({
+    titolo,
+    righe: righe.flatMap((r) => (r.valore ? [{ ...r, valore: r.valore }] : [])),
+  }));
 
   const righeAcquisti = acquisti.map((a) => ({
     etichetta: `${isCodiceProdotto(a.product) ? prodotti[a.product].nome : a.product}${a.paid_at ? ` · ${formatoData.format(new Date(a.paid_at))}` : ""}`,
