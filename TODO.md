@@ -89,29 +89,17 @@
 > 📌 **Ordine di lavoro:** dopo la Fase 7 vengono la Fase 8 (Profilo) e la Fase 9 (Notifiche admin). Le Fasi 10 e 11 (landing) sono già sviluppate: restano solo le voci aperte e i tag `v0.8.0` / `v0.9.0`, da creare dopo la chiusura della Fase 7.
 
 ### Fase 8: Profilo del cliente (Target: v0.10.0)
-> Pagina "Profilo" nell'area riservata, dove il cliente completa e aggiorna i propri dati. Tutto facoltativo tranne i dati base del primo accesso. I dati sull'immobile servono a Guido per capire la situazione e proporre una consulenza: vanno chiesti con una spiegazione chiara del perché, e citati nell'informativa privacy (da verificare con il cliente, Fase 12).
-- [ ] **Dati personali e contatto**: nome, cognome, telefono, comune/provincia di residenza, modalità di contatto preferita (telefono, WhatsApp, email) e fascia oraria in cui essere ricontattato.
-- [ ] **Account**: cambio email (con conferma sul nuovo indirizzo), consenso marketing modificabile, data di accettazione privacy visibile, richiesta di eliminazione dell'account e scaricamento dei propri dati (GDPR).
-- [ ] **L'immobile da vendere** (scheda singola, in futuro più immobili):
-  - Indirizzo o almeno comune, provincia e zona/quartiere.
-  - Tipologia (appartamento, villa/villetta, casa indipendente, rustico, attico, altro) e uso (abitazione principale, seconda casa, investimento).
-  - Superficie commerciale (m²), locali, camere, bagni, piano e ascensore, anno di costruzione (anche indicativo).
-  - Stato (da ristrutturare, buono, ristrutturato, nuovo) e classe energetica, se nota.
-  - Pertinenze: box/posto auto, cantina, giardino, terrazzo/balcone; riscaldamento autonomo o centralizzato; spese condominiali mensili.
-- [ ] **Situazione giuridica e documenti** (le domande che bloccano più spesso una vendita, legate alle tappe della guida):
-  - Proprietà: unico proprietario o cointestata (numero di proprietari, tutti d'accordo a vendere?), immobile ricevuto in eredità (successione già fatta?).
-  - Mutuo residuo o ipoteca da estinguere; immobile libero, abitato dal proprietario o affittato (scadenza del contratto).
-  - Conformità: dubbi su conformità urbanistica o catastale (verande, modifiche interne non dichiarate), lavori con bonus edilizi in corso.
-  - Documenti già disponibili: atto di provenienza, planimetria catastale, visura, APE, certificato di agibilità, regolamento e ultime spese condominiali.
-- [ ] **Obiettivi di vendita**:
-  - Tempistiche desiderate (entro 3 mesi, 6 mesi, 12 mesi, nessuna fretta) e motivo della vendita (acquisto di un'altra casa, trasferimento, eredità, liquidità…).
-  - Vendita legata all'acquisto di un'altra casa (serve coordinare le date?).
-  - Prezzo che si ha in mente e se è già stata fatta una valutazione (da chi).
-  - Immobile già pubblicato su portali o già affidato ad agenzie in passato (incarico ancora in corso?).
-- [ ] **A che punto sei**: tappa della guida in cui si trova il cliente (dalle 7 tappe), con indicazione di completamento del profilo (es. "Profilo completo al 60%").
-- [ ] **Richiesta di contatto a Guido**: casella "Vorrei essere ricontattato per una consulenza" con note libere; avviso agli admin quando un cliente la attiva (vedi Fase 9).
-- [ ] **Area admin**: scheda del cliente con tutti i dati del profilo e dell'immobile, filtri (es. comune, tempistiche, richiesta di consulenza) ed esportazione CSV.
-- [ ] Tabelle Supabase (`properties` o campi aggiuntivi su `profiles`) con RLS: il cliente vede e modifica solo i propri dati, l'admin legge tutto.
+> Pagina "Profilo" nell'area riservata: serve a Guido per conoscere il potenziale cliente, il cliente la compila quando vuole. Tutto facoltativo tranne i dati base del primo accesso, con un messaggio che spiega che completarla aiuta Guido. Design: `docs/superpowers/specs/2026-11-12-profilo-cliente-design.md`.
+- [ ] Migrazione: nuove colonne in `profiles` (residenza, contatto preferito e orario) e tabella `properties` (un immobile per cliente) con RLS: il cliente vede e modifica solo i propri dati, l'admin legge tutto.
+- [ ] Pagina `/dashboard/profilo` a sezioni, ciascuna con il proprio "Salva", e riquadro "Profilo completo al N%":
+  - [ ] **Dati personali**: nome, cognome, telefono, residenza, contatto preferito (telefono, WhatsApp, email) e orario. L'email non è modificabile.
+  - [ ] **La tua casa**: comune, provincia, zona e via (facoltativa, "serve solo a Guido per una valutazione più precisa"); tipologia, uso, m², locali, camere, bagni, piano e ascensore, anno, stato, classe energetica, pertinenze, riscaldamento, spese condominiali.
+  - [ ] **Situazione e documenti**: proprietà (cointestata, tutti d'accordo), eredità e successione, mutuo o ipoteca, occupazione (fine affitto), dubbi di conformità, bonus edilizi; documenti da spuntare (ce l'ho / non ce l'ho / non so), senza caricamento di file.
+  - [ ] **Obiettivi di vendita**: tempistiche, motivo, vendita legata a un altro acquisto, prezzo in mente, valutazione già fatta, portali o agenzie.
+  - [ ] **Note per Guido**.
+- [ ] Riquadro "Completa il tuo profilo" in dashboard finché il profilo non è al 100%.
+- [ ] Admin: colonna "Profilo" nella tabella utenti con popup di sola lettura e pulsante **"Scarica scheda cliente"** (PDF per Guido).
+- [ ] GDPR: scaricamento dei propri dati ed eliminazione dell'account (parte successiva).
 - [ ] **Tag Versione:** `v0.10.0`.
 
 ### Fase 9: Notifiche agli admin (Target: v0.11.0)
@@ -123,9 +111,10 @@
   - Pagamento in elaborazione o non andato a buon fine (metodi differiti).
   - Rimborso emesso e accesso revocato.
   - Contestazione aperta (urgente: va gestita su Stripe entro la scadenza indicata) e contestazione chiusa (vinta o persa).
-  - Richiesta di ricontatto per una consulenza dal profilo (Fase 8) e profilo/immobile compilato o aggiornato.
+  - Profilo o immobile compilato o aggiornato.
   - Richiesta di eliminazione dell'account o di scaricamento dei dati (GDPR).
   - Problemi tecnici: email al cliente non partita, errore del webhook Stripe.
+- [ ] **Richiesta di ricontatto** (dal profilo, Fase 8): casella "Vorrei essere ricontattato da Guido per una consulenza" con note e preferenze, evidenziata in admin e notificata subito agli admin.
 - [ ] **Riepilogo periodico** facoltativo (giornaliero o settimanale): nuovi account, acquisti e incassi, visite/checkout/acquisti per landing.
 - [ ] **Sezione "Notifiche" in admin**:
   - Elenco dei destinatari (email anche esterne all'app, es. commercialista solo per gli acquisti), con aggiunta, rimozione e pausa.
