@@ -10,11 +10,9 @@
 - **Poi:** Fase 12 · Lancio della guida (`v1.0.0`).
 
 ### Da fare a mano (fuori dal codice)
-- [ ] Creare i tag `v0.8.0` (landing) e `v0.9.0` (editor delle landing), il codice è già su `main`.
 - [ ] Scegliere in `/admin/landing` se usare la prima landing come pagina iniziale.
 - [ ] Foto dell'autore e testimonianze vere per la landing, quando disponibili.
 - [ ] Copiare i modelli email di Supabase Auth nel pannello (vedi `docs/supabase-auth.md`) e provarli.
-- [ ] Verifiche legali e fiscali con il cliente/commercialista (Fase 12).
 - [ ] Al passaggio a Stripe live: chiavi, webhook di produzione e branding completo (Fase 12).
 - [ ] Player Bunny: nascondere i controlli si imposta nella libreria Bunny.
 
