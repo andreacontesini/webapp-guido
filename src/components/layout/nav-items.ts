@@ -3,6 +3,7 @@ import {
   FileTextIcon,
   HomeIcon,
   LayoutDashboardIcon,
+  MegaphoneIcon,
   PlayCircleIcon,
   UserIcon,
   UsersIcon,
@@ -49,6 +50,11 @@ export const navigazioneAdmin: VoceNavigazione[] = [
     titolo: "Guida PDF",
     href: "/admin/guida",
     icona: FileTextIcon,
+  },
+  {
+    titolo: "Landing",
+    href: "/admin/landing",
+    icona: MegaphoneIcon,
   },
 ];
 

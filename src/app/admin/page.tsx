@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRightIcon, FileTextIcon, UsersIcon } from "lucide-react";
+import { ArrowRightIcon, FileTextIcon, MegaphoneIcon, UsersIcon } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Panoramica",
@@ -19,6 +19,12 @@ const sezioni = [
     icona: FileTextIcon,
     href: "/admin/guida",
   },
+  {
+    titolo: "Landing",
+    descrizione: "Pagine di vendita pubbliche e scelta della pagina iniziale.",
+    icona: MegaphoneIcon,
+    href: "/admin/landing",
+  },
 ];
 
 export default function AdminPage() {
@@ -33,7 +39,7 @@ export default function AdminPage() {
         </p>
       </header>
 
-      <ul className="grid gap-4 md:grid-cols-2">
+      <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {sezioni.map(({ titolo, descrizione, icona: Icona, href }) => (
           <li key={titolo}>
             <Link
