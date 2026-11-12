@@ -37,7 +37,7 @@ export const prodotti = {
       { etichetta: "Pagine", valore: "18" },
       { etichetta: "Autore", valore: "Guido Contesini" },
     ],
-    prezzo: null,
+    prezzo: 89,
     href: "/dashboard/guida",
     etichettaApri: "Apri la guida",
     etichettaAcquista: "Acquista la guida",
