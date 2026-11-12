@@ -4,6 +4,28 @@
 
 ---
 
+## 📍 Stato del progetto (aggiornato al 12/11/2026)
+- **Versione attuale:** `0.10.0` (tag `v0.10.0`). Fasi 1-8 completate; Fasi 10 e 11 (landing) già sviluppate, con i tag `v0.8.0` e `v0.9.0` ancora da creare.
+- **Prossimo passo:** Fase 9 · Notifiche agli admin (con la richiesta di ricontatto dal profilo).
+- **Poi:** Fase 12 · Lancio della guida (`v1.0.0`).
+
+### Da fare a mano (fuori dal codice)
+- [ ] Creare i tag `v0.8.0` (landing) e `v0.9.0` (editor delle landing), il codice è già su `main`.
+- [ ] Scegliere in `/admin/landing` se usare la prima landing come pagina iniziale.
+- [ ] Foto dell'autore e testimonianze vere per la landing, quando disponibili.
+- [ ] Copiare i modelli email di Supabase Auth nel pannello (vedi `docs/supabase-auth.md`) e provarli.
+- [ ] Verifiche legali e fiscali con il cliente/commercialista (Fase 12).
+- [ ] Al passaggio a Stripe live: chiavi, webhook di produzione e branding completo (Fase 12).
+- [ ] Player Bunny: nascondere i controlli si imposta nella libreria Bunny.
+
+### Note tecniche
+- Test automatici: `npm test` (file `*.test.ts` in `src/`, eseguiti con `tsx`).
+- Migrazioni del database: file in `supabase/migrations/`, applicati con la connessione `SUPABASE_DB_URL` di `.env.local`.
+- Pagamenti in Test Mode: carta `4242 4242 4242 4242`; contestazione automatica con `4000 0000 0000 0259`.
+- Design e piani delle funzionalità più grandi: `docs/superpowers/specs/` e `docs/superpowers/plans/`.
+
+---
+
 ## 🟢 VERSIONE 1.0 (Focus: Guida PDF, pagamenti e landing) — branch `main`
 
 ### Fase 1: Setup & Design System
@@ -86,7 +108,7 @@
 - [x] Test: acquisto senza account provato online il 12/11/2026 (account creato, guida sbloccata, conversione registrata sulla landing). *Restano da provare online, nel test end-to-end della Fase 12: ingresso automatico dopo Stripe, email già registrata, pagamento annullato senza account.*
 - [x] **Tag Versione:** `v0.7.0`.
 
-> 📌 **Ordine di lavoro:** dopo la Fase 7 vengono la Fase 8 (Profilo) e la Fase 9 (Notifiche admin). Le Fasi 10 e 11 (landing) sono già sviluppate: restano solo le voci aperte e i tag `v0.8.0` / `v0.9.0`, da creare dopo la chiusura della Fase 7.
+> 📌 **Ordine di lavoro:** le Fasi 8 e 9 sono state anticipate rispetto alle Fasi 10 e 11 (landing), che erano già sviluppate. Per questo le versioni non seguono il numero di fase.
 
 ### Fase 8: Profilo del cliente (Target: v0.10.0)
 > Pagina "Profilo" nell'area riservata: serve a Guido per conoscere il potenziale cliente, il cliente la compila quando vuole. Tutto facoltativo tranne i dati base del primo accesso, con un messaggio che spiega che completarla aiuta Guido. Design: `docs/superpowers/specs/2026-11-12-profilo-cliente-design.md`.
@@ -103,7 +125,7 @@
 - [x] GDPR: "Scarica i tuoi dati" (file JSON con account, immobile e acquisti) ed "Elimina account" con conferma scrivendo ELIMINA: cancella account, profilo e immobile, conserva gli acquisti senza collegamento all'utente (obblighi fiscali), email di conferma; gli admin non si eliminano da qui. *Provato in locale con utenti di prova.*
 - [x] **Tag Versione:** `v0.10.0`.
 
-### Fase 9: Notifiche agli admin (Target: v0.11.0)
+### Fase 9: Notifiche agli admin (Target: v0.11.0) ⬅️ PROSSIMA
 > Gli admin ricevono via email (Resend) gli eventi importanti dell'app. Ogni notifica ha il "Rispondi a" impostato sull'email del cliente, così si può rispondere direttamente.
 - [ ] **Eventi notificati** (ognuno attivabile o disattivabile):
   - Nuovo account: registrazione autonoma, account creato da un acquisto senza account, account creato da un admin.
@@ -138,10 +160,11 @@
   - Chi è l'autore, domande frequenti, prezzo e garanzie (pagamento sicuro Stripe, accesso immediato). Testimonianze non inserite: non ce ne sono ancora di reali.
   - [x] Il pulsante porta direttamente a Stripe Checkout senza passare dal login (flusso della Fase 7).
 - [x] Contenuti con dati reali presi dalla guida v1.0 (7 tappe, 8 controlli, 18 pagine, presentazione dell'autore); nessun numero di utenti o valutazione.
-  - [ ] Aggiungere il prezzo quando definito (il blocco prezzo lo legge da `src/lib/prodotti.ts`) ed eventualmente una foto dell'autore e testimonianze vere.
+  - [x] Prezzo nella landing (89 €, letto da `src/lib/prodotti.ts`).
+  - [ ] Foto dell'autore e testimonianze vere, quando disponibili.
 - [x] SEO e condivisione: titolo, descrizione, URL canonico e immagine di anteprima per ogni landing (generata dall'app se manca), `sitemap.xml` e `robots.txt`.
 - [x] Landing pronte a spostarsi sul dominio principale: per ora vivono su `app.guidocontesini.it` (il dominio principale ospita il sito WordPress, da non toccare), ma URL canonici, sitemap e link verso l'area riservata usano due variabili d'ambiente separate (`NEXT_PUBLIC_LANDING_URL`, facoltativa, e `NEXT_PUBLIC_APP_URL`) invece di indirizzi scritti nel codice. I link di ritorno da Stripe restano sull'app.
-- [ ] **Tag Versione:** `v0.8.0` (dopo le Fasi 5-7).
+- [ ] **Tag Versione:** `v0.8.0` (codice completo, tag da creare).
 
 ### Fase 11: Editor delle landing in admin (Target: v0.9.0)
 - [x] Elenco landing in admin (`/admin/landing`): crea (nasce in bozza con apertura e prezzo), modifica, anteprima, duplica, elimina con conferma, pubblica/ritira, pagina iniziale.
@@ -160,7 +183,7 @@
   - Griglia (2-4 colonne, una su smartphone) con ingrandimento a schermo intero, frecce e tasti freccia.
   - Carosello a scorrimento nativo: trascinamento su smartphone, frecce su desktop, indicatori di posizione, scorrimento automatico facoltativo (si ferma al tocco, al passaggio del mouse e con "riduci animazioni").
   - Testo alternativo e didascalia per ogni immagine; caricamento differito.
-- [ ] **Tag Versione:** `v0.9.0` (dopo le Fasi 5-7).
+- [ ] **Tag Versione:** `v0.9.0` (codice completo, tag da creare).
 
 ### Fase 12: Lancio della Guida (Target: v1.0.0)
 - [ ] Aspetti legali e fiscali da verificare con il cliente/commercialista: condizioni di vendita, rinuncia al recesso per contenuti digitali (casella nel checkout), emissione della fattura (la ricevuta Stripe non è una fattura), privacy e cookie.
