@@ -17,6 +17,10 @@ export type Profilo = {
   guide_access: boolean;
   privacy_accepted_at: string | null;
   marketing_consent: boolean;
+  residence_city: string | null;
+  residence_province: string | null;
+  contact_preference: "telefono" | "whatsapp" | "email" | null;
+  contact_time: "mattina" | "pomeriggio" | "sera" | "indifferente" | null;
   onboarded_at: string | null;
   current_session_id: string | null;
   created_at: string;
@@ -48,6 +52,68 @@ export type Acquisto = {
   stripe_checkout_session_id: string | null;
   stripe_payment_intent_id: string | null;
   paid_at: string | null;
+  created_at: string;
+  updated_at: string;
+};
+
+export type CodiceDocumento =
+  | "atto_provenienza"
+  | "planimetria"
+  | "visura"
+  | "ape"
+  | "agibilita"
+  | "spese_condominiali";
+export type RispostaDocumento = "si" | "no" | "non_so";
+export type Documenti = Partial<Record<CodiceDocumento, RispostaDocumento>>;
+
+/**
+ * Immobile da vendere del cliente (tabella `properties`, uno per cliente).
+ * I valori testuali sono validati da `src/lib/profilo/campi.ts` e dal database.
+ */
+export type Immobile = {
+  id: string;
+  user_id: string;
+  street: string | null;
+  city: string | null;
+  province: string | null;
+  area: string | null;
+  property_type: string | null;
+  usage: string | null;
+  surface_sqm: number | null;
+  rooms: number | null;
+  bedrooms: number | null;
+  bathrooms: number | null;
+  floor: number | null;
+  has_elevator: boolean | null;
+  year_built: number | null;
+  condition: string | null;
+  energy_class: string | null;
+  has_garage: boolean | null;
+  has_cellar: boolean | null;
+  has_garden: boolean | null;
+  has_terrace: boolean | null;
+  heating: string | null;
+  condo_fees_monthly: number | null;
+  ownership: string | null;
+  owners_count: number | null;
+  owners_agree: string | null;
+  inherited: boolean | null;
+  succession_done: string | null;
+  mortgage: string | null;
+  occupancy: string | null;
+  lease_end: string | null;
+  compliance_doubts: string | null;
+  compliance_notes: string | null;
+  building_bonus_works: boolean | null;
+  documents: Documenti;
+  sale_timeline: string | null;
+  sale_reason: string | null;
+  linked_purchase: string | null;
+  expected_price: number | null;
+  valuation_done: boolean | null;
+  valuation_by: string | null;
+  listed_before: string | null;
+  notes: string | null;
   created_at: string;
   updated_at: string;
 };
@@ -111,6 +177,12 @@ export type Database = {
         Row: ImpostazioniGuida;
         Insert: Partial<ImpostazioniGuida>;
         Update: Partial<ImpostazioniGuida>;
+        Relationships: [];
+      };
+      properties: {
+        Row: Immobile;
+        Insert: Partial<Omit<Immobile, "id" | "created_at" | "updated_at">> & { user_id: string };
+        Update: Partial<Omit<Immobile, "id" | "user_id" | "created_at" | "updated_at">>;
         Relationships: [];
       };
       purchases: {
