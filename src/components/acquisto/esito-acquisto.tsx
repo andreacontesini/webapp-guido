@@ -14,6 +14,7 @@ export function EsitoAcquisto({
   children,
   azionePrincipale,
   azioneSecondaria,
+  pulsantePrincipale,
   animaIcona,
 }: {
   icona: LucideIcon;
@@ -22,6 +23,8 @@ export function EsitoAcquisto({
   children: React.ReactNode;
   azionePrincipale?: Azione;
   azioneSecondaria?: Azione;
+  /** Pulsante principale personalizzato (es. il popup di acquisto), al posto di `azionePrincipale`. */
+  pulsantePrincipale?: React.ReactNode;
   animaIcona?: boolean;
 }) {
   return (
@@ -48,7 +51,7 @@ export function EsitoAcquisto({
       <h1 className="relative text-2xl font-semibold tracking-tight">{titolo}</h1>
       <div className="relative mt-2 space-y-2 text-muted-foreground">{children}</div>
 
-      {(azionePrincipale || azioneSecondaria) && (
+      {(azionePrincipale || azioneSecondaria || pulsantePrincipale) && (
         <div className="relative mt-8 flex flex-col-reverse gap-2 sm:flex-row sm:justify-center">
           {azioneSecondaria && (
             <Button
@@ -60,7 +63,8 @@ export function EsitoAcquisto({
               {azioneSecondaria.etichetta}
             </Button>
           )}
-          {azionePrincipale && (
+          {pulsantePrincipale}
+          {!pulsantePrincipale && azionePrincipale && (
             <Button size="lg" render={<Link href={azionePrincipale.href} />} nativeButton={false}>
               {azionePrincipale.etichetta}
             </Button>

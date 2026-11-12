@@ -62,7 +62,8 @@ export async function avviaCheckout(
         metadata: metadati,
       },
       success_url: `${base}/dashboard/acquisto/conferma?prodotto=${prodotto}&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${base}/dashboard/acquisto/annullato?prodotto=${prodotto}`,
+      // La landing di origine resta nell'URL: "Riprova" la riusa per le statistiche.
+      cancel_url: `${base}/dashboard/acquisto/annullato?prodotto=${prodotto}${landingId ? `&origine=${landingId}` : ""}`,
     });
     urlPagamento = sessione.url;
   } catch (errore) {
