@@ -105,19 +105,23 @@
 - [ ] **Tag Versione:** `v0.8.0` (dopo le Fasi 5-7).
 
 ### Fase 9: Editor delle landing in admin (Target: v0.9.0)
-- [ ] Elenco landing in admin: crea, duplica, elimina (pubblica/ritira e scelta della pagina iniziale già fatti in Fase 8).
-- [ ] Editor dei blocchi: aggiungi, modifica e riordina; anteprima prima della pubblicazione.
-- [ ] Caricamento immagini per le landing (bucket pubblico su Supabase Storage).
-- [ ] **Nuovo blocco Video** (da aggiungere ai blocchi predefiniti in `src/lib/landing/blocchi.ts` e all'editor):
-  - Sorgente: video caricato su Bunny Stream (preferito) o link YouTube/Vimeo.
-  - Impostazioni personalizzabili: titolo e testo di accompagnamento, immagine di copertina, formato (16:9, 9:16, 1:1), avvio automatico (solo senza audio), audio disattivato all'avvio, ripetizione continua, controlli visibili o nascosti, sottotitoli, punto di inizio, pulsante "Acquista" sotto il video.
-  - Player ottimizzato per smartphone: riproduzione nella pagina senza aprire lo schermo intero (`playsinline`), caricamento solo al tocco o quando il video entra nello schermo (copertina leggera al posto del player), streaming adattivo alla connessione, area di tocco ampia per play/pausa, nessun salto del layout.
-- [ ] **Nuovo blocco Galleria immagini**, con due modalità a scelta:
-  - Griglia (2-4 colonne, una colonna su smartphone) con ingrandimento a schermo intero al tocco.
-  - Carosello a scorrimento (swiper) con trascinamento su smartphone, frecce su desktop, indicatori di posizione e scorrimento automatico facoltativo.
-  - Per ogni immagine testo alternativo e didascalia; immagini ottimizzate e caricate solo quando servono.
-- [ ] Misurazione delle conversioni (visite landing → checkout → acquisti), nel rispetto della privacy/cookie.
-- [ ] **Tag Versione:** `v0.9.0`.
+- [x] Elenco landing in admin (`/admin/landing`): crea (nasce in bozza con apertura e prezzo), modifica, anteprima, duplica, elimina con conferma, pubblica/ritira, pagina iniziale.
+- [x] Editor dei blocchi (`/admin/landing/modifica?id=…`): impostazioni (nome, indirizzo, titolo e descrizione SEO, immagine di anteprima), aggiungi/modifica/duplica/elimina/riordina i blocchi, avviso per i blocchi incompleti (salvati ma nascosti nella pagina) e per le modifiche non salvate.
+- [x] Anteprima prima della pubblicazione (`/anteprima/<id>`, solo admin, non indicizzata): mostra l'ultima versione salvata anche delle bozze, senza contare visite.
+- [x] Caricamento immagini per le landing: bucket pubblico `landing` su Supabase Storage (max 10 MB, JPG/PNG/WebP/AVIF/GIF), caricamento diretto dal browser con URL firmato, oppure indirizzo incollato.
+  - [ ] Pulizia delle immagini non più usate (oggi restano nel bucket anche dopo l'eliminazione di una landing).
+- [x] Misurazione delle conversioni (visite landing → checkout avviati → acquisti), anonima e senza cookie: tabella `landing_events` (solo landing, tipo e data), visite inviate dalla pagina, checkout dal popup di acquisto, acquisti dal webhook Stripe. Statistiche degli ultimi 30 giorni nell'elenco admin.
+  - [ ] Verificare le statistiche di checkout e acquisto con Stripe attivo (Fase 5) e con l'acquisto senza account (Fase 7, il checkout dovrà portarsi dietro la landing di origine).
+- [x] **Nuovo blocco Video**:
+  - Sorgente riconosciuta dall'indirizzo: Bunny Stream (link di embed o di riproduzione), YouTube (dominio senza cookie), Vimeo, file MP4/WebM.
+  - Impostazioni: titolo e testo, copertina, formato (16:9, 9:16, 1:1), avvio automatico (sempre senza audio), audio disattivato, ripetizione, controlli, sottotitoli, secondo di partenza, pulsante "Acquista" sotto il video.
+  - Player per smartphone: copertina leggera al posto del player, caricamento al tocco o quando il video entra nello schermo, riproduzione nella pagina (`playsinline`), pulsante play da 80 px, spazio riservato dal formato (nessun salto del layout); streaming adattivo dai player di Bunny/YouTube/Vimeo.
+  - [ ] Nascondere i controlli funziona con YouTube, Vimeo e file diretti; con Bunny dipende dalle impostazioni del player nella libreria Bunny.
+- [x] **Nuovo blocco Galleria immagini**:
+  - Griglia (2-4 colonne, una su smartphone) con ingrandimento a schermo intero, frecce e tasti freccia.
+  - Carosello a scorrimento nativo: trascinamento su smartphone, frecce su desktop, indicatori di posizione, scorrimento automatico facoltativo (si ferma al tocco, al passaggio del mouse e con "riduci animazioni").
+  - Testo alternativo e didascalia per ogni immagine; caricamento differito.
+- [ ] **Tag Versione:** `v0.9.0` (dopo le Fasi 5-7).
 
 ### Fase 10: Lancio della Guida (Target: v1.0.0)
 - [ ] Aspetti legali e fiscali da verificare con il cliente/commercialista: condizioni di vendita, rinuncia al recesso per contenuti digitali (casella nel checkout), emissione della fattura (la ricevuta Stripe non è una fattura), privacy e cookie.
