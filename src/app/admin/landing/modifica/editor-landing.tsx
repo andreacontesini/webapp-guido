@@ -172,11 +172,11 @@ export function EditorLanding({ iniziale, base }: { iniziale: LandingDaModificar
             <label className="text-sm font-medium" htmlFor={idSlug}>
               Indirizzo <span className="text-destructive">*</span>
             </label>
-            <div className="flex items-center rounded-md border border-input focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50 dark:bg-input/30">
-              <span className="truncate pl-3 text-sm text-muted-foreground">{base}/</span>
+            <div className="flex items-center rounded-lg border border-input focus-within:border-ring focus-within:ring-3 focus-within:ring-ring/50 dark:bg-input/30">
+              <span className="truncate pl-3.5 text-base text-muted-foreground">{base}/</span>
               <input
                 id={idSlug}
-                className="h-10 min-w-0 flex-1 bg-transparent pr-3 text-base outline-none md:text-sm"
+                className="h-12 min-w-0 flex-1 bg-transparent pr-3.5 text-base outline-none"
                 value={impostazioni.slug}
                 onChange={(e) => cambiaImpostazione("slug", e.target.value.toLowerCase())}
               />
@@ -355,7 +355,7 @@ export function EditorLanding({ iniziale, base }: { iniziale: LandingDaModificar
               </option>
             ))}
           </SelectNativa>
-          <Button type="button" variant="outline" onClick={aggiungi}>
+          <Button type="button" variant="outline" size="lg" onClick={aggiungi}>
             <PlusIcon aria-hidden />
             Aggiungi blocco
           </Button>
