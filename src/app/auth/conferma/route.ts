@@ -2,6 +2,7 @@ import type { EmailOtpType } from "@supabase/supabase-js";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { PERCORSO_ACCESSO, percorsoSicuro } from "@/lib/auth/percorsi";
+import { notificaDopo } from "@/lib/notifiche/invia";
 import { creaClientServer } from "@/lib/supabase/server";
 
 /**
@@ -50,6 +51,35 @@ export async function GET(request: NextRequest) {
   }
   await supabase.auth.signOut({ scope: "others" });
 
+  await notificaRegistrazione(supabase);
+
   // Il proxy porterà a /benvenuto chi deve ancora completare il profilo.
   return NextResponse.redirect(new URL(prossimo, request.url));
+}
+
+/** Entro quanto tempo dalla creazione un primo accesso conta come nuova registrazione. */
+const FINESTRA_REGISTRAZIONE_MS = 2 * 60 * 60 * 1000;
+
+/**
+ * Registrazione autonoma: l'account nasce quando si chiede il Magic Link, ma
+ * si notifica al primo clic sul link (account confermato). Gli account creati
+ * da un acquisto o da un admin sono già stati notificati con la stessa chiave
+ * (`nuovo_account:<id>`), quindi non partono doppioni.
+ */
+async function notificaRegistrazione(supabase: Awaited<ReturnType<typeof creaClientServer>>) {
+  const { data } = await supabase.auth.getClaims();
+  const id = data?.claims?.sub;
+  if (!id) return;
+  const { data: profilo } = await supabase
+    .from("profiles")
+    .select("email, onboarded_at, created_at")
+    .eq("id", id)
+    .maybeSingle();
+  if (
+    profilo &&
+    !profilo.onboarded_at &&
+    Date.now() - new Date(profilo.created_at).getTime() < FINESTRA_REGISTRAZIONE_MS
+  ) {
+    notificaDopo({ evento: "nuovo_account", cliente: { id, email: profilo.email }, origine: "registrazione" });
+  }
 }

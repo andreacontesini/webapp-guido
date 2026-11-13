@@ -7,6 +7,7 @@ import EmailAccountCreato from "@/emails/account-creato";
 import { richiediAdmin } from "@/lib/auth/admin";
 import { inviaEmail } from "@/lib/email/invia";
 import { generaLinkAccesso } from "@/lib/auth/link-accesso";
+import { notificaDopo, segnalaProblema } from "@/lib/notifiche/invia";
 import { creaClientAdmin } from "@/lib/supabase/admin";
 import type { Profilo, RuoloUtente } from "@/lib/supabase/tipi";
 
@@ -181,6 +182,13 @@ export async function creaUtente(
 
   revalidatePath(PERCORSO);
 
+  notificaDopo({
+    evento: "nuovo_account",
+    cliente: { id, email: valori.email, nome: [valori.nome, valori.cognome].filter(Boolean).join(" ") || null },
+    origine: "admin",
+    guidaAttiva: valori.guida,
+  });
+
   let avviso: string | undefined;
   if (valori.invia) {
     try {
@@ -196,6 +204,10 @@ export async function creaUtente(
       });
     } catch (errore) {
       console.error("Invio email al nuovo utente non riuscito", errore);
+      segnalaProblema("Email di benvenuto al nuovo utente non partita", errore, `account-creato:${id}`, {
+        id,
+        email: valori.email,
+      });
       avviso =
         "Account creato, ma l'email non è partita: l'utente può accedere da /accesso con la sua email.";
     }

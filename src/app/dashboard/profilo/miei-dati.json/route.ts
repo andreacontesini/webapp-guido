@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 
+import { notificaDopo } from "@/lib/notifiche/invia";
 import { datiEsportati } from "@/lib/profilo/account";
 import { leggiProfiloCompleto } from "@/lib/profilo/dati";
 import { creaClientServer } from "@/lib/supabase/server";
@@ -19,6 +20,16 @@ export async function GET() {
     .order("created_at");
 
   const dati = datiEsportati(profilo, immobile, acquisti ?? []);
+  notificaDopo({
+    evento: "richiesta_gdpr",
+    cliente: {
+      id: profilo.id,
+      email: profilo.email,
+      nome: [profilo.first_name, profilo.last_name].filter(Boolean).join(" ") || null,
+    },
+    tipo: "scaricamento",
+    il: new Date().toISOString(),
+  });
   return new NextResponse(JSON.stringify(dati, null, 2), {
     headers: {
       "Content-Type": "application/json; charset=utf-8",

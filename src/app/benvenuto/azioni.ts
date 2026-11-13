@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 
 import { PERCORSO_INIZIALE } from "@/lib/auth/percorsi";
 import { leggiProfiloCorrente } from "@/lib/auth/utente";
+import { notificaDopo } from "@/lib/notifiche/invia";
 import { creaClientServer } from "@/lib/supabase/server";
 
 type Campo = "nome" | "cognome" | "telefono" | "privacy";
@@ -69,6 +70,13 @@ export async function salvaDatiIniziali(
       erroreGenerale: "Non siamo riusciti a salvare i dati. Riprova tra poco.",
     };
   }
+
+  notificaDopo({
+    evento: "primo_accesso",
+    cliente: { id: profilo.id, email: profilo.email, nome: `${valori.nome} ${valori.cognome}` },
+    telefono: valori.telefono || null,
+    marketing: valori.marketing,
+  });
 
   redirect(PERCORSO_INIZIALE);
 }

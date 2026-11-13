@@ -9,6 +9,8 @@ import EmailAccountEliminato from "@/emails/account-eliminato";
 import { PERCORSO_ACCESSO } from "@/lib/auth/percorsi";
 import { leggiProfiloCorrente } from "@/lib/auth/utente";
 import { inviaEmail } from "@/lib/email/invia";
+import { notificaDopo, segnalaProblema } from "@/lib/notifiche/invia";
+import { calcolaCompletamento } from "@/lib/profilo/completamento";
 import { isConfermaEliminazione, PAROLA_CONFERMA } from "@/lib/profilo/account";
 import { sezionePerId, type IdSezione } from "@/lib/profilo/campi";
 import { validaSezione } from "@/lib/profilo/validazione";
@@ -53,6 +55,7 @@ export async function salvaSezione(idSezione: IdSezione, _stato: StatoSezione, f
 
   revalidatePath("/dashboard/profilo");
   revalidatePath("/dashboard");
+  await notificaProfiloAggiornato(profilo, sezione.titolo);
   return { errori: {}, salvatoIl: Date.now() };
 }
 
@@ -89,10 +92,44 @@ export async function eliminaAccount(_stato: StatoEliminazione, formData: FormDa
   } catch (errore) {
     // L'account è già eliminato: l'email di conferma non deve bloccare l'uscita.
     console.error("Email di conferma dell'eliminazione non inviata", errore);
+    segnalaProblema("Email di conferma dell'eliminazione dell'account non partita", errore, `account-eliminato:${profilo.id}`, {
+      email: profilo.email,
+      nome: nomeCompleto(profilo),
+    });
   }
+
+  notificaDopo({
+    evento: "richiesta_gdpr",
+    cliente: { id: profilo.id, email: profilo.email, nome: nomeCompleto(profilo) },
+    tipo: "eliminazione",
+    il: new Date().toISOString(),
+  });
 
   // Toglie i cookie di una sessione che non esiste più.
   const supabase = await creaClientServer();
   await supabase.auth.signOut({ scope: "local" }).catch(() => undefined);
   redirect(`${PERCORSO_ACCESSO}?motivo=account-eliminato`);
+}
+
+const nomeCompleto = (profilo: Pick<Profilo, "first_name" | "last_name">) =>
+  [profilo.first_name, profilo.last_name].filter(Boolean).join(" ") || null;
+
+/** Giorno di oggi in Italia (AAAA-MM-GG): al massimo una notifica al giorno per cliente. */
+const oggiInItalia = () => new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Rome" }).format(new Date());
+
+/** Notifica agli admin il profilo aggiornato, con la percentuale dopo il salvataggio. */
+async function notificaProfiloAggiornato(profilo: Profilo, sezione: string) {
+  const supabase = await creaClientServer();
+  const [{ data: aggiornato }, { data: immobile }] = await Promise.all([
+    supabase.from("profiles").select("*").eq("id", profilo.id).maybeSingle(),
+    supabase.from("properties").select("*").eq("user_id", profilo.id).maybeSingle(),
+  ]);
+  const attuale = aggiornato ?? profilo;
+  notificaDopo({
+    evento: "profilo_aggiornato",
+    cliente: { id: profilo.id, email: profilo.email, nome: nomeCompleto(attuale) },
+    sezione,
+    percentuale: calcolaCompletamento(attuale, immobile ?? null).percentuale,
+    giorno: oggiInItalia(),
+  });
 }

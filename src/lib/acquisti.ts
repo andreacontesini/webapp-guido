@@ -8,6 +8,8 @@ import { inviaEmail } from "@/lib/email/invia";
 import { registraEventoLanding } from "@/lib/landing/eventi";
 import { generaLinkAccesso } from "@/lib/auth/link-accesso";
 import { PERCORSO_INIZIALE } from "@/lib/auth/percorsi";
+import type { ClienteNotifica } from "@/lib/notifiche/eventi";
+import { notificaDopo, segnalaProblema } from "@/lib/notifiche/invia";
 import { isCodiceProdotto } from "@/lib/prodotti";
 import { stripe } from "@/lib/stripe";
 import { creaClientAdmin } from "@/lib/supabase/admin";
@@ -72,6 +74,18 @@ export async function registraPagamento(sessione: Stripe.Checkout.Session) {
   const landingId = sessione.metadata?.landing_id;
   if (nuovo && landingId) await registraEventoLanding(landingId, "acquisto");
 
+  if (nuovo) {
+    notificaDopo({
+      evento: "acquisto",
+      cliente: await clienteNotifica(userId, email),
+      prodotto,
+      importoCentesimi: importo,
+      sessione: sessione.id,
+      landing: landingId ? await slugLanding(landingId) : null,
+      senzaAccount: ospite,
+    });
+  }
+
   if (!userId) {
     console.warn(`Webhook Stripe: acquisto ${sessione.id} senza utente, registrato senza sblocco`);
     return;
@@ -108,7 +122,30 @@ export async function registraPagamento(sessione: Stripe.Checkout.Session) {
   } catch (errore) {
     // L'acquisto è già registrato e sbloccato: l'email non deve bloccare il webhook.
     console.error(`Webhook Stripe: email di conferma per ${sessione.id} non inviata`, errore);
+    segnalaProblema("Email di conferma dell'acquisto non partita", errore, `conferma-acquisto:${sessione.id}`, {
+      id: userId,
+      email,
+      nome: profilo?.first_name ?? null,
+    });
   }
+}
+
+/** Nome e cognome del cliente per le notifiche agli admin (l'email c'è sempre). */
+export async function clienteNotifica(userId: string | null, email: string): Promise<ClienteNotifica> {
+  if (!userId) return { id: null, email };
+  const { data } = await creaClientAdmin()
+    .from("profiles")
+    .select("first_name, last_name")
+    .eq("id", userId)
+    .maybeSingle();
+  const nome = [data?.first_name, data?.last_name].filter(Boolean).join(" ");
+  return { id: userId, email, nome: nome || null };
+}
+
+/** Indirizzo della landing di provenienza, per la notifica d'acquisto. */
+async function slugLanding(id: string) {
+  const { data } = await creaClientAdmin().from("landing_pages").select("slug").eq("id", id).maybeSingle();
+  return data?.slug ?? null;
 }
 
 type StatoAcquisto = "pagato" | "rimborsato" | "contestato";
@@ -123,25 +160,26 @@ export async function cambiaStatoAcquisto(
   stato: StatoAcquisto,
 ) {
   const idPagamento = typeof paymentIntent === "string" ? paymentIntent : paymentIntent?.id;
-  if (!idPagamento) return;
+  if (!idPagamento) return null;
 
   const client = creaClientAdmin();
   const { data: acquisto, error } = await client
     .from("purchases")
     .update({ status: stato })
     .eq("stripe_payment_intent_id", idPagamento)
-    .select("user_id, product")
+    .select("user_id, email, product, amount_total")
     .maybeSingle();
   if (error) throw error;
   if (!acquisto) {
     // Pagamento non fatto dall'app (es. creato a mano nel pannello Stripe).
     console.warn(`Webhook Stripe: nessun acquisto per il pagamento ${idPagamento}`);
-    return;
+    return null;
   }
 
   if (acquisto.user_id && acquisto.product === "guida") {
     await allineaAccessoGuida(acquisto.user_id);
   }
+  return { ...acquisto, idPagamento };
 }
 
 /**
@@ -261,6 +299,12 @@ async function trovaOCreaAccount(email: string, nomeCompleto?: string | null) {
       .update({ first_name: nome.slice(0, 80), last_name: cognome.join(" ").slice(0, 80) || null })
       .eq("id", creazione.user.id);
   }
+  notificaDopo({
+    evento: "nuovo_account",
+    cliente: { id: creazione.user.id, email, nome: nomeCompleto?.trim() || null },
+    origine: "acquisto",
+    guidaAttiva: true,
+  });
   return creazione.user.id;
 }
 
