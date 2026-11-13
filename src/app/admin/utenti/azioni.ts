@@ -81,6 +81,26 @@ export async function eliminaUtente(id: string): Promise<EsitoAzione> {
   return {};
 }
 
+/** Segna come gestita la richiesta di ricontatto del cliente (anche la propria, per le prove). */
+export async function segnaRicontattoGestito(id: string): Promise<EsitoAzione> {
+  const preparazione = await preparaModifica(id, { ancheSuSeStessi: true });
+  if ("errore" in preparazione) return { errore: preparazione.errore };
+
+  const { data, error } = await preparazione.client
+    .from("profiles")
+    .update({ contact_request_handled_at: new Date().toISOString() })
+    .eq("id", id)
+    .not("contact_request_at", "is", null)
+    .select("id");
+  if (error || !data?.length) {
+    console.error("Richiesta di ricontatto non segnata come gestita", error);
+    return { errore: "Modifica non riuscita. Riprova." };
+  }
+  revalidatePath(PERCORSO);
+  revalidatePath("/admin");
+  return {};
+}
+
 // -------------------------------------------------------------
 // Creazione di un utente dal back office
 // -------------------------------------------------------------

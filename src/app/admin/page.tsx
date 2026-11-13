@@ -1,6 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRightIcon, FileTextIcon, MegaphoneIcon, UsersIcon } from "lucide-react";
+import { Suspense } from "react";
+import { ArrowRightIcon, BellIcon, FileTextIcon, MegaphoneIcon, PhoneCallIcon, UsersIcon } from "lucide-react";
+
+import { richiediAdmin } from "@/lib/auth/admin";
+import { statoRichiesta } from "@/lib/profilo/ricontatto";
+import { creaClientServer } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Panoramica",
@@ -25,6 +30,12 @@ const sezioni = [
     icona: MegaphoneIcon,
     href: "/admin/landing",
   },
+  {
+    titolo: "Notifiche",
+    descrizione: "Chi riceve via email gli eventi dell'app e storico degli invii.",
+    icona: BellIcon,
+    href: "/admin/notifiche",
+  },
 ];
 
 export default function AdminPage() {
@@ -38,6 +49,10 @@ export default function AdminPage() {
           Gestisci utenti, permessi e contenuti dell&apos;app.
         </p>
       </header>
+
+      <Suspense fallback={null}>
+        <AvvisoRicontatti />
+      </Suspense>
 
       <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {sezioni.map(({ titolo, descrizione, icona: Icona, href }) => (
@@ -62,5 +77,30 @@ export default function AdminPage() {
         ))}
       </ul>
     </div>
+  );
+}
+
+/** Clienti che hanno chiesto di essere ricontattati e non sono ancora stati gestiti. */
+async function AvvisoRicontatti() {
+  await richiediAdmin();
+  const supabase = await creaClientServer();
+  const { data } = await supabase
+    .from("profiles")
+    .select("contact_request_at, contact_request_handled_at")
+    .not("contact_request_at", "is", null);
+  const quanti = (data ?? []).filter((r) => statoRichiesta(r) === "in_attesa").length;
+  if (quanti === 0) return null;
+
+  return (
+    <Link
+      href="/admin/utenti?ricontatto=1"
+      className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4 text-sm font-medium hover:bg-primary/10 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+    >
+      <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <PhoneCallIcon className="size-4" aria-hidden />
+      </span>
+      {quanti === 1 ? "1 cliente chiede di essere ricontattato" : `${quanti} clienti chiedono di essere ricontattati`}
+      <ArrowRightIcon className="ml-auto size-4 text-muted-foreground" aria-hidden />
+    </Link>
   );
 }

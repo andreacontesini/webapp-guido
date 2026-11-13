@@ -1,4 +1,5 @@
 import {
+  BellIcon,
   BookOpenIcon,
   FileTextIcon,
   HomeIcon,
@@ -54,6 +55,11 @@ export const navigazioneAdmin: VoceNavigazione[] = [
     titolo: "Landing",
     href: "/admin/landing",
     icona: MegaphoneIcon,
+  },
+  {
+    titolo: "Notifiche",
+    href: "/admin/notifiche",
+    icona: BellIcon,
   },
 ];
 

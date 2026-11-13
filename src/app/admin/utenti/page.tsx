@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { SearchIcon } from "lucide-react";
+import { PhoneCallIcon, SearchIcon } from "lucide-react";
 
 import { AcquistiUtente, type RigaAcquisto } from "@/app/admin/utenti/acquisti-utente";
 import { AzioniUtente, InterruttoreGuida } from "@/app/admin/utenti/azioni-utente";
 import { ProfiloUtente } from "@/app/admin/utenti/profilo-utente";
+import { RicontattoUtente } from "@/app/admin/utenti/ricontatto-utente";
 import { NuovoUtente } from "@/app/admin/utenti/nuovo-utente";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -13,6 +14,7 @@ import { Input } from "@/components/ui/input";
 import { richiediAdmin } from "@/lib/auth/admin";
 import { aBlocchi } from "@/lib/blocchi";
 import { calcolaCompletamento } from "@/lib/profilo/completamento";
+import { statoRichiesta } from "@/lib/profilo/ricontatto";
 import { creaClientServer } from "@/lib/supabase/server";
 import type { Immobile, Profilo } from "@/lib/supabase/tipi";
 
@@ -52,7 +54,9 @@ const pulisciRicerca = (valore: unknown) =>
 
 async function ElencoUtenti({ searchParams }: Pick<PageProps<"/admin/utenti">, "searchParams">) {
   const admin = await richiediAdmin();
-  const ricerca = pulisciRicerca((await searchParams).q);
+  const parametri = await searchParams;
+  const ricerca = pulisciRicerca(parametri.q);
+  const soloRicontatto = parametri.ricontatto === "1";
 
   // La RLS consente agli admin di leggere tutti i profili.
   const supabase = await creaClientServer();
@@ -67,12 +71,22 @@ async function ElencoUtenti({ searchParams }: Pick<PageProps<"/admin/utenti">, "
       `email.ilike.${filtro},first_name.ilike.${filtro},last_name.ilike.${filtro}`,
     );
   }
-  const { data: utenti, error } = await query;
+  if (soloRicontatto) query = query.not("contact_request_at", "is", null);
+  const { data: risultati, error } = await query;
 
   if (error) {
     console.error("Lettura utenti non riuscita", error);
     return <p className="text-destructive">Non siamo riusciti a caricare gli utenti.</p>;
   }
+  // Richieste ancora aperte: quelle gestite prima di una nuova richiesta contano come aperte.
+  const utenti = soloRicontatto
+    ? risultati.filter((u) => statoRichiesta(u) === "in_attesa")
+    : risultati;
+  const { data: richieste } = await supabase
+    .from("profiles")
+    .select("contact_request_at, contact_request_handled_at")
+    .not("contact_request_at", "is", null);
+  const daRicontattare = (richieste ?? []).filter((r) => statoRichiesta(r) === "in_attesa").length;
 
   // Acquisti degli utenti in elenco (la RLS consente agli admin di leggerli tutti).
   const acquistiPerUtente = new Map<string, RigaAcquisto[]>();
@@ -129,8 +143,28 @@ async function ElencoUtenti({ searchParams }: Pick<PageProps<"/admin/utenti">, "
         </Button>
       </form>
 
+      {daRicontattare > 0 && !soloRicontatto && (
+        <Link
+          href="/admin/utenti?ricontatto=1"
+          className="flex items-center gap-2 rounded-lg border border-primary/30 bg-primary/5 px-4 py-3 text-sm font-medium hover:bg-primary/10"
+        >
+          <PhoneCallIcon className="size-4 text-primary" aria-hidden />
+          {daRicontattare === 1
+            ? "1 cliente chiede di essere ricontattato"
+            : `${daRicontattare} clienti chiedono di essere ricontattati`}
+          <span className="ml-auto text-primary underline-offset-4">Mostra</span>
+        </Link>
+      )}
+
       <p className="text-sm text-muted-foreground">
-        {ricerca ? (
+        {soloRicontatto ? (
+          <>
+            {utenti.length} da ricontattare ·{" "}
+            <Link href="/admin/utenti" className="underline underline-offset-4">
+              mostra tutti
+            </Link>
+          </>
+        ) : ricerca ? (
           <>
             {utenti.length} risultati per «{ricerca}» ·{" "}
             <Link href="/admin/utenti" className="underline underline-offset-4">
@@ -189,8 +223,9 @@ function RigaUtente({
   urlPagamentiStripe: string;
 }) {
   const nomeCompleto = [utente.first_name, utente.last_name].filter(Boolean).join(" ");
+  const ricontatto = statoRichiesta(utente) === "in_attesa" && utente.contact_request_at;
   return (
-    <tr className={utente.is_blocked ? "bg-muted/40" : undefined}>
+    <tr className={utente.is_blocked ? "bg-muted/40" : ricontatto ? "bg-primary/5" : undefined}>
       <td className="px-4 py-3">
         <p className="font-medium">{nomeCompleto || "Profilo da completare"}</p>
         <p className="text-muted-foreground">{utente.email}</p>
@@ -216,7 +251,21 @@ function RigaUtente({
         />
       </td>
       <td className="px-4 py-3">
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap items-center gap-1">
+          {ricontatto && (
+            <RicontattoUtente
+              id={utente.id}
+              nome={nomeCompleto || utente.email}
+              email={utente.email}
+              dati={{
+                richiestaIl: ricontatto,
+                note: utente.contact_request_notes,
+                telefono: utente.phone,
+                contatto: utente.contact_preference,
+                orario: utente.contact_time,
+              }}
+            />
+          )}
           {utente.role === "admin" && <Badge>Admin</Badge>}
           {utente.is_blocked ? (
             <Badge variant="destructive">Bloccato</Badge>

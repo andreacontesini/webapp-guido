@@ -30,6 +30,9 @@ import type { StatoNotifica } from "@/lib/supabase/tipi";
 /** Giorni di storico conservati (e mostrati in /admin/notifiche). */
 export const GIORNI_STORICO = 30;
 
+/** Inizio del periodo di storico conservato (ISO). */
+export const inizioStorico = () => new Date(Date.now() - GIORNI_STORICO * 24 * 60 * 60 * 1000).toISOString();
+
 /** Pausa tra due invii: il piano base di Resend accetta poche email al secondo. */
 const PAUSA_TRA_INVII_MS = 600;
 const attendi = (ms: number) => new Promise((risolvi) => setTimeout(risolvi, ms));
@@ -148,8 +151,7 @@ async function aggiornaEsito(id: number, stato: StatoNotifica, inviati: string[]
 
 /** Cancella lo storico più vecchio di 30 giorni (a ogni invio: poche righe, nessun cron). */
 async function pulisciStorico() {
-  const limite = new Date(Date.now() - GIORNI_STORICO * 24 * 60 * 60 * 1000).toISOString();
-  const { error } = await creaClientAdmin().from("admin_notification_log").delete().lt("created_at", limite);
+  const { error } = await creaClientAdmin().from("admin_notification_log").delete().lt("created_at", inizioStorico());
   if (error) console.error("Pulizia dello storico delle notifiche non riuscita", error);
 }
 

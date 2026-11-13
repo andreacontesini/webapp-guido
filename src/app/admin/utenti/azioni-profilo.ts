@@ -2,6 +2,7 @@
 
 import { richiediAdmin } from "@/lib/auth/admin";
 import { leggiProfiloCliente } from "@/lib/profilo/dati";
+import { statoRichiesta } from "@/lib/profilo/ricontatto";
 import { riepilogoProfilo, type GruppoRiepilogo } from "@/lib/profilo/riepilogo";
 
 export type DettaglioProfilo = { gruppi: GruppoRiepilogo[] } | { errore: string };
@@ -32,7 +33,22 @@ export async function leggiDettaglioProfilo(id: string): Promise<DettaglioProfil
         multilinea: false,
       },
       { etichetta: "Comunicazioni promozionali", valore: profilo.marketing_consent ? "Sì" : "No", multilinea: false },
+      { etichetta: "Richiesta di ricontatto", valore: descriviRichiesta(profilo), multilinea: false },
+      ...(statoRichiesta(profilo) === "in_attesa" && profilo.contact_request_notes
+        ? [{ etichetta: "Note della richiesta", valore: profilo.contact_request_notes, multilinea: true }]
+        : []),
     ],
   };
   return { gruppi: [account, ...riepilogoProfilo(profilo, immobile)] };
+}
+
+function descriviRichiesta(profilo: Parameters<typeof statoRichiesta>[0]) {
+  switch (statoRichiesta(profilo)) {
+    case "in_attesa":
+      return `Da ricontattare (richiesta del ${formatoData.format(new Date(profilo.contact_request_at!))})`;
+    case "gestita":
+      return `Gestita il ${formatoData.format(new Date(profilo.contact_request_handled_at!))}`;
+    default:
+      return null;
+  }
 }
