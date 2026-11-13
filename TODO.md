@@ -5,17 +5,16 @@
 ---
 
 ## 📍 Stato del progetto (aggiornato al 13/11/2026)
-- **Versione attuale:** `0.11.0` (ultimo tag `v0.10.0`). Fasi 1-9 sviluppate; Fasi 10 e 11 (landing) già sviluppate, con i tag `v0.8.0` e `v0.9.0` ancora da creare.
-- **Prossimo passo:** Fase 9 · Notifiche agli admin rilasciata (`v0.11.0`): resta la prova online.
+- **Versione attuale:** `0.11.0` (ultimo tag `v0.11.0`). Fasi 1-11 sviluppate; per le Fasi 10 e 11 (landing) mancano i tag `v0.8.0` e `v0.9.0`.
+- **Prossimo passo:** prova online della Fase 9 (notifiche agli admin).
 - **Poi:** Fase 12 · Lancio della guida (`v1.0.0`).
 
 ### Da fare a mano (fuori dal codice)
-- [x] Applicare la migrazione della Fase 9 (`20261119090000_notifiche_admin.sql`) al database Supabase.
-- [x] Stripe: aggiungere l'evento `checkout.session.async_payment_failed` all'endpoint del webhook (test e, al lancio, live).
+- [ ] Prova online delle notifiche: invio di prova, registrazione, acquisto, ricontatto e storico.
 - [ ] Scegliere in `/admin/landing` se usare la prima landing come pagina iniziale.
 - [ ] Foto dell'autore e testimonianze vere per la landing, quando disponibili.
 - [ ] Copiare i modelli email di Supabase Auth nel pannello (vedi `docs/supabase-auth.md`) e provarli.
-- [ ] Al passaggio a Stripe live: chiavi, webhook di produzione e branding completo (Fase 12).
+- [ ] Al passaggio a Stripe live: chiavi, webhook di produzione (con gli stessi eventi di quello di test, vedi `docs/stripe.md`) e branding completo (Fase 12).
 - [ ] Player Bunny: nascondere i controlli si imposta nella libreria Bunny.
 
 ### Note tecniche
@@ -34,26 +33,25 @@
 - [x] Configurare shadcn/ui (solo in lingua italiana).
 - [x] Creare layout base mobile-first per `/dashboard` e layout desktop per `/admin`.
 - [x] Configurare `.env.local` e il `.gitignore`.
-- [x] Sistemare tutti gli errori presenti di next
-- [x] Pensare un layout più moderno, con sidebar di navigazione e aspetto leggermente più dark
-- [x] Dammi le indicazioni per pubblicare il progetto su vercel
+- [x] Errori di Next.js sistemati.
+- [x] Layout più moderno, con sidebar di navigazione e aspetto più scuro.
+- [x] Istruzioni per pubblicare il progetto su Vercel.
 - [x] Font: Geist (default del preset shadcn base-nova), classi tipografiche standard
 - [x] Nuovo design: sidebar a icone, griglia bento, tema chiaro/scuro selezionabile, accento blu
 - [x] Raggi ridotti (base `0.5rem`, pulsanti più squadrati)
 - [x] Prima pubblicazione su Vercel con dominio `app.guidocontesini.it` (CNAME su DNS Aruba)
 - [x] Errore di idratazione in sviluppo: causato dall'estensione Chrome "Directo", non dal codice (va limitata in `chrome://extensions`)
 
-
 ### Fase 2: Database & Autenticazione Core
-- [x] Fix npm warn Unknown env config "cache-dir" (variabile `npm_config_cache_dir` iniettata da Vercel: rimossa in `vercel.json`). This will stop working in the next major version of npm. See `npm help npmrc` for supported config options.
+- [x] Avviso di npm `Unknown env config "cache-dir"` risolto (variabile `npm_config_cache_dir` iniettata da Vercel, rimossa in `vercel.json`).
 - [x] Configurare schema base su Supabase (`profiles`, `guide_settings`).
 - [x] Implementare Row Level Security (RLS) protettiva.
 - [x] Implementare Login/Registrazione con Magic Link via Supabase Auth + Resend.
 - [x] Se al login il cliente è nuovo, richiedi i dati di base per riempire l'account. Il resto dei dati potrà inserirli in futuro nell'area Profilo.
 - [x] Blocco sessioni simultanee (tracciamento `current_session_id`): vince l'ultimo accesso, le altre sessioni vengono revocate e chiuse dal proxy.
-- [x] Voglio vedere il localhost sempre in localhost:3000 quindi verifica se ci sono sessioni attive, fermale. (`npm run dev` libera la porta 3000 e parte sempre lì)
-- [x] Fai in modo che la skin dark sia quella di default del tema
-- [x] Aiutami a creare una github action che pinga ogni 3 giorni il db di Supabase in modo che con la licenza base il progetto non si stoppi mai
+- [x] Server di sviluppo sempre su `localhost:3000`: `npm run dev` libera la porta e parte sempre lì.
+- [x] Tema scuro predefinito.
+- [x] GitHub Action che interroga il database Supabase ogni 3 giorni, così con il piano gratuito il progetto non va in pausa.
 
 ### Fase 3: Area Riservata Cliente (Beta UI)
 - [x] Sviluppare Home utente con 2 sezioni principali: "La tua guida" e "Il tuo videocorso".
@@ -74,7 +72,7 @@
 - [x] Creazione utenti dall'area admin (account già confermato, guida e ruolo admin opzionali, email con link di accesso via Resend; al primo accesso l'utente accetta la privacy con i dati precompilati).
   - [x] Verificare che su Vercel ci siano `RESEND_API_KEY` ed `EMAIL_FROM` (formato `Nome <indirizzo>`), poi provare una creazione con invio dell'email.
 - [x] Gestione Guida PDF: upload del file su Supabase Storage e aggiornamento dettagli.
-- [x] Prendi spunto dalla sezione id="hero" del sito a questo link https://finorio.demo.nextjstemplates.com/ e ricomponi la pagina iniziale dell'app. Non ho bisogno di pulsanti particolari o header / footer, ma semplicemente contenuti e bottone che rimanda alla pagina di accesso / login
+- [x] Pagina iniziale ricomposta sul modello della sezione hero di [finorio](https://finorio.demo.nextjstemplates.com/): solo contenuti e pulsante per l'accesso, senza header né footer.
 - [x] Pagina 404 con lo stile della pagina iniziale (sfondo condiviso in `SfondoHero`).
 
 ### Fase 5: Pagamento base con Stripe (Target: v0.5.0)
@@ -145,7 +143,8 @@
   - Storico degli invii degli ultimi 30 giorni (evento, oggetto, destinatari, esito ed eventuale errore).
 - [x] Tabelle Supabase `admin_notification_recipients` e `admin_notification_log` con RLS solo admin; invio centralizzato in `src/lib/notifiche/` chiamato da webhook, registrazione, primo accesso, profilo e GDPR, dopo la risposta (`after`) e senza bloccare l'operazione principale se l'email non parte.
 - [x] Email di notifica con React Email nello stile delle altre (`src/emails/notifica-admin.tsx`), brevi e con il pulsante per aprire il cliente in admin.
-- [ ] Prova online dopo la migrazione: invio di prova, registrazione, acquisto, ricontatto e storico.
+- [x] Migrazione applicata ed evento `checkout.session.async_payment_failed` aggiunto al webhook Stripe di test (13/11/2026).
+- [ ] Prova online: invio di prova, registrazione, acquisto, ricontatto e storico.
 - [x] **Tag Versione:** `v0.11.0`.
 
 ### Fase 10: Landing di vendita della guida (Target: v0.8.0)
