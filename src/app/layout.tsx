@@ -4,6 +4,7 @@ import "./globals.css";
 
 import { scriptTemaIniziale } from "@/lib/tema";
 import { urlLanding } from "@/lib/url";
+import { Notifiche } from "@/components/ui/notifiche";
 
 const geist = Geist({
   variable: "--font-sans",
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       </head>
       <body className="flex min-h-full flex-col bg-background text-foreground">
         {children}
+        <Notifiche />
       </body>
     </html>
   );

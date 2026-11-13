@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 
 import { sezionePerId } from "./campi";
-import { unisciInviati, validaSezione } from "./validazione";
+import { riepilogoErrori, unisciInviati, validaSezione } from "./validazione";
 
 const modulo = (dati: Record<string, string>) => {
   const fd = new FormData();
@@ -144,4 +144,22 @@ test("dopo un errore i valori nascosti già scritti restano", () => {
 test("dopo un errore i campi visibili prendono il valore inviato, anche vuoto", () => {
   const uniti = unisciInviati(sezione("casa"), { city: "Brescia" }, { city: "" });
   assert.equal(uniti.city, "");
+});
+
+test("piano scritto a parole", () => {
+  const casi: [string, number][] = [["Terra", 0], ["piano terra", 0], ["T", 0], ["PT", 0], ["rialzato", 0], ["seminterrato", -1], ["interrato", -1], ["1°", 1], ["3° piano", 3]];
+  for (const [testo, atteso] of casi) {
+    const { valori, errori } = validaSezione(sezione("casa"), modulo({ floor: testo }));
+    assert.deepEqual(errori, {}, `"${testo}" non deve dare errore`);
+    assert.equal(valori.floor, atteso, `"${testo}" → ${atteso}`);
+  }
+  assert.ok(validaSezione(sezione("casa"), modulo({ floor: "mansarda" })).errori.floor);
+});
+
+test("riepilogo degli errori con le etichette dei campi", () => {
+  assert.equal(
+    riepilogoErrori(sezione("casa"), { floor: "x", condo_fees_monthly: "y" }),
+    "Controlla: Piano, Spese condominiali al mese.",
+  );
+  assert.equal(riepilogoErrori(sezione("casa"), {}), null);
 });

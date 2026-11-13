@@ -38,6 +38,10 @@ function validaCampo(campo: Campo, grezzo: string, inviati: Record<string, strin
       return { valore: testo };
     }
     case "intero": {
+      const parola = grezzo.trim().toLowerCase().replace(/\s+/g, " ");
+      if (campo.parole && parola in campo.parole) return { valore: campo.parole[parola] };
+      // "1°" o "3° piano": tolti il simbolo di grado e la parola "piano".
+      if (campo.parole) grezzo = parola.replace(/°/g, "").replace(/\bpiano\b/g, "");
       const senzaUnita = grezzo.replace(/\s|€|m²|m2|mq/gi, "");
       if (!senzaUnita) return { valore: null };
       // Il punto è un separatore delle migliaia solo a gruppi di tre ("250.000"):
@@ -118,4 +122,10 @@ export function unisciInviati(
     }
   }
   return uniti;
+}
+
+/** Messaggio unico con i campi da correggere, per la notifica e accanto a "Salva". */
+export function riepilogoErrori(sezione: Sezione, errori: Record<string, string>) {
+  const etichette = sezione.campi.filter((c) => errori[c.nome]).map((c) => c.etichetta);
+  return etichette.length ? `Controlla: ${etichette.join(", ")}.` : null;
 }

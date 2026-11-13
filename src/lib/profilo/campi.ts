@@ -19,7 +19,14 @@ type Base = {
 
 export type Campo =
   | (Base & { tipo: "testo"; max: number; multilinea?: boolean; autocomplete?: string })
-  | (Base & { tipo: "intero"; min: number; max: number; unita?: string })
+  | (Base & {
+      tipo: "intero";
+      min: number;
+      max: number;
+      unita?: string;
+      /** Parole accettate al posto del numero (minuscole), es. "terra" → 0. */
+      parole?: Record<string, number>;
+    })
   | (Base & { tipo: "scelta"; opzioni: readonly Opzione[] })
   | (Base & { tipo: "sino" })
   | (Base & { tipo: "data" })
@@ -91,7 +98,7 @@ export const sezioni: Sezione[] = [
       { nome: "rooms", etichetta: "Locali", tipo: "intero", min: 1, max: 30 },
       { nome: "bedrooms", etichetta: "Camere da letto", tipo: "intero", min: 0, max: 20 },
       { nome: "bathrooms", etichetta: "Bagni", tipo: "intero", min: 0, max: 10 },
-      { nome: "floor", etichetta: "Piano", tipo: "intero", min: -2, max: 60, aiuto: "0 per il piano terra, numeri negativi per i seminterrati." },
+      { nome: "floor", etichetta: "Piano", tipo: "intero", min: -2, max: 60, aiuto: "Un numero, oppure \"terra\" o \"seminterrato\".", parole: { terra: 0, "piano terra": 0, t: 0, pt: 0, rialzato: 0, "piano rialzato": 0, seminterrato: -1, interrato: -1 } },
       { nome: "has_elevator", etichetta: "Ascensore", tipo: "sino" },
       { nome: "year_built", etichetta: "Anno di costruzione (anche indicativo)", tipo: "intero", min: 1500, max: new Date().getFullYear() + 3 },
       { nome: "condition", etichetta: "Stato", tipo: "scelta", opzioni: op(["da_ristrutturare", "Da ristrutturare"], ["buono", "Buono"], ["ristrutturato", "Ristrutturato"], ["nuovo", "Nuovo"]) },
