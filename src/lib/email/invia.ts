@@ -20,11 +20,13 @@ type Invio = {
   a: string;
   oggetto: string;
   email: React.ReactElement;
+  /** Indirizzo per il "Rispondi a" (es. l'email del cliente nelle notifiche agli admin). */
+  rispondiA?: string;
   /** Evita doppi invii se la stessa operazione viene ripetuta (es. webhook duplicato). */
   chiaveIdempotenza?: string;
 };
 
-export async function inviaEmail({ a, oggetto, email, chiaveIdempotenza }: Invio) {
+export async function inviaEmail({ a, oggetto, email, rispondiA, chiaveIdempotenza }: Invio) {
   const mittente = process.env.EMAIL_FROM;
   if (!mittente) throw new Error("EMAIL_FROM mancante");
 
@@ -37,6 +39,7 @@ export async function inviaEmail({ a, oggetto, email, chiaveIdempotenza }: Invio
       subject: oggetto,
       html,
       text: toPlainText(html),
+      ...(rispondiA ? { replyTo: rispondiA } : {}),
     },
     chiaveIdempotenza ? { idempotencyKey: chiaveIdempotenza } : undefined,
   );

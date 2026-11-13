@@ -21,6 +21,11 @@ export type Profilo = {
   residence_province: string | null;
   contact_preference: "telefono" | "whatsapp" | "email" | null;
   contact_time: "mattina" | "pomeriggio" | "sera" | "indifferente" | null;
+  /** Richiesta di ricontatto dal profilo (Fase 9): null = nessuna richiesta. */
+  contact_request_at: string | null;
+  contact_request_notes: string | null;
+  /** Richiesta segnata come gestita da un admin. */
+  contact_request_handled_at: string | null;
   onboarded_at: string | null;
   current_session_id: string | null;
   created_at: string;
@@ -151,6 +156,39 @@ export type EventoLanding = {
   created_at: string;
 };
 
+/** Destinatario delle notifiche agli admin (Fase 9). `events`: codici di `src/lib/notifiche/eventi.ts`. */
+export type DestinatarioNotifiche = {
+  id: string;
+  email: string;
+  name: string | null;
+  paused: boolean;
+  events: string[];
+  created_at: string;
+  updated_at: string;
+};
+
+export type StatoNotifica =
+  | "in_invio"
+  | "inviata"
+  | "parziale"
+  | "non_inviata"
+  | "nessun_destinatario";
+
+/** Riga dello storico delle notifiche (scritta solo dal server). */
+export type RigaStoricoNotifiche = {
+  id: number;
+  event: string;
+  dedupe_key: string | null;
+  subject: string;
+  user_id: string | null;
+  customer_email: string | null;
+  data: unknown;
+  recipients: string[];
+  status: StatoNotifica;
+  error: string | null;
+  created_at: string;
+};
+
 /** Campi del profilo che l'utente può modificare (vedi grant nella migrazione RLS). */
 type ProfiloModificabile = Partial<
   Pick<
@@ -161,6 +199,8 @@ type ProfiloModificabile = Partial<
     | "privacy_accepted_at"
     | "marketing_consent"
     | "onboarded_at"
+    | "contact_request_at"
+    | "contact_request_notes"
   >
 >;
 
@@ -195,6 +235,18 @@ export type Database = {
         Row: LandingPage;
         Insert: Pick<LandingPage, "slug" | "title"> & Partial<LandingPage>;
         Update: Partial<LandingPage>;
+        Relationships: [];
+      };
+      admin_notification_recipients: {
+        Row: DestinatarioNotifiche;
+        Insert: Pick<DestinatarioNotifiche, "email"> & Partial<DestinatarioNotifiche>;
+        Update: Partial<Omit<DestinatarioNotifiche, "id" | "created_at" | "updated_at">>;
+        Relationships: [];
+      };
+      admin_notification_log: {
+        Row: RigaStoricoNotifiche;
+        Insert: Pick<RigaStoricoNotifiche, "event" | "subject"> & Partial<Omit<RigaStoricoNotifiche, "id">>;
+        Update: Partial<Omit<RigaStoricoNotifiche, "id">>;
         Relationships: [];
       };
       landing_events: {
