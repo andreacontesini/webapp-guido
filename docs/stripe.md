@@ -35,7 +35,7 @@ Le chiavi vanno in `.env.local` e in Vercel → *Settings → Environment Variab
 **Sviluppatori → Webhook → Aggiungi endpoint**:
 
 - URL: `https://app.guidocontesini.it/api/webhooks/stripe`
-- Eventi: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `charge.refunded`, `charge.dispute.created`, `charge.dispute.closed`
+- Eventi: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed` (dalla Fase 9: notifica agli admin del pagamento differito non riuscito), `charge.refunded`, `charge.dispute.created`, `charge.dispute.closed`
 - Copia il *Signing secret* in `STRIPE_WEBHOOK_SECRET`.
 
 ### In locale con la Stripe CLI

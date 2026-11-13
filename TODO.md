@@ -4,12 +4,14 @@
 
 ---
 
-## 📍 Stato del progetto (aggiornato al 12/11/2026)
-- **Versione attuale:** `0.10.0` (tag `v0.10.0`). Fasi 1-8 completate; Fasi 10 e 11 (landing) già sviluppate, con i tag `v0.8.0` e `v0.9.0` ancora da creare.
-- **Prossimo passo:** Fase 9 · Notifiche agli admin (con la richiesta di ricontatto dal profilo).
+## 📍 Stato del progetto (aggiornato al 13/11/2026)
+- **Versione attuale:** `0.11.0` (ultimo tag `v0.10.0`). Fasi 1-9 sviluppate; Fasi 10 e 11 (landing) già sviluppate, con i tag `v0.8.0` e `v0.9.0` ancora da creare.
+- **Prossimo passo:** Fase 9 · Notifiche agli admin sviluppata (`0.11.0`): da applicare la migrazione e provare online, poi tag `v0.11.0`.
 - **Poi:** Fase 12 · Lancio della guida (`v1.0.0`).
 
 ### Da fare a mano (fuori dal codice)
+- [ ] Applicare la migrazione della Fase 9 (`20261119090000_notifiche_admin.sql`) al database Supabase.
+- [ ] Stripe: aggiungere l'evento `checkout.session.async_payment_failed` all'endpoint del webhook (test e, al lancio, live).
 - [ ] Scegliere in `/admin/landing` se usare la prima landing come pagina iniziale.
 - [ ] Foto dell'autore e testimonianze vere per la landing, quando disponibili.
 - [ ] Copiare i modelli email di Supabase Auth nel pannello (vedi `docs/supabase-auth.md`) e provarli.
@@ -101,9 +103,7 @@
 - [x] Accesso immediato all'app dalla pagina di conferma (link di accesso generato dopo la verifica del pagamento) e, in ogni caso, email con il link di accesso. Account nuovo: dopo Stripe entra in automatico (`/acquisto/entra`), compila i dati base in /benvenuto e arriva in dashboard. Account esistente: guida sbloccata subito, si entra dal link inviato via email (scelta di sicurezza: su Stripe l'email non è verificata, pagando non si deve entrare in un account altrui).
 - [x] **Restyle delle email** con uno stile moderno e professionale, coerente con l'app (logo, colori, tipografia, pulsante ben visibile, piè di pagina con contatti e assistenza):
   - [x] Modelli di Supabase Auth (link di accesso, conferma registrazione, cambio email) generati da React Email in `supabase/templates/` con `npm run email:supabase`.
-  - [ ] ➡️ Spostato nella Fase 12: modelli copiati nel pannello Supabase e provati con un accesso reale.
   - [x] Email inviate dall'app con Resend costruite con React Email (`src/emails/`, invio con `src/lib/email/invia.ts`): conferma acquisto (già inviata dal webhook), account creato dall'admin. La variante con link di accesso per l'acquisto senza account si collega con questa fase.
-  - [ ] ➡️ Spostato nella Fase 12: controllo dell'aspetto nei principali client e in tema scuro.
 - [x] Test: acquisto senza account provato online il 12/11/2026 (account creato, guida sbloccata, conversione registrata sulla landing). *Restano da provare online, nel test end-to-end della Fase 12: ingresso automatico dopo Stripe, email già registrata, pagamento annullato senza account.*
 - [x] **Tag Versione:** `v0.7.0`.
 
@@ -125,27 +125,28 @@
 - [x] GDPR: "Scarica i tuoi dati" (file JSON con account, immobile e acquisti) ed "Elimina account" con conferma scrivendo ELIMINA: cancella account, profilo e immobile, conserva gli acquisti senza collegamento all'utente (obblighi fiscali), email di conferma; gli admin non si eliminano da qui. *Provato in locale con utenti di prova.*
 - [x] **Tag Versione:** `v0.10.0`.
 
-### Fase 9: Notifiche agli admin (Target: v0.11.0) ⬅️ PROSSIMA
-> Gli admin ricevono via email (Resend) gli eventi importanti dell'app. Ogni notifica ha il "Rispondi a" impostato sull'email del cliente, così si può rispondere direttamente.
-- [ ] **Eventi notificati** (ognuno attivabile o disattivabile):
-  - Nuovo account: registrazione autonoma, account creato da un acquisto senza account, account creato da un admin.
+### Fase 9: Notifiche agli admin (Target: v0.11.0)
+> Gli admin ricevono via email (Resend) gli eventi importanti dell'app. Ogni notifica ha il "Rispondi a" impostato sull'email del cliente, così si può rispondere direttamente. Design: `docs/superpowers/specs/2026-11-13-notifiche-admin-design.md`.
+> ⚠️ **Da fare prima di provarla:** applicare la migrazione `supabase/migrations/20261119090000_notifiche_admin.sql` (in autonomia non è stato possibile) e aggiungere l'evento `checkout.session.async_payment_failed` all'endpoint del webhook su Stripe.
+- [x] **Eventi notificati** (ognuno attivabile o disattivabile per destinatario), senza doppioni anche con webhook ripetuti (chiave unica per evento nello storico):
+  - Nuovo account: registrazione autonoma (al primo clic sul Magic Link), account creato da un acquisto senza account, account creato da un admin.
   - Primo accesso completato (dati base e privacy accettata).
   - Acquisto completato: prodotto, importo, cliente, landing di provenienza.
   - Pagamento in elaborazione o non andato a buon fine (metodi differiti).
   - Rimborso emesso e accesso revocato.
-  - Contestazione aperta (urgente: va gestita su Stripe entro la scadenza indicata) e contestazione chiusa (vinta o persa).
-  - Profilo o immobile compilato o aggiornato.
+  - Contestazione aperta (urgente, con la scadenza per rispondere e il link su Stripe) e contestazione chiusa (vinta o persa).
+  - Profilo o immobile compilato o aggiornato (al massimo una notifica al giorno per cliente).
   - Richiesta di eliminazione dell'account o di scaricamento dei dati (GDPR).
   - Problemi tecnici: email al cliente non partita, errore del webhook Stripe.
-- [ ] **Richiesta di ricontatto** (dal profilo, Fase 8): casella "Vorrei essere ricontattato da Guido per una consulenza" con note e preferenze, evidenziata in admin e notificata subito agli admin.
-- [ ] **Riepilogo periodico** facoltativo (giornaliero o settimanale): nuovi account, acquisti e incassi, visite/checkout/acquisti per landing.
-- [ ] **Sezione "Notifiche" in admin**:
-  - Elenco dei destinatari (email anche esterne all'app, es. commercialista solo per gli acquisti), con aggiunta, rimozione e pausa.
-  - Per ogni destinatario, scelta degli eventi da ricevere e della modalità (immediata o solo nel riepilogo).
-  - Pulsante "Invia notifica di prova".
-  - Storico degli invii degli ultimi 30 giorni (evento, destinatari, esito).
-- [ ] Tabelle Supabase `admin_notification_recipients` e `admin_notification_log` con RLS solo admin; invio centralizzato in `src/lib/notifiche/` chiamato da webhook, registrazione, primo accesso e profilo, senza bloccare l'operazione principale se l'email non parte.
-- [ ] Email di notifica con React Email nello stile delle altre, brevi e con il pulsante per aprire la scheda del cliente in admin.
+- [x] **Richiesta di ricontatto** (dal profilo, Fase 8): riquadro "Vuoi parlare con Guido?" con note, contatto preferito, orario e telefono (gli stessi dei dati personali), aggiornabile o annullabile; evidenziata in admin (avviso in Panoramica e nella tabella utenti, filtro "da ricontattare", dettaglio e "Segna come gestita") e notificata subito agli admin.
+- [x] **Sezione "Notifiche" in admin** (`/admin/notifiche`):
+  - Elenco dei destinatari (email anche esterne all'app, es. commercialista solo per gli acquisti), con aggiunta, rimozione e pausa. Gli admin attuali sono aggiunti dalla migrazione con tutti gli eventi.
+  - Per ogni destinatario, scelta degli eventi da ricevere.
+  - Pulsante "Invia prova".
+  - Storico degli invii degli ultimi 30 giorni (evento, oggetto, destinatari, esito ed eventuale errore).
+- [x] Tabelle Supabase `admin_notification_recipients` e `admin_notification_log` con RLS solo admin; invio centralizzato in `src/lib/notifiche/` chiamato da webhook, registrazione, primo accesso, profilo e GDPR, dopo la risposta (`after`) e senza bloccare l'operazione principale se l'email non parte.
+- [x] Email di notifica con React Email nello stile delle altre (`src/emails/notifica-admin.tsx`), brevi e con il pulsante per aprire il cliente in admin.
+- [ ] Prova online dopo la migrazione: invio di prova, registrazione, acquisto, ricontatto e storico.
 - [ ] **Tag Versione:** `v0.11.0`.
 
 ### Fase 10: Landing di vendita della guida (Target: v0.8.0)
