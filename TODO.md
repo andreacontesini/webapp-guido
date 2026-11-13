@@ -19,6 +19,7 @@
 ### Note tecniche
 - Test automatici: `npm test` (file `*.test.ts` in `src/`, eseguiti con `tsx`).
 - Migrazioni del database: file in `supabase/migrations/`, applicati con la connessione `SUPABASE_DB_URL` di `.env.local`.
+- Notifiche a comparsa: `toast` di `sonner`, contenitore `Notifiche` già nel layout principale.
 - Pagamenti in Test Mode: carta `4242 4242 4242 4242`; contestazione automatica con `4000 0000 0000 0259`.
 - Design e piani delle funzionalità più grandi: `docs/superpowers/specs/` e `docs/superpowers/plans/`.
 
@@ -117,6 +118,7 @@
   - [x] **Situazione e documenti**: proprietà (cointestata, tutti d'accordo), eredità e successione, mutuo o ipoteca, occupazione (fine affitto), dubbi di conformità, bonus edilizi; documenti da spuntare (ce l'ho / non ce l'ho / non so), senza caricamento di file.
   - [x] **Obiettivi di vendita**: tempistiche, motivo, vendita legata a un altro acquisto, prezzo in mente, valutazione già fatta, portali o agenzie.
   - [x] **Note per Guido**.
+  - [x] Notifiche a comparsa (sonner) per salvataggio riuscito o non riuscito, elenco dei campi da correggere accanto a "Salva" e scorrimento al primo errore; campo Piano accettato anche a parole ("terra", "seminterrato", "1°").
 - [x] Riquadro "Completa il tuo profilo" in dashboard finché il profilo non è al 100%.
 - [x] Admin: colonna "Profilo" nella tabella utenti con popup di sola lettura e pulsante **"Scarica scheda cliente"** (PDF per Guido).
   - [x] Prova online: compilazione da smartphone (pillole, domande condizionali, "Salvato"), popup e PDF in admin.
