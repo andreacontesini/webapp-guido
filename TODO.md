@@ -6,12 +6,12 @@
 
 ## 📍 Stato del progetto (aggiornato al 13/11/2026)
 - **Versione attuale:** `0.11.0` (ultimo tag `v0.10.0`). Fasi 1-9 sviluppate; Fasi 10 e 11 (landing) già sviluppate, con i tag `v0.8.0` e `v0.9.0` ancora da creare.
-- **Prossimo passo:** Fase 9 · Notifiche agli admin sviluppata (`0.11.0`): da applicare la migrazione e provare online, poi tag `v0.11.0`.
+- **Prossimo passo:** Fase 9 · Notifiche agli admin rilasciata (`v0.11.0`): resta la prova online.
 - **Poi:** Fase 12 · Lancio della guida (`v1.0.0`).
 
 ### Da fare a mano (fuori dal codice)
-- [ ] Applicare la migrazione della Fase 9 (`20261119090000_notifiche_admin.sql`) al database Supabase.
-- [ ] Stripe: aggiungere l'evento `checkout.session.async_payment_failed` all'endpoint del webhook (test e, al lancio, live).
+- [x] Applicare la migrazione della Fase 9 (`20261119090000_notifiche_admin.sql`) al database Supabase.
+- [x] Stripe: aggiungere l'evento `checkout.session.async_payment_failed` all'endpoint del webhook (test e, al lancio, live).
 - [ ] Scegliere in `/admin/landing` se usare la prima landing come pagina iniziale.
 - [ ] Foto dell'autore e testimonianze vere per la landing, quando disponibili.
 - [ ] Copiare i modelli email di Supabase Auth nel pannello (vedi `docs/supabase-auth.md`) e provarli.
@@ -127,7 +127,6 @@
 
 ### Fase 9: Notifiche agli admin (Target: v0.11.0)
 > Gli admin ricevono via email (Resend) gli eventi importanti dell'app. Ogni notifica ha il "Rispondi a" impostato sull'email del cliente, così si può rispondere direttamente. Design: `docs/superpowers/specs/2026-11-13-notifiche-admin-design.md`.
-> ⚠️ **Da fare prima di provarla:** applicare la migrazione `supabase/migrations/20261119090000_notifiche_admin.sql` (in autonomia non è stato possibile) e aggiungere l'evento `checkout.session.async_payment_failed` all'endpoint del webhook su Stripe.
 - [x] **Eventi notificati** (ognuno attivabile o disattivabile per destinatario), senza doppioni anche con webhook ripetuti (chiave unica per evento nello storico):
   - Nuovo account: registrazione autonoma (al primo clic sul Magic Link), account creato da un acquisto senza account, account creato da un admin.
   - Primo accesso completato (dati base e privacy accettata).
@@ -147,7 +146,7 @@
 - [x] Tabelle Supabase `admin_notification_recipients` e `admin_notification_log` con RLS solo admin; invio centralizzato in `src/lib/notifiche/` chiamato da webhook, registrazione, primo accesso, profilo e GDPR, dopo la risposta (`after`) e senza bloccare l'operazione principale se l'email non parte.
 - [x] Email di notifica con React Email nello stile delle altre (`src/emails/notifica-admin.tsx`), brevi e con il pulsante per aprire il cliente in admin.
 - [ ] Prova online dopo la migrazione: invio di prova, registrazione, acquisto, ricontatto e storico.
-- [ ] **Tag Versione:** `v0.11.0`.
+- [x] **Tag Versione:** `v0.11.0`.
 
 ### Fase 10: Landing di vendita della guida (Target: v0.8.0)
 - [x] Tabella `landing_pages` (indirizzo/slug, titolo, testi SEO, blocchi di contenuto, stato bozza/pubblicata, pagina iniziale) con RLS: chiunque legge le landing pubblicate, solo l'admin le bozze e le modifiche.
