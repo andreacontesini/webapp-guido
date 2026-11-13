@@ -242,7 +242,13 @@ Quando il sito WordPress su `guidocontesini.it` verrà dismesso.
 - [ ] **Scelta del dominio per ogni landing:** permettere all'admin di decidere su quale dominio pubblicare ciascuna landing (es. `guidocontesini.it` o `app.guidocontesini.it`), con URL canonico, sitemap e smistamento nel proxy coerenti. Oggi tutte le landing stanno sul dominio dell'app (o su quello di `NEXT_PUBLIC_LANDING_URL`, uguale per tutte).
   - [x] Select «Pubblica su» nell'editor della landing (App / Dominio principale), salvata nella colonna `landing_pages.domain` (enum `dominio_landing`, predefinito `app`). L'opzione «Dominio principale» è visibile ma disattivata e il server la rifiuta.
   - [ ] Attivare l'opzione «Dominio principale» (`attivo: true` in `src/lib/landing/domini.ts`) e usare `domain` di ogni landing per URL canonico, sitemap, link nell'admin e smistamento nel proxy (una landing risponde solo sul suo dominio).
+  - [ ] Indirizzo base dei metadati calcolato per pagina (oggi `metadataBase` è unico nel layout) e sitemap separata per dominio.
+  - [ ] Pagina iniziale scelta per dominio: una landing sulla radice di `guidocontesini.it`, accesso/pagina iniziale attuale su `app`.
+- [ ] Verificare il piano Vercel dell'account del cliente: il piano Hobby è solo per uso non commerciale, con la vendita della guida serve il Pro.
 - [ ] Aggiungere `guidocontesini.it` e `www` al progetto Vercel (record A su DNS Aruba) e aggiornare la variabile d'ambiente con l'indirizzo delle landing.
 - [ ] Smistamento per dominio nel proxy: sul dominio principale solo le landing, il resto (`/login`, `/admin`, area riservata) rimandato su `app.guidocontesini.it`.
 - [ ] Redirect 301 dalle vecchie pagine WordPress che hanno traffico o posizionamento.
 - [ ] Escludere `app.guidocontesini.it` dall'indicizzazione e aggiornare l'URL di ritorno in Stripe.
+- [ ] (Facoltativo) Cookie di sessione su `.guidocontesini.it`, per riconoscere sulle landing chi è già collegato all'app. Non serve per l'acquisto: il webhook sblocca la guida sull'account con la stessa email.
+
+> ℹ️ Landing sul dominio principale e WordPress insieme sono possibili solo spostando WordPress su un altro indirizzo (es. `vecchio.guidocontesini.it`) e facendo passare da Vercel le sue pagine: soluzione fragile. La strada consigliata è il passaggio alla dismissione di WordPress.
