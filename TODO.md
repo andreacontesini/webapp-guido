@@ -6,7 +6,7 @@
 
 ## 📍 Stato del progetto (aggiornato al 13/11/2026)
 - **Versione attuale:** `0.11.0` (ultimo tag `v0.11.0`). Fasi 1-11 sviluppate; per le Fasi 10 e 11 (landing) mancano i tag `v0.8.0` e `v0.9.0`.
-- **Prossimo passo:** prova online della Fase 9 (notifiche agli admin).
+- **Prossimo passo:** prova online della Fase 9 (notifiche agli admin) e rifiniture `v0.11.1` (profilo, tabella utenti, landing).
 - **Poi:** Fase 12 · Lancio della guida (`v1.0.0`).
 
 ### Da fare a mano (fuori dal codice)
@@ -146,6 +146,14 @@
 - [x] Migrazione applicata ed evento `checkout.session.async_payment_failed` aggiunto al webhook Stripe di test (13/11/2026).
 - [ ] Prova online: invio di prova, registrazione, acquisto, ricontatto e storico.
 - [x] **Tag Versione:** `v0.11.0`.
+
+### Rifiniture dopo la Fase 9 (Target: v0.11.1)
+> Correzioni e migliorie emerse dall'uso, su profilo, admin e landing.
+- [ ] **Profilo, allineamento:** la pagina `/dashboard/profilo` non è allineata a sinistra come le altre sezioni dell'area riservata; uniformare contenitore e margini.
+- [ ] **Profilo, percentuale:** con tutte le informazioni compilate il riquadro resta a "Profilo completo al 99%" e non arriva mai al 100%. Trovare il campo che manca nel calcolo (probabilmente un campo condizionale o non più mostrato) e coprire il caso con un test.
+- [ ] **Admin, tabella utenti:** gestirla meglio usando tutto lo spazio disponibile (larghezza piena, colonne più leggibili, meno scorrimento orizzontale).
+- [ ] **Landing, scorrimento:** i pulsanti che portano a un'ancora della pagina (es. "Acquista" verso il prezzo) devono scorrere in modo fluido (smooth scroll), senza animazione per chi ha attivo "riduci animazioni".
+- [ ] **Tag Versione:** `v0.11.1`.
 
 ### Fase 10: Landing di vendita della guida (Target: v0.8.0)
 - [x] Tabella `landing_pages` (indirizzo/slug, titolo, testi SEO, blocchi di contenuto, stato bozza/pubblicata, pagina iniziale) con RLS: chiunque legge le landing pubblicate, solo l'admin le bozze e le modifiche.
