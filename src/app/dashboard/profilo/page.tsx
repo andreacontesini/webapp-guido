@@ -14,7 +14,7 @@ export const metadata: Metadata = { title: "Profilo" };
 
 export default function PaginaProfilo() {
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="max-w-3xl space-y-6">
       <header className="space-y-1">
         <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Il tuo profilo</h1>
         <p className="text-muted-foreground">Compila le sezioni quando vuoi: ognuna si salva da sola.</p>
