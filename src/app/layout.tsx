@@ -43,6 +43,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="it"
       className={`${geist.variable} ${geistMono.variable} dark h-full antialiased`}
       style={{ colorScheme: "dark" }}
+      // Lo scorrimento fluido (solo nelle landing, vedi globals.css) non deve
+      // valere per i cambi di pagina: Next.js lo sospende durante la navigazione.
+      data-scroll-behavior="smooth"
       suppressHydrationWarning
     >
       <head>

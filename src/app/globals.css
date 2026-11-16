@@ -152,3 +152,14 @@
   }
 
 }
+
+/*
+ * Landing: i pulsanti verso un'ancora della pagina (es. "Cosa trovi nella
+ * guida") scorrono in modo fluido. Solo dove c'è una landing e mai per chi
+ * ha chiesto di ridurre le animazioni.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  html:has([data-scorrimento="fluido"]) {
+    scroll-behavior: smooth;
+  }
+}

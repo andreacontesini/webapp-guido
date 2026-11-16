@@ -35,7 +35,7 @@ export function PaginaLanding({
   const conAcquisto = haAcquisto(landing.blocchi);
 
   return (
-    <div className={conAcquisto ? "flex flex-1 flex-col pb-24 sm:pb-0" : "flex flex-1 flex-col"}>
+    <div data-scorrimento="fluido" className={conAcquisto ? "flex flex-1 flex-col pb-24 sm:pb-0" : "flex flex-1 flex-col"}>
       <Intestazione />
       <main className="flex-1">
         {landing.blocchi.map((blocco, i) => (
