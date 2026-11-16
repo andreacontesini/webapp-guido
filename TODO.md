@@ -6,7 +6,7 @@
 
 ## 📍 Stato del progetto (aggiornato al 16/11/2026)
 - **Versione attuale:** `0.11.1` (ultimo tag `v0.11.1`). Fasi 1-11 sviluppate; per le Fasi 10 e 11 (landing) mancano i tag `v0.8.0` e `v0.9.0`.
-- **Prossimo passo:** prova online della Fase 9 (notifiche agli admin) e delle rifiniture `v0.11.1`.
+- **Prossimo passo:** test end-to-end con `docs/test-end-to-end.md` (database ripulito il 16/11/2026: restano solo i due admin, nessun acquisto, statistiche delle landing azzerate). Poi far rileggere a Guido le pagine legali.
 - **Poi:** Fase 12 · Lancio della guida (`v1.0.0`).
 
 ### Da fare a mano (fuori dal codice)
