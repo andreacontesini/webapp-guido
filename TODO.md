@@ -5,7 +5,7 @@
 ---
 
 ## 📍 Stato del progetto (aggiornato al 16/11/2026)
-- **Versione attuale:** `0.11.1` (ultimo tag `v0.11.0`). Fasi 1-11 sviluppate; per le Fasi 10 e 11 (landing) mancano i tag `v0.8.0` e `v0.9.0`.
+- **Versione attuale:** `0.11.1` (ultimo tag `v0.11.1`). Fasi 1-11 sviluppate; per le Fasi 10 e 11 (landing) mancano i tag `v0.8.0` e `v0.9.0`.
 - **Prossimo passo:** prova online della Fase 9 (notifiche agli admin) e delle rifiniture `v0.11.1`.
 - **Poi:** Fase 12 · Lancio della guida (`v1.0.0`).
 
@@ -153,7 +153,7 @@
 - [x] **Profilo, percentuale:** il 99% era corretto (nel profilo di prova mancava "Uso attuale"), ma la pagina non diceva cosa mancasse. Ora il riquadro elenca i campi mancanti per sezione, e il 100% compare solo a profilo davvero completo (l'arrotondamento non nasconde più un campo vuoto). Coperto da test.
 - [x] **Admin, tabella utenti:** pagina a tutta larghezza (`data-larghezza="piena"`), colonna "Stato" assorbita nella cella dell'utente (badge Admin/Bloccato e "Da ricontattare" accanto al nome), telefono cliccabile, data di registrazione solo su schermi larghi (altrimenti sotto l'email), intestazione evidenziata e larghezza minima ridotta.
 - [x] **Landing, scorrimento:** scorrimento fluido verso le ancore solo nelle pagine landing (`data-scorrimento="fluido"` + `html:has(...)` in `globals.css`), disattivato con "riduci animazioni"; `data-scroll-behavior="smooth"` su `<html>` perché Next.js non lo applichi ai cambi di pagina.
-- [ ] **Tag Versione:** `v0.11.1`.
+- [x] **Tag Versione:** `v0.11.1`.
 
 ### Fase 10: Landing di vendita della guida (Target: v0.8.0)
 - [x] Tabella `landing_pages` (indirizzo/slug, titolo, testi SEO, blocchi di contenuto, stato bozza/pubblicata, pagina iniziale) con RLS: chiunque legge le landing pubblicate, solo l'admin le bozze e le modifiche.
