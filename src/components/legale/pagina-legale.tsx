@@ -45,16 +45,6 @@ export function Sezione({ id, titolo, children }: { id: string; titolo: string; 
   );
 }
 
-/** Dato del venditore, o segnaposto evidenziato se non ancora inserito. */
-export function Dato({ valore, nome }: { valore: string | null; nome: string }) {
-  if (valore) return <>{valore}</>;
-  return (
-    <mark className="rounded bg-amber-200/70 px-1 text-amber-950 dark:bg-amber-400/25 dark:text-amber-100">
-      [{nome} da completare]
-    </mark>
-  );
-}
-
 /** Blocco con l'identità del venditore / titolare. */
 export function DatiVenditore() {
   return (
@@ -62,21 +52,17 @@ export function DatiVenditore() {
       <li>
         <strong>{venditore.nome}</strong>, {venditore.attivita.toLowerCase()}
       </li>
-      <li>
-        Sede: <Dato valore={venditore.indirizzo} nome="indirizzo" />
-      </li>
-      <li>
-        Partita IVA: <Dato valore={venditore.partitaIva} nome="partita IVA" />
-      </li>
-      <li>
-        Codice fiscale: <Dato valore={venditore.codiceFiscale} nome="codice fiscale" />
-      </li>
+      <li>Sede: {venditore.indirizzo}</li>
+      <li>Partita IVA: {venditore.partitaIva}</li>
+      {venditore.codiceFiscale && <li>Codice fiscale: {venditore.codiceFiscale}</li>}
       <li>
         Email: <a href={`mailto:${venditore.email}`}>{venditore.email}</a>
       </li>
-      <li>
-        PEC: <Dato valore={venditore.pec} nome="PEC" />
-      </li>
+      {venditore.pec && (
+        <li>
+          PEC: <a href={`mailto:${venditore.pec}`}>{venditore.pec}</a>
+        </li>
+      )}
     </ul>
   );
 }

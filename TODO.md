@@ -11,7 +11,7 @@
 
 ### Da fare a mano (fuori dal codice)
 - [ ] Prova online delle notifiche: invio di prova, registrazione, acquisto, ricontatto e storico.
-- [ ] Completare i dati del venditore (sede, partita IVA, codice fiscale, PEC) in `src/lib/legale/venditore.ts` e far rileggere condizioni, privacy e cookie.
+- [ ] Far rileggere a Guido condizioni di vendita, privacy e cookie.
 - [ ] Scegliere in `/admin/landing` se usare la prima landing come pagina iniziale.
 - [ ] Foto dell'autore e testimonianze vere per la landing, quando disponibili.
 - [ ] Copiare i modelli email di Supabase Auth nel pannello (vedi `docs/supabase-auth.md`) e provarli.
@@ -160,8 +160,7 @@
 - [x] Tabella `landing_pages` (indirizzo/slug, titolo, testi SEO, blocchi di contenuto, stato bozza/pubblicata, pagina iniziale) con RLS: chiunque legge le landing pubblicate, solo l'admin le bozze e le modifiche.
 - [x] Blocchi predefiniti con lo stile dell'app (`src/lib/landing/blocchi.ts`, `src/components/landing/`): hero, punti chiave, contenuti della guida (tappe), testo libero, immagine, testimonianze, chi è l'autore, domande frequenti, prezzo con pulsante "Acquista", invito all'acquisto o all'accesso.
 - [x] Pagine pubbliche delle landing (`/<slug>`, in cache e aggiornate subito dalle azioni admin) e scelta della landing da usare come pagina iniziale in `/admin/landing` (insieme a pubblica/ritira). Senza landing scelta resta la pagina iniziale predefinita.
-  - [ ] Completare i dati del venditore (sede, partita IVA, codice fiscale, PEC) in `src/lib/legale/venditore.ts` e far rileggere condizioni, privacy e cookie.
-- [ ] Scegliere in `/admin/landing` se usare la prima landing come pagina iniziale.
+  - [ ] Scegliere in `/admin/landing` se usare la prima landing come pagina iniziale.
 - [x] **Prima landing di vendita** (`/guida-vendere-casa-da-privato`), ottimizzata per la conversione:
   - Hero con promessa chiara e pulsante "Acquista la guida" ben visibile (ripetuto lungo la pagina e fisso in basso su smartphone).
   - Vantaggi dell'acquisto (niente sorprese, prezzo giusto, metodo, incasso netto).
@@ -196,8 +195,8 @@
 
 ### Fase 12: Lancio della Guida (Target: v1.0.0)
 - [ ] **Aspetti legali e fiscali:**
-  - [x] Pagine pubbliche `/condizioni-di-vendita`, `/privacy` e `/cookie` (solo per le landing, nulla nell'area riservata), collegate dal piè di pagina delle landing e incluse nella sitemap. Dati del venditore centralizzati in `src/lib/legale/venditore.ts`; indirizzi riservati alle landing aggiornati (codice e migrazione `20261120090000_slug_pagine_legali.sql`, applicata).
-  - [ ] Completare in `src/lib/legale/venditore.ts` i dati del venditore: indirizzo della sede, partita IVA, codice fiscale, PEC (oggi segnaposto evidenziati nelle pagine; la partita IVA compare anche nel piè di pagina appena inserita).
+  - [x] Pagine pubbliche `/condizioni-di-vendita`, `/privacy` e `/cookie` (solo per le landing, nulla nell'area riservata), collegate dal piè di pagina delle landing (escluse dalla sitemap). Dati del venditore centralizzati in `src/lib/legale/venditore.ts`; indirizzi riservati alle landing aggiornati (codice e migrazione `20261120090000_slug_pagine_legali.sql`, applicata).
+  - [x] Dati del venditore in `src/lib/legale/venditore.ts`: sede e partita IVA (anche nel piè di pagina delle landing). Codice fiscale e PEC facoltativi, mostrati solo se inseriti.
   - [ ] Far rileggere i testi a Guido (ed eventualmente a un consulente) prima del lancio.
   - [ ] Rinuncia al recesso per contenuti digitali: rimandata. Finché nel checkout non c'è la casella, le condizioni prevedono il recesso ordinario di 14 giorni (sezione 8); quando si aggiunge, aggiornare quella sezione.
   - [x] Fattura: la gestisce la commercialista (la ricevuta Stripe non è una fattura); le condizioni rimandano all'email di assistenza per i dati di fatturazione.

@@ -89,7 +89,7 @@ export function PiePagina() {
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <p>
             © 2026 {venditore.nome} · {venditore.attivita}, Lago di Garda
-            {venditore.partitaIva && ` · P. IVA ${venditore.partitaIva}`}
+            · P. IVA {venditore.partitaIva}
           </p>
           <p>
             Assistenza:{" "}
