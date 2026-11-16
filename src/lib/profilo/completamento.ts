@@ -16,7 +16,7 @@ export function valoriSezione(sezione: Sezione, profilo: Partial<Profilo>, immob
 
 export type Completamento = {
   percentuale: number;
-  sezioni: { id: IdSezione; titolo: string; completa: boolean }[];
+  sezioni: { id: IdSezione; titolo: string; completa: boolean; mancanti: string[] }[];
 };
 
 /** Percentuale = media delle frazioni compilate delle sezioni che contano (note escluse). */
@@ -26,14 +26,17 @@ export function calcolaCompletamento(profilo: Partial<Profilo>, immobile: Partia
     .map((sezione) => {
       const valori = valoriSezione(sezione, profilo, immobile);
       const campi = sezione.campi.filter((c) => isVisibile(c, valori));
-      const compilati = campi.filter((c) =>
-        c.tipo === "documenti" ? documenti.every((d) => valori[`documents.${d.codice}`]) : valori[c.nome] !== "",
-      ).length;
-      return { id: sezione.id, titolo: sezione.titolo, frazione: campi.length ? compilati / campi.length : 1 };
+      const mancanti = campi.filter((c) =>
+        c.tipo === "documenti" ? !documenti.every((d) => valori[`documents.${d.codice}`]) : valori[c.nome] === "",
+      );
+      const frazione = campi.length ? (campi.length - mancanti.length) / campi.length : 1;
+      return { id: sezione.id, titolo: sezione.titolo, frazione, mancanti: mancanti.map((c) => c.etichetta) };
     });
   const media = risultato.reduce((somma, s) => somma + s.frazione, 0) / risultato.length;
+  const tutteComplete = risultato.every((s) => s.mancanti.length === 0);
   return {
-    percentuale: Math.round(media * 100),
-    sezioni: risultato.map(({ id, titolo, frazione }) => ({ id, titolo, completa: frazione === 1 })),
+    // Il 100% solo a profilo davvero completo: l'arrotondamento non deve nascondere un campo mancante.
+    percentuale: tutteComplete ? 100 : Math.min(99, Math.round(media * 100)),
+    sezioni: risultato.map(({ id, titolo, mancanti }) => ({ id, titolo, completa: mancanti.length === 0, mancanti })),
   };
 }

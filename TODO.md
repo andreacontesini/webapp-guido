@@ -150,7 +150,7 @@
 ### Rifiniture dopo la Fase 9 (Target: v0.11.1)
 > Correzioni e migliorie emerse dall'uso, su profilo, admin e landing.
 - [x] **Profilo, allineamento:** la pagina `/dashboard/profilo` non è allineata a sinistra come le altre sezioni dell'area riservata; uniformare contenitore e margini.
-- [ ] **Profilo, percentuale:** con tutte le informazioni compilate il riquadro resta a "Profilo completo al 99%" e non arriva mai al 100%. Trovare il campo che manca nel calcolo (probabilmente un campo condizionale o non più mostrato) e coprire il caso con un test.
+- [x] **Profilo, percentuale:** il 99% era corretto (nel profilo di prova mancava "Uso attuale"), ma la pagina non diceva cosa mancasse. Ora il riquadro elenca i campi mancanti per sezione, e il 100% compare solo a profilo davvero completo (l'arrotondamento non nasconde più un campo vuoto). Coperto da test.
 - [ ] **Admin, tabella utenti:** gestirla meglio usando tutto lo spazio disponibile (larghezza piena, colonne più leggibili, meno scorrimento orizzontale).
 - [ ] **Landing, scorrimento:** i pulsanti che portano a un'ancora della pagina (es. "Acquista" verso il prezzo) devono scorrere in modo fluido (smooth scroll), senza animazione per chi ha attivo "riduci animazioni".
 - [ ] **Tag Versione:** `v0.11.1`.
