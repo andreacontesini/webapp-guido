@@ -16,6 +16,7 @@ import { aBlocchi } from "@/lib/blocchi";
 import { calcolaCompletamento } from "@/lib/profilo/completamento";
 import { statoRichiesta } from "@/lib/profilo/ricontatto";
 import { creaClientServer } from "@/lib/supabase/server";
+import { cn } from "@/lib/utils";
 import type { Immobile, Profilo } from "@/lib/supabase/tipi";
 
 export const metadata: Metadata = {
@@ -30,7 +31,7 @@ const formatoData = new Intl.DateTimeFormat("it-IT", {
 
 export default function PaginaUtenti({ searchParams }: PageProps<"/admin/utenti">) {
   return (
-    <div className="space-y-6">
+    <div data-larghezza="piena" className="space-y-6">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div className="space-y-1">
           <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">Utenti</h1>
@@ -178,15 +179,15 @@ async function ElencoUtenti({ searchParams }: Pick<PageProps<"/admin/utenti">, "
 
       {utenti.length > 0 && (
         <div className="overflow-x-auto rounded-xl border bg-card">
-          <table className="w-full min-w-[60rem] text-sm">
-            <thead className="border-b text-left text-xs text-muted-foreground">
+          <table className="w-full min-w-[42rem] text-sm">
+            <thead className="border-b bg-muted/40 text-left text-xs whitespace-nowrap text-muted-foreground">
               <tr>
                 <th scope="col" className="px-4 py-3 font-medium">Utente</th>
-                <th scope="col" className="px-4 py-3 font-medium">Registrato</th>
+                <th scope="col" className="hidden px-4 py-3 font-medium lg:table-cell">Telefono</th>
+                <th scope="col" className="hidden px-4 py-3 font-medium xl:table-cell">Registrato</th>
                 <th scope="col" className="px-4 py-3 font-medium">Guida</th>
                 <th scope="col" className="px-4 py-3 font-medium">Acquisti</th>
                 <th scope="col" className="px-4 py-3 font-medium">Profilo</th>
-                <th scope="col" className="px-4 py-3 font-medium">Stato</th>
                 <th scope="col" className="px-4 py-3 text-right font-medium">Azioni</th>
               </tr>
             </thead>
@@ -225,12 +226,55 @@ function RigaUtente({
   const nomeCompleto = [utente.first_name, utente.last_name].filter(Boolean).join(" ");
   const ricontatto = statoRichiesta(utente) === "in_attesa" && utente.contact_request_at;
   return (
-    <tr className={utente.is_blocked ? "bg-muted/40" : ricontatto ? "bg-primary/5" : undefined}>
-      <td className="px-4 py-3">
-        <p className="font-medium">{nomeCompleto || "Profilo da completare"}</p>
-        <p className="text-muted-foreground">{utente.email}</p>
+    <tr
+      className={cn(
+        "align-middle transition-colors hover:bg-muted/30",
+        utente.is_blocked ? "bg-muted/40" : ricontatto && "bg-primary/5",
+      )}
+    >
+      <td className="max-w-[22rem] px-4 py-3">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+          <span className="font-medium">{nomeCompleto || "Profilo da completare"}</span>
+          {utente.role === "admin" && <Badge>Admin</Badge>}
+          {utente.is_blocked && <Badge variant="destructive">Bloccato</Badge>}
+        </div>
+        <p className="truncate text-muted-foreground" title={utente.email}>
+          {utente.email}
+        </p>
+        {/* Su schermi stretti telefono e data stanno qui, sotto l'email. */}
+        <p className="text-xs text-muted-foreground lg:hidden">
+          {[utente.phone, `dal ${formatoData.format(new Date(utente.created_at))}`].filter(Boolean).join(" · ")}
+        </p>
+        <p className="hidden text-xs text-muted-foreground lg:block xl:hidden">
+          dal {formatoData.format(new Date(utente.created_at))}
+        </p>
+        {ricontatto && (
+          <div className="mt-1.5">
+            <RicontattoUtente
+              id={utente.id}
+              nome={nomeCompleto || utente.email}
+              email={utente.email}
+              dati={{
+                richiestaIl: ricontatto,
+                note: utente.contact_request_notes,
+                telefono: utente.phone,
+                contatto: utente.contact_preference,
+                orario: utente.contact_time,
+              }}
+            />
+          </div>
+        )}
       </td>
-      <td className="px-4 py-3 whitespace-nowrap text-muted-foreground">
+      <td className="hidden px-4 py-3 whitespace-nowrap text-muted-foreground lg:table-cell">
+        {utente.phone ? (
+          <a href={`tel:${utente.phone.replace(/[^+\d]/g, "")}`} className="underline-offset-4 hover:text-foreground hover:underline">
+            {utente.phone}
+          </a>
+        ) : (
+          "—"
+        )}
+      </td>
+      <td className="hidden px-4 py-3 whitespace-nowrap text-muted-foreground xl:table-cell">
         {formatoData.format(new Date(utente.created_at))}
       </td>
       <td className="px-4 py-3">
@@ -250,31 +294,7 @@ function RigaUtente({
           percentuale={calcolaCompletamento(utente, immobile).percentuale}
         />
       </td>
-      <td className="px-4 py-3">
-        <div className="flex flex-wrap items-center gap-1">
-          {ricontatto && (
-            <RicontattoUtente
-              id={utente.id}
-              nome={nomeCompleto || utente.email}
-              email={utente.email}
-              dati={{
-                richiestaIl: ricontatto,
-                note: utente.contact_request_notes,
-                telefono: utente.phone,
-                contatto: utente.contact_preference,
-                orario: utente.contact_time,
-              }}
-            />
-          )}
-          {utente.role === "admin" && <Badge>Admin</Badge>}
-          {utente.is_blocked ? (
-            <Badge variant="destructive">Bloccato</Badge>
-          ) : (
-            <Badge variant="outline">Attivo</Badge>
-          )}
-        </div>
-      </td>
-      <td className="px-4 py-3 text-right">
+      <td className="px-4 py-3 text-right whitespace-nowrap">
         <AzioniUtente
           id={utente.id}
           nome={nomeCompleto || utente.email}

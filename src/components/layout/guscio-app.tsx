@@ -42,7 +42,8 @@ export function GuscioApp({
       <BarraLaterale area={area} fondo={voceFondo(area, "laterale")} />
       <div className="flex min-w-0 flex-1 flex-col">
         <BarraSuperiore area={area} />
-        <main className="w-full max-w-6xl flex-1 px-4 pt-6 pb-28 sm:px-6 lg:px-8 lg:pt-8 lg:pb-10">
+        {/* Le pagine con molti dati (es. tabella utenti) usano tutta la larghezza con data-larghezza="piena". */}
+        <main className="w-full max-w-6xl flex-1 px-4 pt-6 pb-28 has-[[data-larghezza=piena]]:max-w-none sm:px-6 lg:px-8 lg:pt-8 lg:pb-10">
           {children}
         </main>
       </div>

@@ -151,7 +151,7 @@
 > Correzioni e migliorie emerse dall'uso, su profilo, admin e landing.
 - [x] **Profilo, allineamento:** la pagina `/dashboard/profilo` non è allineata a sinistra come le altre sezioni dell'area riservata; uniformare contenitore e margini.
 - [x] **Profilo, percentuale:** il 99% era corretto (nel profilo di prova mancava "Uso attuale"), ma la pagina non diceva cosa mancasse. Ora il riquadro elenca i campi mancanti per sezione, e il 100% compare solo a profilo davvero completo (l'arrotondamento non nasconde più un campo vuoto). Coperto da test.
-- [ ] **Admin, tabella utenti:** gestirla meglio usando tutto lo spazio disponibile (larghezza piena, colonne più leggibili, meno scorrimento orizzontale).
+- [x] **Admin, tabella utenti:** pagina a tutta larghezza (`data-larghezza="piena"`), colonna "Stato" assorbita nella cella dell'utente (badge Admin/Bloccato e "Da ricontattare" accanto al nome), telefono cliccabile, data di registrazione solo su schermi larghi (altrimenti sotto l'email), intestazione evidenziata e larghezza minima ridotta.
 - [ ] **Landing, scorrimento:** i pulsanti che portano a un'ancora della pagina (es. "Acquista" verso il prezzo) devono scorrere in modo fluido (smooth scroll), senza animazione per chi ha attivo "riduci animazioni".
 - [ ] **Tag Versione:** `v0.11.1`.
 
