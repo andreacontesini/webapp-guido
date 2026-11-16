@@ -200,7 +200,7 @@
   - [ ] Far rileggere i testi a Guido (ed eventualmente a un consulente) prima del lancio.
   - [ ] Rinuncia al recesso per contenuti digitali: rimandata. Finché nel checkout non c'è la casella, le condizioni prevedono il recesso ordinario di 14 giorni (sezione 8); quando si aggiunge, aggiornare quella sezione.
   - [x] Fattura: la gestisce la commercialista (la ricevuta Stripe non è una fattura); le condizioni rimandano all'email di assistenza per i dati di fatturazione.
-- [ ] Test end-to-end: Magic Link, permessi PDF, redirect, acquisto, rimborso, acquisto da landing senza account.
+- [ ] Test end-to-end con la lista in `docs/test-end-to-end.md` (27 casi: accesso, guida PDF, acquisto, rimborsi e contestazioni, profilo e ricontatto, GDPR, admin, email).
   - [ ] Acquisto senza account: ingresso automatico dopo Stripe con email nuova, email già registrata (link via email), pagamento annullato con "Riprova".
 - [ ] Email (dalla Fase 7): modelli di Supabase Auth copiati nel pannello (Authentication → Emails → Templates, vedi `docs/supabase-auth.md`) e provati con un accesso reale; controllo dell'aspetto nei principali client (Gmail, Apple Mail, Outlook, smartphone) e in tema scuro.
 - [ ] Passaggio di Stripe alle chiavi live e webhook di produzione.
