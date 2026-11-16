@@ -76,7 +76,7 @@ Carte di prova (qualsiasi data futura, qualsiasi CVC):
 
 19. - [ ] **Profilo.** Compila tutte le sezioni da smartphone.
     - Atteso: ogni sezione si salva con il suo pulsante; il riquadro mostra cosa manca e arriva al 100% a profilo completo; in dashboard sparisce l'invito a completare il profilo.
-    - Notifica "Profilo aggiornato" al massimo una volta al giorno per cliente.
+    - Notifica "Profilo o immobile aggiornato" al massimo una volta al giorno per cliente.
     - Admin: popup del profilo e "Scarica scheda cliente" (PDF) con i dati inseriti.
 20. - [ ] **Ricontatto.** Nel profilo compila "Vuoi parlare con Guido?" e invia.
     - Atteso: notifica "Richiesta di ricontatto"; in admin avviso in Panoramica e nella tabella utenti, riga evidenziata, filtro "da ricontattare"; "Segna come gestita" toglie l'avviso.
