@@ -6,13 +6,17 @@
 /** Percorsi di primo livello già usati dall'app: non possono essere landing. */
 export const PERCORSI_RISERVATI = [
   "accesso",
+  "acquisto",
   "admin",
   "anteprima",
   "api",
   "auth",
   "benvenuto",
+  "condizioni-di-vendita",
+  "cookie",
   "dashboard",
   "opengraph-image",
+  "privacy",
   "robots.txt",
   "sitemap.xml",
   "twitter-image",

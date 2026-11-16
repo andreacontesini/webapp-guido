@@ -1,10 +1,11 @@
 import type { MetadataRoute } from "next";
 
 import { elencoLandingPubblicate } from "@/lib/landing/dati";
+import { pagineLegali } from "@/lib/legale/venditore";
 import { urlLanding } from "@/lib/url";
 
 /**
- * Sitemap delle pagine pubbliche: pagina iniziale e landing pubblicate.
+ * Sitemap delle pagine pubbliche: pagina iniziale, landing pubblicate e pagine legali.
  * L'area riservata e il back office non sono indicizzati.
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -28,5 +29,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         changeFrequency: "weekly" as const,
         priority: 0.8,
       })),
+    ...pagineLegali.map((p) => ({
+      url: `${base}${p.href}`,
+      changeFrequency: "yearly" as const,
+      priority: 0.2,
+    })),
   ];
 }

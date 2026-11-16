@@ -7,6 +7,7 @@ import { ContaVisita } from "@/components/landing/conta-visita";
 import { Button } from "@/components/ui/button";
 import { PERCORSO_ACCESSO } from "@/lib/auth/percorsi";
 import { haAcquisto } from "@/lib/landing/blocchi";
+import { pagineLegali, venditore } from "@/lib/legale/venditore";
 import type { LandingPubblica } from "@/lib/landing/dati";
 import { EMAIL_ASSISTENZA, formattaPrezzo, prodotti } from "@/lib/prodotti";
 import { acquistoDisponibile } from "@/lib/stripe";
@@ -51,7 +52,8 @@ export function PaginaLanding({
   );
 }
 
-function Intestazione() {
+/** Intestazione delle landing (usata anche dalle pagine legali). */
+export function Intestazione() {
   return (
     <header className="sticky top-0 z-30 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
@@ -79,23 +81,37 @@ function Intestazione() {
   );
 }
 
-function PiePagina() {
+/** Piè di pagina delle landing (usato anche dalle pagine legali). */
+export function PiePagina() {
   return (
     <footer className="border-t">
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-10 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
-        <p>
-          © 2026 Guido Contesini · Consulente immobiliare,
-          Lago di Garda
-        </p>
-        <p>
-          Assistenza:{" "}
-          <a
-            href={`mailto:${EMAIL_ASSISTENZA}`}
-            className="font-medium text-foreground underline underline-offset-4"
-          >
-            {EMAIL_ASSISTENZA}
-          </a>
-        </p>
+      <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-10 text-sm text-muted-foreground sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <p>
+            © 2026 {venditore.nome} · {venditore.attivita}, Lago di Garda
+            {venditore.partitaIva && ` · P. IVA ${venditore.partitaIva}`}
+          </p>
+          <p>
+            Assistenza:{" "}
+            <a
+              href={`mailto:${EMAIL_ASSISTENZA}`}
+              className="font-medium text-foreground underline underline-offset-4"
+            >
+              {EMAIL_ASSISTENZA}
+            </a>
+          </p>
+        </div>
+        <nav aria-label="Informazioni legali">
+          <ul className="flex flex-wrap gap-x-5 gap-y-2">
+            {pagineLegali.map((p) => (
+              <li key={p.href}>
+                <Link href={p.href} className="underline-offset-4 hover:text-foreground hover:underline">
+                  {p.etichetta}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </div>
     </footer>
   );
