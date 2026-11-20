@@ -1,7 +1,7 @@
 "use client";
 
 import { useId, useRef, useState } from "react";
-import { ImageIcon, LoaderIcon, Trash2Icon, UploadIcon } from "lucide-react";
+import { FilmIcon, ImageIcon, LoaderIcon, Trash2Icon, UploadIcon } from "lucide-react";
 
 import { preparaCaricamentoImmagine } from "@/app/admin/landing/azioni";
 import { Button } from "@/components/ui/button";
@@ -10,19 +10,22 @@ import { BUCKET_LANDING } from "@/lib/bucket";
 import { creaClientBrowser } from "@/lib/supabase/client";
 
 /**
- * Campo immagine dell'editor: carica un file nel bucket pubblico delle landing
- * (direttamente dal browser, con un URL firmato dal server) oppure accetta un
- * indirizzo https incollato.
+ * Campo immagine o video dell'editor: carica un file nel bucket pubblico delle
+ * landing (direttamente dal browser, con un URL firmato dal server) oppure
+ * accetta un indirizzo https incollato (per i video anche Bunny, YouTube, Vimeo).
  */
 export function CampoImmagine({
   valore,
   onChange,
   idCampo,
+  tipoFile = "immagine",
 }: {
   valore: string;
   onChange: (url: string) => void;
   idCampo?: string;
+  tipoFile?: "immagine" | "video";
 }) {
+  const video = tipoFile === "video";
   const idFile = useId();
   const input = useRef<HTMLInputElement>(null);
   const [inCorso, setInCorso] = useState(false);
@@ -59,9 +62,11 @@ export function CampoImmagine({
     <div className="space-y-2">
       <div className="flex items-start gap-3">
         <span className="flex size-16 shrink-0 items-center justify-center overflow-hidden rounded-md border bg-muted">
-          {valore ? (
+          {valore && !video ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={valore} alt="" className="size-full object-cover" />
+          ) : video ? (
+            <FilmIcon className="size-5 text-muted-foreground" aria-hidden />
           ) : (
             <ImageIcon className="size-5 text-muted-foreground" aria-hidden />
           )}
@@ -78,7 +83,7 @@ export function CampoImmagine({
               ref={input}
               id={idFile}
               type="file"
-              accept="image/jpeg,image/png,image/webp,image/avif,image/gif"
+              accept={video ? "video/mp4,video/webm" : "image/jpeg,image/png,image/webp,image/avif,image/gif"}
               className="sr-only"
               disabled={inCorso}
               onChange={(e) => {
@@ -98,7 +103,7 @@ export function CampoImmagine({
               ) : (
                 <UploadIcon aria-hidden />
               )}
-              {inCorso ? "Caricamento…" : "Carica immagine"}
+              {inCorso ? "Caricamento…" : video ? "Carica video" : "Carica immagine"}
             </Button>
             {valore && (
               <Button type="button" variant="ghost" size="sm" onClick={() => onChange("")}>

@@ -3,6 +3,7 @@ import {
   BookOpenIcon,
   FileTextIcon,
   HomeIcon,
+  InboxIcon,
   LayoutDashboardIcon,
   MegaphoneIcon,
   PlayCircleIcon,
@@ -55,6 +56,11 @@ export const navigazioneAdmin: VoceNavigazione[] = [
     titolo: "Landing",
     href: "/admin/landing",
     icona: MegaphoneIcon,
+  },
+  {
+    titolo: "Richieste",
+    href: "/admin/richieste",
+    icona: InboxIcon,
   },
   {
     titolo: "Notifiche",

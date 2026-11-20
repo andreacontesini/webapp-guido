@@ -101,6 +101,7 @@ async function ElencoLanding({ base }: { base: string }) {
           const visite = Number(s?.visite ?? 0);
           const checkout = Number(s?.checkout ?? 0);
           const acquisti = Number(s?.acquisti ?? 0);
+          const richieste = Number(s?.richieste ?? 0);
 
           return (
             <li key={l.id} className="space-y-4 rounded-xl border bg-card p-5 text-card-foreground">
@@ -153,12 +154,13 @@ async function ElencoLanding({ base }: { base: string }) {
                 </div>
               </div>
 
-              <dl className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              <dl className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
                 {[
                   { etichetta: "Visite", valore: visite.toLocaleString("it-IT") },
                   { etichetta: "Checkout avviati", valore: checkout.toLocaleString("it-IT") },
                   { etichetta: "Acquisti", valore: acquisti.toLocaleString("it-IT") },
-                  { etichetta: "Conversione", valore: percentuale(acquisti, visite) },
+                  { etichetta: "Richieste", valore: richieste.toLocaleString("it-IT") },
+                  { etichetta: "Conversione", valore: percentuale(acquisti + richieste, visite) },
                 ].map(({ etichetta, valore }) => (
                   <div key={etichetta} className="rounded-lg border px-3 py-2">
                     <dt className="text-xs text-muted-foreground">{etichetta}</dt>
@@ -177,7 +179,8 @@ async function ElencoLanding({ base }: { base: string }) {
       </ul>
       <p className="text-xs text-muted-foreground">
         Statistiche degli ultimi {GIORNI_STATISTICHE} giorni, anonime e senza cookie: visite alla
-        pagina, pagamenti avviati su Stripe e acquisti completati partiti dalla landing.
+        pagina, pagamenti avviati su Stripe, acquisti completati e richieste inviate dal modulo di
+        contatto. La conversione conta acquisti e richieste sulle visite.
       </p>
     </div>
   );

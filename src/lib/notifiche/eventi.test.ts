@@ -110,6 +110,14 @@ test("ogni evento produce oggetto, titolo e almeno una riga", () => {
     { evento: "contestazione_chiusa", cliente, prodotto: "guida", contestazione: "dp", vinta: false },
     { evento: "richiesta_gdpr", cliente, tipo: "eliminazione", il: "2026-11-13T10:00:00Z" },
     { evento: "problema_tecnico", problema: "Email non partita", dettaglio: "timeout", chiave: "k" },
+    {
+      evento: "richiesta_landing",
+      cliente,
+      richiesta: "r1",
+      landing: "Vendi casa da privato",
+      campi: [{ etichetta: "Nome e Cognome", valore: "Mario Rossi" }],
+      destinatari: [],
+    },
   ];
   for (const dati of campioni) {
     const contenuto = contenutoNotifica(dati);
@@ -117,4 +125,23 @@ test("ogni evento produce oggetto, titolo e almeno una riga", () => {
     assert.ok(contenuto.titolo, dati.evento);
     assert.ok(contenuto.righe.length > 0, dati.evento);
   }
+});
+
+test("richiesta da landing: nome nell'oggetto, campi nelle righe, link alle richieste", () => {
+  const dati: DatiEvento = {
+    evento: "richiesta_landing",
+    cliente: null,
+    richiesta: "r1",
+    landing: "Vendi casa da privato",
+    campi: [
+      { etichetta: "Nome e Cognome", valore: "Mario Rossi" },
+      { etichetta: "Telefono", valore: "333 1234567" },
+    ],
+    destinatari: ["extra@example.com"],
+  };
+  const contenuto = contenutoNotifica(dati);
+  assert.match(contenuto.oggetto, /Vendi casa da privato.*Mario Rossi/);
+  assert.ok(contenuto.righe.some((r) => r.valore === "333 1234567"));
+  assert.match(contenuto.pulsante?.href ?? "", /\/admin\/richieste$/);
+  assert.equal(chiaveDeduplica(dati), "richiesta_landing:r1");
 });

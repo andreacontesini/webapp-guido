@@ -102,7 +102,9 @@ async function esegui(dati: DatiEvento) {
     throw erroreDestinatari;
   }
 
-  const indirizzi = (destinatari ?? []).map((d) => d.email);
+  // Il modulo di una landing può indicare destinatari propri, oltre a chi riceve l'evento.
+  const extra = dati.evento === "richiesta_landing" ? dati.destinatari : [];
+  const indirizzi = [...new Set([...(destinatari ?? []).map((d) => d.email), ...extra])];
   const esito = await inviaATutti(indirizzi, contenuto, cliente?.email ?? null, `notifica-${registrata.id}`);
   await aggiornaEsito(registrata.id, esito.stato, esito.inviati, esito.errore);
   await pulisciStorico();

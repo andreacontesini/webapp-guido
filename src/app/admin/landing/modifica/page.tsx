@@ -8,6 +8,7 @@ import { AzioniLanding } from "@/app/admin/landing/azioni-landing";
 import { EditorLanding } from "@/app/admin/landing/modifica/editor-landing";
 import { Badge } from "@/components/ui/badge";
 import { richiediAdmin } from "@/lib/auth/admin";
+import { aggiornaFormatoBlocchi } from "@/lib/landing/blocchi";
 import { creaClientServer } from "@/lib/supabase/server";
 import { urlLanding } from "@/lib/url";
 
@@ -47,17 +48,16 @@ async function Editor({
   const supabase = await creaClientServer();
   const { data: landing } = await supabase
     .from("landing_pages")
-    .select("id, slug, title, seo_title, seo_description, og_image_url, domain, blocks, status, is_home")
+    .select("id, slug, title, seo_title, seo_description, og_image_url, domain, blocks, mobile_bar, status, is_home")
     .eq("id", id)
     .maybeSingle();
   if (!landing) notFound();
 
   const pubblicata = landing.status === "pubblicata";
-  const blocchi = Array.isArray(landing.blocks)
-    ? landing.blocks.filter(
-        (b): b is Record<string, unknown> => typeof b === "object" && b !== null && !Array.isArray(b),
-      )
-    : [];
+  // Le landing salvate prima dei pulsanti configurabili (v0.12.0) si aprono già convertite.
+  const blocchi = aggiornaFormatoBlocchi(landing.blocks).filter(
+    (b): b is Record<string, unknown> => typeof b === "object" && b !== null && !Array.isArray(b),
+  );
 
   return (
     <>
@@ -92,6 +92,7 @@ async function Editor({
           seoDescrizione: landing.seo_description ?? "",
           immagineAnteprima: landing.og_image_url ?? "",
           blocchi,
+          barra: landing.mobile_bar,
           pubblicata,
         }}
       />

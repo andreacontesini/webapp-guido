@@ -140,13 +140,32 @@ export type LandingPage = {
   status: StatoLanding;
   is_home: boolean;
   domain: DominioLanding;
+  /** Barra fissa su smartphone (`{ attiva, titolo, testo, pulsante }`); null = barra di acquisto predefinita. */
+  mobile_bar: Record<string, unknown> | null;
   published_at: string | null;
   created_at: string;
   updated_at: string;
   updated_by: string | null;
 };
 
-export type TipoEventoLanding = "visita" | "checkout" | "acquisto";
+export type TipoEventoLanding = "visita" | "checkout" | "acquisto" | "contatto";
+
+/** Richiesta arrivata dal modulo di contatto di una landing (scritta solo dal server). */
+export type RichiestaLanding = {
+  id: string;
+  landing_id: string | null;
+  landing_title: string;
+  block_id: string;
+  full_name: string | null;
+  email: string | null;
+  phone: string | null;
+  city: string | null;
+  message: string | null;
+  consent_at: string;
+  created_at: string;
+  handled_at: string | null;
+  handled_by: string | null;
+};
 
 /** Evento anonimo di conversione di una landing (scritto solo dal server). */
 export type EventoLanding = {
@@ -249,6 +268,13 @@ export type Database = {
         Update: Partial<Omit<RigaStoricoNotifiche, "id">>;
         Relationships: [];
       };
+      landing_requests: {
+        Row: RichiestaLanding;
+        Insert: Pick<RichiestaLanding, "landing_title" | "block_id" | "consent_at"> &
+          Partial<Omit<RichiestaLanding, "id" | "created_at">>;
+        Update: Partial<Pick<RichiestaLanding, "handled_at" | "handled_by">>;
+        Relationships: [];
+      };
       landing_events: {
         Row: EventoLanding;
         Insert: Pick<EventoLanding, "landing_id" | "type"> & Partial<EventoLanding>;
@@ -269,7 +295,7 @@ export type Database = {
       };
       statistiche_landing: {
         Args: { giorni?: number };
-        Returns: { landing_id: string; visite: number; checkout: number; acquisti: number }[];
+        Returns: { landing_id: string; visite: number; checkout: number; acquisti: number; richieste: number }[];
       };
     };
     Enums: {

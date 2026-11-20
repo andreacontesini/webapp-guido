@@ -26,6 +26,32 @@ type Base = {
   id?: string;
 };
 
+/**
+ * Pulsante configurabile dall'editor: cosa c'è scritto e cosa fa.
+ * - `acquista`: apre il pagamento della guida;
+ * - `sezione`: scorre a un blocco della pagina (es. il modulo di contatto);
+ * - `link`: apre un indirizzo (https, percorso interno, mailto: o tel:);
+ * - `accedi`: porta all'accesso all'area riservata.
+ */
+export const AZIONI_PULSANTE = ["acquista", "sezione", "link", "accedi"] as const;
+export type AzionePulsante = (typeof AZIONI_PULSANTE)[number];
+export const STILI_PULSANTE = ["principale", "secondario"] as const;
+export type StilePulsante = (typeof STILI_PULSANTE)[number];
+
+export type Pulsante = {
+  etichetta: string;
+  azione: AzionePulsante;
+  /** Id del blocco di destinazione (azione `sezione`). */
+  sezione?: string;
+  /** Indirizzo (azione `link`). */
+  link?: string;
+  stile: StilePulsante;
+};
+
+/** Cosa mostra l'apertura a fianco del testo. */
+export const MEDIA_HERO = ["guida", "immagine", "video", "nessuno"] as const;
+export type MediaHero = (typeof MEDIA_HERO)[number];
+
 export type BloccoHero = Base & {
   tipo: "hero";
   /** Etichetta breve sopra il titolo (es. "Guida pratica · 18 pagine"). */
@@ -38,6 +64,14 @@ export type BloccoHero = Base & {
   nota?: string;
   /** Numeri chiave: solo dati reali. */
   numeri?: { valore: string; etichetta: string }[];
+  pulsante?: Pulsante;
+  pulsanteSecondario?: Pulsante;
+  media: MediaHero;
+  immagineUrl?: string;
+  immagineAlt?: string;
+  videoUrl?: string;
+  videoCopertina?: string;
+  videoFormato: FormatoVideo;
 };
 
 export type BloccoPuntiChiave = Base & {
@@ -45,6 +79,7 @@ export type BloccoPuntiChiave = Base & {
   titolo: string;
   sottotitolo?: string;
   punti: { icona: IconaPunto; titolo: string; testo: string }[];
+  pulsante?: Pulsante;
 };
 
 export type BloccoTappe = Base & {
@@ -52,12 +87,14 @@ export type BloccoTappe = Base & {
   titolo: string;
   sottotitolo?: string;
   tappe: { titolo: string; testo: string }[];
+  pulsante?: Pulsante;
 };
 
 export type BloccoTesto = Base & {
   tipo: "testo";
   titolo?: string;
   paragrafi: string[];
+  pulsante?: Pulsante;
 };
 
 export type BloccoImmagine = Base & {
@@ -82,6 +119,7 @@ export type BloccoAutore = Base & {
   paragrafi: string[];
   luogo?: string;
   fotoUrl?: string;
+  pulsante?: Pulsante;
 };
 
 export type BloccoFaq = Base & {
@@ -96,14 +134,15 @@ export type BloccoPrezzo = Base & {
   sottotitolo?: string;
   /** Rassicurazioni sotto il pulsante (pagamento sicuro, accesso immediato…). */
   garanzie: string[];
+  /** Testo del pulsante di acquisto (predefinito: "Acquista la guida"). */
+  etichettaPulsante?: string;
 };
 
 export type BloccoInvito = Base & {
   tipo: "invito";
   titolo: string;
   testo?: string;
-  /** "acquista" apre il popup di acquisto, "accedi" porta alla pagina di accesso. */
-  azione: "acquista" | "accedi";
+  pulsante: Pulsante;
 };
 
 /** Formati del riquadro video (larghezza:altezza). */
@@ -133,8 +172,8 @@ export type BloccoVideo = Base & {
   sottotitoli: boolean;
   /** Secondo da cui parte la riproduzione. */
   inizio?: number;
-  /** Pulsante "Acquista" sotto il video. */
-  pulsanteAcquisto: boolean;
+  /** Pulsante facoltativo sotto il video. */
+  pulsante?: Pulsante;
 };
 
 export const MODALITA_GALLERIA = ["griglia", "carosello"] as const;
@@ -151,6 +190,41 @@ export type BloccoGalleria = Base & {
   immagini: { url: string; alt: string; didascalia?: string }[];
 };
 
+export const SIMBOLI_ELENCO = ["spunta", "croce", "domanda"] as const;
+export type SimboloElenco = (typeof SIMBOLI_ELENCO)[number];
+
+export type BloccoElenco = Base & {
+  tipo: "elenco";
+  titolo?: string;
+  testo?: string;
+  voci: string[];
+  simbolo: SimboloElenco;
+  pulsante?: Pulsante;
+};
+
+/** Campi che il modulo di contatto può chiedere (nome → etichetta predefinita). */
+export const CAMPI_CONTATTO = {
+  nome: "Nome e cognome",
+  email: "Email",
+  telefono: "Telefono",
+  citta: "Città",
+  messaggio: "Messaggio",
+} as const;
+export type CampoContatto = keyof typeof CAMPI_CONTATTO;
+export const codiciCampiContatto = Object.keys(CAMPI_CONTATTO) as CampoContatto[];
+
+export type BloccoModulo = Base & {
+  tipo: "modulo";
+  titolo?: string;
+  testo?: string;
+  /** Campi nell'ordine scelto, senza doppioni. Almeno email o telefono. */
+  campi: { campo: CampoContatto; etichetta: string; obbligatorio: boolean }[];
+  etichettaInvio: string;
+  messaggioConferma: string;
+  /** Email che ricevono le richieste di questo modulo (oltre all'evento "Richieste landing"). */
+  destinatari: string[];
+};
+
 export type Blocco =
   | BloccoHero
   | BloccoPuntiChiave
@@ -163,7 +237,9 @@ export type Blocco =
   | BloccoPrezzo
   | BloccoInvito
   | BloccoVideo
-  | BloccoGalleria;
+  | BloccoGalleria
+  | BloccoElenco
+  | BloccoModulo;
 
 export type TipoBlocco = Blocco["tipo"];
 
@@ -181,6 +257,8 @@ export const NOMI_BLOCCHI: Record<TipoBlocco, string> = {
   invito: "Invito (acquisto o accesso)",
   video: "Video",
   galleria: "Galleria immagini",
+  elenco: "Elenco",
+  modulo: "Modulo di contatto",
 };
 
 // -------------------------------------------------------------
@@ -222,6 +300,40 @@ const coppia = (o: Oggetto) => {
   return titolo && descrizione ? { titolo, testo: descrizione } : null;
 };
 
+const formatoEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** Destinazione di un link: https, percorso interno, mailto: o tel:. */
+export function isLinkValido(v: string) {
+  return (
+    v.startsWith("https://") ||
+    (v.startsWith("/") && !v.startsWith("//")) ||
+    /^mailto:[^\s@]+@[^\s@]+$/.test(v) ||
+    /^tel:\+?[0-9 ().-]{5,20}$/.test(v)
+  );
+}
+
+/**
+ * Pulsante dal JSON. I pulsanti facoltativi valgono solo con `attivo: true`;
+ * `undefined` se assente, spento o incompleto.
+ */
+function pulsante(v: unknown, facoltativo = true): Pulsante | undefined {
+  if (!isOggetto(v)) return undefined;
+  if (facoltativo && v.attivo !== true) return undefined;
+  const etichetta = testo(v.etichetta);
+  const azione = (AZIONI_PULSANTE as readonly unknown[]).includes(v.azione) ? (v.azione as AzionePulsante) : undefined;
+  if (!etichetta || !azione) return undefined;
+  const stile: StilePulsante = v.stile === "secondario" ? "secondario" : "principale";
+  if (azione === "sezione") {
+    const sezione = testo(v.sezione);
+    return sezione ? { etichetta, azione, sezione, stile } : undefined;
+  }
+  if (azione === "link") {
+    const link = testo(v.link);
+    return link && isLinkValido(link) ? { etichetta, azione, link, stile } : undefined;
+  }
+  return { etichetta, azione, stile };
+}
+
 const isIconaPunto = (v: unknown): v is IconaPunto =>
   typeof v === "string" && (ICONE_PUNTI as readonly string[]).includes(v);
 
@@ -239,6 +351,7 @@ function normalizzaBlocco(o: Oggetto): Blocco | null {
         const etichetta = testo(n.etichetta);
         return valore && etichetta ? { valore, etichetta } : null;
       });
+      const media = (MEDIA_HERO as readonly unknown[]).includes(o.media) ? (o.media as MediaHero) : "guida";
       return {
         tipo: "hero",
         id,
@@ -248,6 +361,14 @@ function normalizzaBlocco(o: Oggetto): Blocco | null {
         sottotitolo,
         nota: testo(o.nota),
         numeri,
+        pulsante: pulsante(o.pulsante),
+        pulsanteSecondario: pulsante(o.pulsanteSecondario),
+        media,
+        immagineUrl: url(o.immagineUrl),
+        immagineAlt: testo(o.immagineAlt),
+        videoUrl: testo(o.videoUrl) && analizzaVideo(testo(o.videoUrl)!) ? testo(o.videoUrl) : undefined,
+        videoCopertina: url(o.videoCopertina),
+        videoFormato: formatoVideo(o.videoFormato),
       };
     }
     case "punti-chiave": {
@@ -257,18 +378,18 @@ function normalizzaBlocco(o: Oggetto): Blocco | null {
         return base ? { ...base, icona: isIconaPunto(p.icona) ? p.icona : "metodo" } : null;
       });
       if (!titolo || punti.length === 0) return null;
-      return { tipo: "punti-chiave", id, titolo, sottotitolo: testo(o.sottotitolo), punti };
+      return { tipo: "punti-chiave", id, titolo, sottotitolo: testo(o.sottotitolo), punti, pulsante: pulsante(o.pulsante) };
     }
     case "tappe": {
       const titolo = testo(o.titolo);
       const tappe = elenco(o.tappe, coppia);
       if (!titolo || tappe.length === 0) return null;
-      return { tipo: "tappe", id, titolo, sottotitolo: testo(o.sottotitolo), tappe };
+      return { tipo: "tappe", id, titolo, sottotitolo: testo(o.sottotitolo), tappe, pulsante: pulsante(o.pulsante) };
     }
     case "testo": {
       const paragrafi = testi(o.paragrafi);
       if (paragrafi.length === 0) return null;
-      return { tipo: "testo", id, titolo: testo(o.titolo), paragrafi };
+      return { tipo: "testo", id, titolo: testo(o.titolo), paragrafi, pulsante: pulsante(o.pulsante) };
     }
     case "immagine": {
       const indirizzo = url(o.url);
@@ -299,6 +420,7 @@ function normalizzaBlocco(o: Oggetto): Blocco | null {
         paragrafi,
         luogo: testo(o.luogo),
         fotoUrl: url(o.fotoUrl),
+        pulsante: pulsante(o.pulsante),
       };
     }
     case "faq": {
@@ -319,19 +441,19 @@ function normalizzaBlocco(o: Oggetto): Blocco | null {
         titolo,
         sottotitolo: testo(o.sottotitolo),
         garanzie: testi(o.garanzie),
+        etichettaPulsante: testo(o.etichettaPulsante),
       };
     }
     case "invito": {
       const titolo = testo(o.titolo);
-      if (!titolo || (o.azione !== "acquista" && o.azione !== "accedi")) return null;
-      return { tipo: "invito", id, titolo, testo: testo(o.testo), azione: o.azione };
+      const azione = pulsante(o.pulsante, false);
+      if (!titolo || !azione) return null;
+      return { tipo: "invito", id, titolo, testo: testo(o.testo), pulsante: azione };
     }
     case "video": {
       const indirizzo = testo(o.indirizzo);
       if (!indirizzo || !analizzaVideo(indirizzo)) return null;
-      const formato = (FORMATI_VIDEO as readonly unknown[]).includes(o.formato)
-        ? (o.formato as FormatoVideo)
-        : "16:9";
+      const formato = formatoVideo(o.formato);
       const inizio = Number(o.inizio);
       const avvioAutomatico = o.avvioAutomatico === true;
       return {
@@ -349,7 +471,7 @@ function normalizzaBlocco(o: Oggetto): Blocco | null {
         controlli: o.controlli !== false,
         sottotitoli: o.sottotitoli === true,
         inizio: Number.isFinite(inizio) && inizio > 0 ? Math.floor(inizio) : undefined,
-        pulsanteAcquisto: o.pulsanteAcquisto === true,
+        pulsante: pulsante(o.pulsante),
       };
     }
     case "galleria": {
@@ -370,14 +492,120 @@ function normalizzaBlocco(o: Oggetto): Blocco | null {
         immagini,
       };
     }
+    case "elenco": {
+      const voci = testi(o.voci);
+      if (voci.length === 0) return null;
+      const simbolo = (SIMBOLI_ELENCO as readonly unknown[]).includes(o.simbolo)
+        ? (o.simbolo as SimboloElenco)
+        : "spunta";
+      return {
+        tipo: "elenco",
+        id,
+        titolo: testo(o.titolo),
+        testo: testo(o.testo),
+        voci,
+        simbolo,
+        pulsante: pulsante(o.pulsante),
+      };
+    }
+    case "modulo": {
+      const visti = new Set<string>();
+      const campi = elenco(o.campi, (c) => {
+        const campo = c.campo;
+        if (typeof campo !== "string" || !(campo in CAMPI_CONTATTO) || visti.has(campo)) return null;
+        visti.add(campo);
+        return {
+          campo: campo as CampoContatto,
+          etichetta: testo(c.etichetta) ?? CAMPI_CONTATTO[campo as CampoContatto],
+          obbligatorio: c.obbligatorio === true,
+        };
+      });
+      // Senza email né telefono non si può ricontattare chi scrive.
+      if (!visti.has("email") && !visti.has("telefono")) return null;
+      return {
+        tipo: "modulo",
+        id,
+        titolo: testo(o.titolo),
+        testo: testo(o.testo),
+        campi,
+        etichettaInvio: testo(o.etichettaInvio) ?? "Invia",
+        messaggioConferma:
+          testo(o.messaggioConferma) ?? "Grazie! Abbiamo ricevuto la tua richiesta e ti ricontatteremo presto.",
+        destinatari: testi(o.destinatari)
+          .map((e) => e.toLowerCase())
+          .filter((e, i, tutte) => formatoEmail.test(e) && tutte.indexOf(e) === i)
+          .slice(0, 10),
+      };
+    }
     default:
       return null;
   }
 }
 
-/** True se il blocco (JSON grezzo) è completo e verrà mostrato nella pagina. */
+const formatoVideo = (v: unknown): FormatoVideo =>
+  (FORMATI_VIDEO as readonly unknown[]).includes(v) ? (v as FormatoVideo) : "16:9";
+
+/**
+ * Porta un blocco salvato prima dei pulsanti configurabili (v0.12.0) al
+ * formato attuale, senza cambiarne l'aspetto: l'apertura con "Acquista" e
+ * "Scopri cosa contiene", l'invito con la vecchia `azione`, il video con
+ * `pulsanteAcquisto`. Usata dalla pagina pubblica e dall'editor.
+ */
+export function aggiornaFormatoBlocco(o: Record<string, unknown>, tutti: unknown[]): Record<string, unknown> {
+  switch (o.tipo) {
+    case "hero": {
+      if ("pulsante" in o) return o;
+      const tappe = tutti.find((b) => isOggetto(b) && b.tipo === "tappe" && typeof b.id === "string") as
+        | Oggetto
+        | undefined;
+      return {
+        ...o,
+        media: o.media ?? "guida",
+        pulsante: { attivo: true, etichetta: "Acquista la guida", azione: "acquista", stile: "principale" },
+        pulsanteSecondario: tappe
+          ? { attivo: true, etichetta: "Scopri cosa contiene", azione: "sezione", sezione: tappe.id, stile: "secondario" }
+          : { attivo: false, etichetta: "", azione: "sezione", stile: "secondario" },
+      };
+    }
+    case "invito": {
+      if ("pulsante" in o) return o;
+      const accedi = o.azione === "accedi";
+      const { azione: _vecchia, ...resto } = o;
+      void _vecchia;
+      return {
+        ...resto,
+        pulsante: accedi
+          ? { attivo: true, etichetta: "Accedi alla tua area", azione: "accedi", stile: "secondario" }
+          : { attivo: true, etichetta: "Acquista la guida", azione: "acquista", stile: "principale" },
+      };
+    }
+    case "video": {
+      if ("pulsante" in o) return o;
+      const { pulsanteAcquisto, ...resto } = o;
+      return {
+        ...resto,
+        pulsante: { attivo: pulsanteAcquisto === true, etichetta: "Acquista la guida", azione: "acquista", stile: "principale" },
+      };
+    }
+    default:
+      return o;
+  }
+}
+
+/** Blocchi (JSON grezzo) nel formato attuale: vedi `aggiornaFormatoBlocco`. */
+export function aggiornaFormatoBlocchi(valore: unknown): unknown[] {
+  if (!Array.isArray(valore)) return [];
+  return valore.map((b) => (isOggetto(b) ? aggiornaFormatoBlocco(b, valore) : b));
+}
+
+/** True se il blocco (JSON grezzo, già nel formato attuale) è completo e verrà mostrato nella pagina. */
 export function isBloccoValido(valore: unknown) {
   return isOggetto(valore) && normalizzaBlocco(valore) !== null;
+}
+
+/** Blocco normalizzato dal JSON grezzo, o `null` (usato dal server per il modulo di contatto). */
+export function normalizzaUnBlocco(valore: unknown, tutti: unknown[] = []): Blocco | null {
+  return isOggetto(valore) ? normalizzaBlocco(aggiornaFormatoBlocco(valore, tutti)) : null;
 }
 
 // -------------------------------------------------------------
@@ -440,12 +668,51 @@ export function analizzaVideo(indirizzo: string): SorgenteVideo | null {
 
 /** Blocchi validi di una landing, nell'ordine salvato. */
 export function normalizzaBlocchi(valore: unknown): Blocco[] {
-  return elenco(valore, normalizzaBlocco);
+  return elenco(aggiornaFormatoBlocchi(valore), normalizzaBlocco);
 }
 
-/** True se la landing contiene almeno un punto da cui si acquista. */
+/**
+ * Barra fissa in basso su smartphone (colonna `landing_pages.mobile_bar`):
+ * - `predefinita`: landing salvate prima della v0.12.0, barra di acquisto se la landing vende la guida;
+ * - `spenta`: nessuna barra;
+ * - `personalizzata`: titolo, testo e pulsante scelti nell'editor.
+ */
+export type BarraFissa =
+  | { modo: "predefinita" }
+  | { modo: "spenta" }
+  | { modo: "personalizzata"; titolo?: string; testo?: string; pulsante: Pulsante };
+
+export function normalizzaBarra(v: unknown): BarraFissa {
+  if (!isOggetto(v)) return { modo: "predefinita" };
+  if (v.attiva !== true) return { modo: "spenta" };
+  const azione = pulsante(v.pulsante, false);
+  return azione
+    ? { modo: "personalizzata", titolo: testo(v.titolo), testo: testo(v.testo), pulsante: azione }
+    : { modo: "spenta" };
+}
+
+/** Tutti i pulsanti configurati nei blocchi. */
+export function pulsantiDi(blocchi: Blocco[]): Pulsante[] {
+  return blocchi.flatMap((b) => {
+    switch (b.tipo) {
+      case "hero":
+        return [b.pulsante, b.pulsanteSecondario].filter((p): p is Pulsante => p !== undefined);
+      case "invito":
+        return [b.pulsante];
+      case "punti-chiave":
+      case "tappe":
+      case "testo":
+      case "autore":
+      case "video":
+      case "elenco":
+        return b.pulsante ? [b.pulsante] : [];
+      default:
+        return [];
+    }
+  });
+}
+
+/** True se la landing contiene almeno un punto da cui si acquista la guida. */
 export function haAcquisto(blocchi: Blocco[]) {
-  return blocchi.some(
-    (b) => b.tipo === "hero" || b.tipo === "prezzo" || (b.tipo === "invito" && b.azione === "acquista"),
-  );
+  return blocchi.some((b) => b.tipo === "prezzo") || pulsantiDi(blocchi).some((p) => p.azione === "acquista");
 }

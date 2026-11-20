@@ -2,11 +2,11 @@ import Link from "next/link";
 import { BookOpenIcon, LogInIcon } from "lucide-react";
 
 import { PopupAcquisto } from "@/components/acquisto/popup-acquisto";
-import { BloccoLanding, type ContestoLanding } from "@/components/landing/blocchi";
+import { BloccoLanding, PulsanteLanding, type ContestoLanding } from "@/components/landing/blocchi";
 import { ContaVisita } from "@/components/landing/conta-visita";
 import { Button } from "@/components/ui/button";
 import { PERCORSO_ACCESSO } from "@/lib/auth/percorsi";
-import { haAcquisto } from "@/lib/landing/blocchi";
+import { haAcquisto, type BarraFissa } from "@/lib/landing/blocchi";
 import { pagineLegali, venditore } from "@/lib/legale/venditore";
 import type { LandingPubblica } from "@/lib/landing/dati";
 import { EMAIL_ASSISTENZA, formattaPrezzo, prodotti } from "@/lib/prodotti";
@@ -30,13 +30,15 @@ export function PaginaLanding({
 }) {
   const contesto: ContestoLanding = {
     pagamentoAttivo: acquistoDisponibile("guida"),
-    ancoraContenuti: landing.blocchi.find((b) => b.tipo === "tappe")?.id,
     origine: anteprima ? undefined : landing.id,
+    landingId: landing.id,
+    anteprima,
   };
-  const conAcquisto = haAcquisto(landing.blocchi);
+  const barra = landing.barra;
+  const conBarra = barra.modo === "personalizzata" || (barra.modo === "predefinita" && haAcquisto(landing.blocchi));
 
   return (
-    <div data-scorrimento="fluido" className={conAcquisto ? "flex flex-1 flex-col pb-24 sm:pb-0" : "flex flex-1 flex-col"}>
+    <div data-scorrimento="fluido" className={conBarra ? "flex flex-1 flex-col pb-24 sm:pb-0" : "flex flex-1 flex-col"}>
       <Intestazione />
       <main className="flex-1">
         {landing.blocchi.map((blocco, i) => (
@@ -45,8 +47,10 @@ export function PaginaLanding({
       </main>
       <PiePagina />
       {!anteprima && <ContaVisita landing={landing.id} />}
-      {conAcquisto && (
-        <BarraAcquisto pagamentoAttivo={contesto.pagamentoAttivo} origine={contesto.origine} />
+      {barra.modo === "personalizzata" ? (
+        <BarraPersonalizzata barra={barra} contesto={contesto} />
+      ) : (
+        conBarra && <BarraAcquisto pagamentoAttivo={contesto.pagamentoAttivo} origine={contesto.origine} />
       )}
     </div>
   );
@@ -142,6 +146,33 @@ function BarraAcquisto({
           etichetta="Acquista"
           origine={origine}
           diretto
+        />
+      </div>
+    </div>
+  );
+}
+
+/** Barra fissa su smartphone configurata nell'editor (testi e pulsante a scelta). */
+function BarraPersonalizzata({
+  barra,
+  contesto,
+}: {
+  barra: Extract<BarraFissa, { modo: "personalizzata" }>;
+  contesto: ContestoLanding;
+}) {
+  return (
+    <div className="fixed inset-x-0 bottom-0 z-40 border-t bg-background/90 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur sm:hidden">
+      <div className="flex items-center gap-3">
+        {(barra.titolo || barra.testo) && (
+          <div className="min-w-0 flex-1 leading-tight">
+            {barra.titolo && <p className="truncate text-sm font-medium">{barra.titolo}</p>}
+            {barra.testo && <p className="truncate text-xs text-muted-foreground">{barra.testo}</p>}
+          </div>
+        )}
+        <PulsanteLanding
+          pulsante={barra.pulsante}
+          contesto={contesto}
+          className={barra.titolo || barra.testo ? "shrink-0" : "w-full"}
         />
       </div>
     </div>

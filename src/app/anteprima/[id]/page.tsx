@@ -38,7 +38,7 @@ async function Anteprima({ params }: Pick<PageProps<"/anteprima/[id]">, "params"
   const supabase = await creaClientServer();
   const { data } = await supabase
     .from("landing_pages")
-    .select("id, slug, title, seo_title, seo_description, og_image_url, blocks, is_home, updated_at, status")
+    .select("id, slug, title, seo_title, seo_description, og_image_url, blocks, mobile_bar, is_home, updated_at, status")
     .eq("id", id)
     .maybeSingle();
   if (!data) notFound();

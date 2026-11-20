@@ -46,7 +46,7 @@ export function BarraInferiore({
 export function VoceInferiore({ voce, attiva }: { voce: VoceNavigazione; attiva: boolean }) {
   const Icona = voce.icona;
   const classi = cn(
-    "-mt-px flex flex-col items-center justify-center gap-1 pt-2.5 pb-2 text-xs text-muted-foreground",
+    "-mt-px flex min-w-0 flex-col items-center justify-center gap-1 pt-2.5 pb-2 text-xs text-muted-foreground",
     "border-t-2 border-transparent focus-visible:bg-muted focus-visible:outline-none",
     attiva && "border-sidebar-primary font-medium text-foreground"
   );
@@ -55,14 +55,14 @@ export function VoceInferiore({ voce, attiva }: { voce: VoceNavigazione; attiva:
     return (
       <span aria-disabled="true" className={cn(classi, "opacity-40")}>
         <Icona className="size-5" aria-hidden />
-        {voce.titolo}
+        <span className="max-w-full truncate px-0.5">{voce.titolo}</span>
       </span>
     );
   }
   return (
     <Link href={voce.href} className={classi} aria-current={attiva ? "page" : undefined}>
       <Icona className={cn("size-5", attiva && "text-sidebar-primary")} aria-hidden />
-      {voce.titolo}
+      <span className="max-w-full truncate px-0.5">{voce.titolo}</span>
     </Link>
   );
 }

@@ -19,7 +19,7 @@ export const venditore = {
 };
 
 /** Data dell'ultima revisione delle pagine legali (da aggiornare a ogni modifica dei testi). */
-export const AGGIORNAMENTO_PAGINE_LEGALI = "16 novembre 2026";
+export const AGGIORNAMENTO_PAGINE_LEGALI = "20 novembre 2026";
 
 /** Pagine legali pubbliche, collegate dal piè di pagina delle landing (non nella sitemap). */
 export const pagineLegali = [

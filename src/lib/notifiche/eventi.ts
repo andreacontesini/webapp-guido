@@ -5,6 +5,7 @@
  * `eventi.test.ts` e usato da invio, email e pagina /admin/notifiche.
  */
 import { formattaPrezzo, prodotti, type CodiceProdotto } from "@/lib/prodotti";
+import { urlApp } from "@/lib/url";
 
 export const codiciEvento = [
   "nuovo_account",
@@ -17,6 +18,7 @@ export const codiciEvento = [
   "profilo_aggiornato",
   "richiesta_ricontatto",
   "richiesta_gdpr",
+  "richiesta_landing",
   "problema_tecnico",
 ] as const;
 
@@ -84,6 +86,11 @@ export const eventi: Record<CodiceEvento, SchedaEvento> = {
   richiesta_gdpr: {
     etichetta: "Richiesta sui dati personali",
     descrizione: "Scaricamento dei dati o eliminazione dell'account (GDPR).",
+    gruppo: "Profilo e richieste",
+  },
+  richiesta_landing: {
+    etichetta: "Richieste landing",
+    descrizione: "Messaggi inviati dai moduli di contatto delle landing.",
     gruppo: "Profilo e richieste",
   },
   problema_tecnico: {
@@ -177,6 +184,18 @@ export type DatiEvento =
       il: string;
     }
   | {
+      evento: "richiesta_landing";
+      /** Chi ha scritto, se ha lasciato l'email (diventa il "Rispondi a"). */
+      cliente?: ClienteNotifica | null;
+      /** Id della richiesta salvata. */
+      richiesta: string;
+      landing: string;
+      /** Campi compilati, nell'ordine del modulo. */
+      campi: RigaNotifica[];
+      /** Email indicate nel blocco del modulo, oltre ai destinatari dell'evento. */
+      destinatari: string[];
+    }
+  | {
       evento: "problema_tecnico";
       cliente?: ClienteNotifica | null;
       problema: string;
@@ -258,6 +277,8 @@ export function chiaveDeduplica(dati: DatiEvento): string {
     case "richiesta_gdpr":
       // Al minuto: un doppio clic non manda due email.
       return `richiesta_gdpr:${dati.tipo}:${id}:${dati.il.slice(0, 16)}`;
+    case "richiesta_landing":
+      return `richiesta_landing:${dati.richiesta}`;
     case "problema_tecnico":
       return `problema_tecnico:${dati.chiave}`.slice(0, 200);
   }
@@ -411,6 +432,17 @@ export function contenutoNotifica(dati: DatiEvento): ContenutoNotifica {
         righe: [...cliente, { etichetta: "Data", valore: formattaDataOra(dati.il) }],
         urgente,
       };
+    case "richiesta_landing": {
+      const nome = dati.campi.find((c) => c.etichetta.toLowerCase().includes("nome"))?.valore;
+      return {
+        oggetto: `Nuova richiesta dalla landing «${dati.landing}»${nome ? `: ${nome}` : ""}`,
+        titolo: "Nuova richiesta da una landing",
+        testo: `Qualcuno ha compilato il modulo di contatto della landing «${dati.landing}».`,
+        righe: [...dati.campi, { etichetta: "Landing", valore: dati.landing }],
+        urgente,
+        pulsante: { etichetta: "Apri le richieste", href: `${urlApp()}/admin/richieste` },
+      };
+    }
     case "problema_tecnico":
       return {
         oggetto: `Problema tecnico: ${dati.problema}`,

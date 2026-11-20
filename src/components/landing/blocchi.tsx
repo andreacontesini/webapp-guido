@@ -4,13 +4,16 @@ import {
   ArrowRightIcon,
   CheckIcon,
   ChevronDownIcon,
+  CircleHelpIcon,
   MapPinIcon,
   QuoteIcon,
+  XIcon,
 } from "lucide-react";
 import { cn } from "cn";
 
 import { PopupAcquisto } from "@/components/acquisto/popup-acquisto";
 import { Galleria as GalleriaImmagini } from "@/components/landing/galleria";
+import { ModuloContatto } from "@/components/landing/modulo-contatto";
 import { PlayerVideo } from "@/components/landing/player-video";
 import { SfondoHero } from "@/components/layout/sfondo-hero";
 import { iconePunti } from "@/components/landing/icone";
@@ -19,17 +22,20 @@ import { PERCORSO_ACCESSO } from "@/lib/auth/percorsi";
 import type {
   Blocco,
   BloccoAutore,
+  BloccoElenco,
   BloccoFaq,
   BloccoGalleria,
   BloccoHero,
   BloccoImmagine,
   BloccoInvito,
+  BloccoModulo,
   BloccoPrezzo,
   BloccoPuntiChiave,
   BloccoTappe,
   BloccoTestimonianze,
   BloccoTesto,
   BloccoVideo,
+  Pulsante,
 } from "@/lib/landing/blocchi";
 import { formattaPrezzo, prodotti } from "@/lib/prodotti";
 import { linkApp } from "@/lib/url";
@@ -38,10 +44,12 @@ import { linkApp } from "@/lib/url";
 export type ContestoLanding = {
   /** Stripe configurato e prezzo definito: il popup apre il pagamento. */
   pagamentoAttivo: boolean;
-  /** Ancora della sezione con le tappe, per il link "Scopri cosa contiene". */
-  ancoraContenuti?: string;
-  /** Id della landing, per attribuirle i checkout (misurazione conversioni). */
+  /** Id della landing, per attribuirle i checkout (misurazione conversioni); assente in anteprima. */
   origine?: string;
+  /** Id della landing, anche in anteprima (modulo di contatto). */
+  landingId: string;
+  /** Anteprima in admin: il modulo di contatto non invia. */
+  anteprima: boolean;
 };
 
 const guida = prodotti.guida;
@@ -110,6 +118,51 @@ function PulsanteAcquisto({
   );
 }
 
+/** Link esterno: si apre in una nuova scheda. */
+const isEsterno = (link: string) => link.startsWith("https://");
+
+/** Pulsante configurato nell'editor: acquista, scorre a una sezione, apre un link o porta all'accesso. */
+export function PulsanteLanding({
+  pulsante,
+  contesto,
+  className,
+}: {
+  pulsante: Pulsante;
+  contesto: ContestoLanding;
+  className?: string;
+}) {
+  if (pulsante.azione === "acquista") {
+    return <PulsanteAcquisto contesto={contesto} etichetta={pulsante.etichetta} className={className} />;
+  }
+  const variante = pulsante.stile === "secondario" ? "outline" : "default";
+  const destinazione =
+    pulsante.azione === "sezione" ? (
+      <a href={`#${pulsante.sezione}`} />
+    ) : pulsante.azione === "accedi" ? (
+      <Link href={linkApp(PERCORSO_ACCESSO)} />
+    ) : isEsterno(pulsante.link ?? "") ? (
+      <a href={pulsante.link} target="_blank" rel="noopener noreferrer" />
+    ) : (
+      <a href={pulsante.link} />
+    );
+  return (
+    <Button size="lg" variant={variante} className={className} render={destinazione} nativeButton={false}>
+      {pulsante.etichetta}
+      {pulsante.azione === "sezione" ? <ArrowDownIcon aria-hidden /> : <ArrowRightIcon aria-hidden />}
+    </Button>
+  );
+}
+
+/** Pulsante facoltativo in fondo a un blocco. */
+function PulsanteSotto({ pulsante, contesto }: { pulsante?: Pulsante; contesto: ContestoLanding }) {
+  if (!pulsante) return null;
+  return (
+    <div className="mt-10 flex justify-center">
+      <PulsanteLanding pulsante={pulsante} contesto={contesto} className="w-full sm:w-auto" />
+    </div>
+  );
+}
+
 const SpuntaElenco = () => (
   <span className="mt-0.5 inline-flex size-5 shrink-0 items-center justify-center rounded-full bg-primary/15 text-primary">
     <CheckIcon className="size-3.5" aria-hidden />
@@ -150,21 +203,20 @@ function Hero({ blocco, contesto }: { blocco: BloccoHero; contesto: ContestoLand
           </div>
 
           <div className="space-y-3">
-            <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
-              <PulsanteAcquisto contesto={contesto} className="w-full sm:w-auto" />
-              {contesto.ancoraContenuti && (
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full sm:w-auto"
-                  render={<a href={`#${contesto.ancoraContenuti}`} />}
-                  nativeButton={false}
-                >
-                  Scopri cosa contiene
-                  <ArrowDownIcon aria-hidden />
-                </Button>
-              )}
-            </div>
+            {(blocco.pulsante || blocco.pulsanteSecondario) && (
+              <div className="flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
+                {blocco.pulsante && (
+                  <PulsanteLanding pulsante={blocco.pulsante} contesto={contesto} className="w-full sm:w-auto" />
+                )}
+                {blocco.pulsanteSecondario && (
+                  <PulsanteLanding
+                    pulsante={blocco.pulsanteSecondario}
+                    contesto={contesto}
+                    className="w-full sm:w-auto"
+                  />
+                )}
+              </div>
+            )}
             {blocco.nota && <p className="text-sm text-muted-foreground">{blocco.nota}</p>}
           </div>
 
@@ -186,10 +238,43 @@ function Hero({ blocco, contesto }: { blocco: BloccoHero; contesto: ContestoLand
           )}
         </div>
 
-        <CopertinaGuida />
+        <MediaHero blocco={blocco} />
       </div>
     </section>
   );
+}
+
+/** Contenuto a destra del testo dell'apertura: copertina della guida, immagine, video o niente. */
+function MediaHero({ blocco }: { blocco: BloccoHero }) {
+  if (blocco.media === "guida") return <CopertinaGuida />;
+  if (blocco.media === "immagine" && blocco.immagineUrl) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={blocco.immagineUrl}
+        alt={blocco.immagineAlt ?? ""}
+        className="mx-auto w-full max-w-md rounded-2xl border object-cover shadow-2xl"
+      />
+    );
+  }
+  if (blocco.media === "video" && blocco.videoUrl) {
+    return (
+      <div className={cn("mx-auto w-full", blocco.videoFormato === "16:9" ? "max-w-xl" : "max-w-md")}>
+        <PlayerVideo
+          indirizzo={blocco.videoUrl}
+          titolo={blocco.titolo}
+          copertinaUrl={blocco.videoCopertina}
+          formato={blocco.videoFormato}
+          avvioAutomatico
+          muto
+          ripeti
+          controlli
+          sottotitoli={false}
+        />
+      </div>
+    );
+  }
+  return null;
 }
 
 /** Copertina illustrativa della guida (con i testi reali della copertina). */
@@ -227,7 +312,7 @@ function CopertinaGuida() {
   );
 }
 
-function PuntiChiave({ blocco }: { blocco: BloccoPuntiChiave }) {
+function PuntiChiave({ blocco, contesto }: { blocco: BloccoPuntiChiave; contesto: ContestoLanding }) {
   return (
     <Sezione id={blocco.id}>
       <TitoloSezione titolo={blocco.titolo} sottotitolo={blocco.sottotitolo} />
@@ -245,11 +330,12 @@ function PuntiChiave({ blocco }: { blocco: BloccoPuntiChiave }) {
           );
         })}
       </ul>
+      <PulsanteSotto pulsante={blocco.pulsante} contesto={contesto} />
     </Sezione>
   );
 }
 
-function Tappe({ blocco }: { blocco: BloccoTappe }) {
+function Tappe({ blocco, contesto }: { blocco: BloccoTappe; contesto: ContestoLanding }) {
   return (
     <Sezione id={blocco.id} className="border-y bg-muted/30">
       <TitoloSezione titolo={blocco.titolo} sottotitolo={blocco.sottotitolo} />
@@ -269,11 +355,12 @@ function Tappe({ blocco }: { blocco: BloccoTappe }) {
           </li>
         ))}
       </ol>
+      <PulsanteSotto pulsante={blocco.pulsante} contesto={contesto} />
     </Sezione>
   );
 }
 
-function Testo({ blocco }: { blocco: BloccoTesto }) {
+function Testo({ blocco, contesto }: { blocco: BloccoTesto; contesto: ContestoLanding }) {
   return (
     <Sezione id={blocco.id}>
       <div className="mx-auto max-w-3xl space-y-5">
@@ -288,6 +375,7 @@ function Testo({ blocco }: { blocco: BloccoTesto }) {
           </p>
         ))}
       </div>
+      <PulsanteSotto pulsante={blocco.pulsante} contesto={contesto} />
     </Sezione>
   );
 }
@@ -336,7 +424,7 @@ function Testimonianze({ blocco }: { blocco: BloccoTestimonianze }) {
   );
 }
 
-function Autore({ blocco }: { blocco: BloccoAutore }) {
+function Autore({ blocco, contesto }: { blocco: BloccoAutore; contesto: ContestoLanding }) {
   const iniziali = blocco.nome
     .split(/\s+/)
     .map((parola) => parola[0])
@@ -382,6 +470,11 @@ function Autore({ blocco }: { blocco: BloccoAutore }) {
               {paragrafo}
             </p>
           ))}
+          {blocco.pulsante && (
+            <div className="pt-2">
+              <PulsanteLanding pulsante={blocco.pulsante} contesto={contesto} className="w-full sm:w-auto" />
+            </div>
+          )}
         </div>
       </div>
     </Sezione>
@@ -453,7 +546,7 @@ function Prezzo({ blocco, contesto }: { blocco: BloccoPrezzo; contesto: Contesto
           ))}
         </ul>
 
-        <PulsanteAcquisto contesto={contesto} className="mt-8 w-full" />
+        <PulsanteAcquisto contesto={contesto} className="mt-8 w-full" etichetta={blocco.etichettaPulsante} />
 
         {blocco.garanzie.length > 0 && (
           <ul className="mt-6 grid gap-2 border-t pt-6 text-sm text-muted-foreground sm:grid-cols-2">
@@ -471,33 +564,20 @@ function Prezzo({ blocco, contesto }: { blocco: BloccoPrezzo; contesto: Contesto
 }
 
 function Invito({ blocco, contesto }: { blocco: BloccoInvito; contesto: ContestoLanding }) {
-  const accedi = blocco.azione === "accedi";
+  const principale = blocco.pulsante.stile === "principale";
   return (
     <Sezione id={blocco.id} className="py-10 sm:py-14">
       <div
         className={cn(
           "flex flex-col items-center gap-6 rounded-2xl border p-6 text-center sm:p-10 md:flex-row md:justify-between md:text-left",
-          accedi ? "bg-card" : "border-primary/30 bg-accent/60",
+          principale ? "border-primary/30 bg-accent/60" : "bg-card",
         )}
       >
         <div className="max-w-2xl space-y-2">
           <h2 className="text-2xl font-semibold tracking-tight text-balance">{blocco.titolo}</h2>
           {blocco.testo && <p className="text-pretty text-muted-foreground">{blocco.testo}</p>}
         </div>
-        {accedi ? (
-          <Button
-            size="lg"
-            variant="outline"
-            className="w-full shrink-0 sm:w-auto"
-            render={<Link href={linkApp(PERCORSO_ACCESSO)} />}
-            nativeButton={false}
-          >
-            Accedi alla tua area
-            <ArrowRightIcon aria-hidden />
-          </Button>
-        ) : (
-          <PulsanteAcquisto contesto={contesto} className="w-full shrink-0 sm:w-auto" />
-        )}
+        <PulsanteLanding pulsante={blocco.pulsante} contesto={contesto} className="w-full shrink-0 sm:w-auto" />
       </div>
     </Sezione>
   );
@@ -521,11 +601,7 @@ function Video({ blocco, contesto }: { blocco: BloccoVideo; contesto: ContestoLa
           inizio={blocco.inizio}
         />
       </div>
-      {blocco.pulsanteAcquisto && (
-        <div className="mt-8 flex justify-center">
-          <PulsanteAcquisto contesto={contesto} className="w-full sm:w-auto" />
-        </div>
-      )}
+      <PulsanteSotto pulsante={blocco.pulsante} contesto={contesto} />
     </Sezione>
   );
 }
@@ -546,6 +622,54 @@ function Galleria({ blocco }: { blocco: BloccoGalleria }) {
   );
 }
 
+const simboliElenco = {
+  spunta: { Icona: CheckIcon, classi: "bg-primary/15 text-primary" },
+  croce: { Icona: XIcon, classi: "bg-destructive/15 text-destructive" },
+  domanda: { Icona: CircleHelpIcon, classi: "bg-accent text-accent-foreground" },
+} as const;
+
+function Elenco({ blocco, contesto }: { blocco: BloccoElenco; contesto: ContestoLanding }) {
+  const { Icona, classi } = simboliElenco[blocco.simbolo];
+  return (
+    <Sezione id={blocco.id}>
+      <div className="mx-auto max-w-3xl">
+        <TitoloSezione titolo={blocco.titolo} sottotitolo={blocco.testo} centrato={false} />
+        <ul className="grid gap-3">
+          {blocco.voci.map((voce) => (
+            <li key={voce} className="flex items-start gap-3 rounded-xl border bg-card p-4 text-pretty sm:p-5">
+              <span className={cn("mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full", classi)}>
+                <Icona className="size-3.5" aria-hidden />
+              </span>
+              <span className="text-lg">{voce}</span>
+            </li>
+          ))}
+        </ul>
+        <PulsanteSotto pulsante={blocco.pulsante} contesto={contesto} />
+      </div>
+    </Sezione>
+  );
+}
+
+function Modulo({ blocco, contesto }: { blocco: BloccoModulo; contesto: ContestoLanding }) {
+  return (
+    <Sezione id={blocco.id} className="border-t bg-muted/30">
+      <div className="mx-auto grid max-w-5xl gap-10 lg:grid-cols-[1fr_1.1fr] lg:gap-16">
+        <TitoloSezione titolo={blocco.titolo} sottotitolo={blocco.testo} centrato={false} />
+        <div className="rounded-2xl border bg-card p-6 shadow-xl sm:p-8">
+          <ModuloContatto
+            landingId={contesto.landingId}
+            bloccoId={blocco.id ?? ""}
+            campi={blocco.campi}
+            etichettaInvio={blocco.etichettaInvio}
+            messaggioConferma={blocco.messaggioConferma}
+            anteprima={contesto.anteprima}
+          />
+        </div>
+      </div>
+    </Sezione>
+  );
+}
+
 // -------------------------------------------------------------
 // Smistamento
 // -------------------------------------------------------------
@@ -561,17 +685,17 @@ export function BloccoLanding({
     case "hero":
       return <Hero blocco={blocco} contesto={contesto} />;
     case "punti-chiave":
-      return <PuntiChiave blocco={blocco} />;
+      return <PuntiChiave blocco={blocco} contesto={contesto} />;
     case "tappe":
-      return <Tappe blocco={blocco} />;
+      return <Tappe blocco={blocco} contesto={contesto} />;
     case "testo":
-      return <Testo blocco={blocco} />;
+      return <Testo blocco={blocco} contesto={contesto} />;
     case "immagine":
       return <Immagine blocco={blocco} />;
     case "testimonianze":
       return <Testimonianze blocco={blocco} />;
     case "autore":
-      return <Autore blocco={blocco} />;
+      return <Autore blocco={blocco} contesto={contesto} />;
     case "faq":
       return <Faq blocco={blocco} />;
     case "prezzo":
@@ -582,5 +706,9 @@ export function BloccoLanding({
       return <Video blocco={blocco} contesto={contesto} />;
     case "galleria":
       return <Galleria blocco={blocco} />;
+    case "elenco":
+      return <Elenco blocco={blocco} contesto={contesto} />;
+    case "modulo":
+      return <Modulo blocco={blocco} contesto={contesto} />;
   }
 }

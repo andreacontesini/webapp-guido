@@ -51,6 +51,11 @@ export default function PaginaPrivacy() {
             accedere al contenuto, intestato all&apos;email usata per pagare.
           </li>
           <li>
+            <strong>Richieste dai moduli di contatto.</strong> Quando compili un modulo di contatto su queste pagine
+            (per esempio per prenotare una consulenza): i dati che inserisci, come nome e cognome, email, telefono,
+            città e messaggio, la pagina da cui scrivi, la data e il tuo consenso.
+          </li>
+          <li>
             <strong>Comunicazioni.</strong> I dati che ci scrivi via email quando chiedi assistenza o informazioni.
           </li>
         </ul>
@@ -78,6 +83,11 @@ export default function PaginaPrivacy() {
             <strong>Rispondere alle tue richieste</strong> di assistenza: esecuzione del contratto o di misure
             precontrattuali richieste da te.
           </li>
+          <li>
+            <strong>Ricontattarti dopo che hai compilato un modulo di contatto</strong>, per rispondere alla tua
+            richiesta e organizzare l&apos;eventuale consulenza: misure precontrattuali richieste da te (art. 6.1.b
+            GDPR). Non usiamo questi dati per altri scopi né per inviarti pubblicità.
+          </li>
         </ul>
         <p>
           Non usiamo i tuoi dati per pubblicità profilata, non li vendiamo e non prendiamo decisioni automatizzate che ti
@@ -93,6 +103,11 @@ export default function PaginaPrivacy() {
           <li>
             Dati degli acquisti: 10 anni, come richiesto dalla normativa fiscale. Se elimini l&apos;account, gli acquisti
             restano registrati ma non sono più collegati a te come utente.
+          </li>
+          <li>
+            Richieste dai moduli di contatto: 24 mesi dall&apos;ultimo contatto, salvo che nel frattempo nasca un
+            rapporto di consulenza (in quel caso per la durata del rapporto e gli obblighi di legge successivi). Puoi
+            chiederne la cancellazione in qualsiasi momento.
           </li>
           <li>Email di assistenza: per il tempo necessario a gestire la richiesta e gli eventuali seguiti.</li>
         </ul>
@@ -115,7 +130,7 @@ export default function PaginaPrivacy() {
             autonomo, secondo la propria informativa.
           </li>
           <li>
-            <strong>Resend</strong>: invio delle email di servizio.
+            <strong>Resend</strong>: invio delle email di servizio e delle notifiche interne sulle richieste ricevute.
           </li>
           <li>
             <strong>Fornitori dei video</strong> (Bunny.net, YouTube, Vimeo), solo se avvii un video incorporato nella pagina:

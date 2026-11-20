@@ -2,7 +2,7 @@ import "server-only";
 
 import { cacheLife, cacheTag } from "next/cache";
 
-import { normalizzaBlocchi, type Blocco } from "@/lib/landing/blocchi";
+import { normalizzaBarra, normalizzaBlocchi, type BarraFissa, type Blocco } from "@/lib/landing/blocchi";
 import { creaClientPubblico } from "@/lib/supabase/pubblico";
 
 /**
@@ -21,12 +21,13 @@ export type LandingPubblica = {
   seoDescrizione: string | null;
   immagineAnteprima: string | null;
   blocchi: Blocco[];
+  barra: BarraFissa;
   paginaIniziale: boolean;
   aggiornataIl: string;
 };
 
 const CAMPI =
-  "id, slug, title, seo_title, seo_description, og_image_url, blocks, is_home, updated_at" as const;
+  "id, slug, title, seo_title, seo_description, og_image_url, blocks, mobile_bar, is_home, updated_at" as const;
 
 type RigaLanding = {
   id: string;
@@ -36,6 +37,7 @@ type RigaLanding = {
   seo_description: string | null;
   og_image_url: string | null;
   blocks: unknown;
+  mobile_bar: unknown;
   is_home: boolean;
   updated_at: string;
 };
@@ -48,6 +50,7 @@ export const converti = (riga: RigaLanding): LandingPubblica => ({
   seoDescrizione: riga.seo_description,
   immagineAnteprima: riga.og_image_url,
   blocchi: normalizzaBlocchi(riga.blocks),
+  barra: normalizzaBarra(riga.mobile_bar),
   paginaIniziale: riga.is_home,
   aggiornataIl: riga.updated_at,
 });

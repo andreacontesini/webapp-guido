@@ -17,20 +17,28 @@ import {
 import { cn } from "cn";
 
 import { salvaLanding, type EsitoSalvataggio } from "@/app/admin/landing/azioni";
-import { CampiModulo, classiTextarea, sposta } from "@/app/admin/landing/modifica/campi-blocco";
+import {
+  CampiModulo,
+  CampoModulo,
+  classiTextarea,
+  SezioniPagina,
+  sposta,
+} from "@/app/admin/landing/modifica/campi-blocco";
 import { CampoImmagine } from "@/app/admin/landing/campo-immagine";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SelectNativa } from "@/components/ui/select-nativa";
 import { DOMINI_LANDING } from "@/lib/landing/domini";
-import { isBloccoValido, NOMI_BLOCCHI, type TipoBlocco } from "@/lib/landing/blocchi";
+import { haAcquisto, isBloccoValido, normalizzaBlocchi, NOMI_BLOCCHI, type TipoBlocco } from "@/lib/landing/blocchi";
 import {
   BLOCCHI_NUOVI,
   nuovoIdBlocco,
   ORDINE_BLOCCHI,
+  pulsanteNuovo,
   SCHEMI_BLOCCHI,
 } from "@/lib/landing/editor";
+import { prodotti } from "@/lib/prodotti";
 
 type Dati = Record<string, unknown>;
 
@@ -43,8 +51,21 @@ export type LandingDaModificare = {
   seoDescrizione: string;
   immagineAnteprima: string;
   blocchi: Dati[];
+  /** Barra fissa su smartphone (`null`: barra di acquisto predefinita). */
+  barra: Dati | null;
   pubblicata: boolean;
 };
+
+/** Barra iniziale nell'editor: quella salvata o, se manca, l'equivalente della predefinita. */
+function barraIniziale(iniziale: LandingDaModificare): Dati {
+  if (iniziale.barra) return { ...iniziale.barra, pulsante: pulsanteNuovo({ attivo: true, ...(iniziale.barra.pulsante as Dati) }) };
+  return {
+    attiva: haAcquisto(normalizzaBlocchi(iniziale.blocchi)),
+    titolo: prodotti.guida.titoloCompleto,
+    testo: "",
+    pulsante: pulsanteNuovo({ attivo: true, etichetta: "Acquista" }),
+  };
+}
 
 const tipoDi = (b: Dati) => b.tipo as TipoBlocco;
 
@@ -70,6 +91,9 @@ export function EditorLanding({ iniziale, base }: { iniziale: LandingDaModificar
   const [blocchi, setBlocchi] = useState<Dati[]>(() =>
     iniziale.blocchi.map((b) => ({ ...b, id: typeof b.id === "string" ? b.id : nuovoIdBlocco(tipoDi(b)) })),
   );
+  const [barra, setBarra] = useState<Dati>(() => barraIniziale(iniziale));
+  // Finché non si tocca la barra, una landing senza impostazione resta con quella predefinita.
+  const [barraToccata, setBarraToccata] = useState(false);
   const [aperti, setAperti] = useState<Set<string>>(new Set());
   const [daAggiungere, setDaAggiungere] = useState<TipoBlocco>("testo");
   const [modificato, setModificato] = useState(false);
@@ -119,7 +143,11 @@ export function EditorLanding({ iniziale, base }: { iniziale: LandingDaModificar
 
   function salva() {
     avvia(async () => {
-      const risultato = await salvaLanding(iniziale.id, { ...impostazioni, blocchi });
+      const risultato = await salvaLanding(iniziale.id, {
+        ...impostazioni,
+        blocchi,
+        barra: barraToccata || iniziale.barra ? barra : undefined,
+      });
       const salvato = !risultato.errore && !risultato.errori;
       setEsito({ ...risultato, salvato });
       if (salvato) setModificato(false);
@@ -131,7 +159,18 @@ export function EditorLanding({ iniziale, base }: { iniziale: LandingDaModificar
       <p className="text-xs text-destructive">{esito.errori[chiave]}</p>
     ) : null;
 
+  const cambiaBarra = (nuova: Dati) => {
+    setBarra(nuova);
+    setBarraToccata(true);
+    setModificato(true);
+  };
+  const sezioni = blocchi.map((b, i) => ({
+    id: b.id as string,
+    nome: `${i + 1}. ${NOMI_BLOCCHI[tipoDi(b)]}${riassunto(b) ? ` · ${riassunto(b).slice(0, 50)}` : ""}`,
+  }));
+
   return (
+    <SezioniPagina value={sezioni}>
     <div className="space-y-8">
       {/* Impostazioni della pagina */}
       <section className="space-y-4 rounded-xl border bg-card p-5 sm:p-6">
@@ -362,6 +401,52 @@ export function EditorLanding({ iniziale, base }: { iniziale: LandingDaModificar
         </div>
       </section>
 
+      {/* Barra fissa su smartphone */}
+      <section className="space-y-4 rounded-xl border bg-card p-5 sm:p-6">
+        <div className="space-y-1">
+          <h2 className="font-semibold">Barra fissa su smartphone</h2>
+          <p className="text-sm text-muted-foreground">
+            Resta in basso sullo schermo del telefono mentre si scorre la pagina.
+          </p>
+        </div>
+        <label className="flex items-center gap-2.5 text-sm">
+          <input
+            type="checkbox"
+            className="size-4 accent-primary"
+            checked={barra.attiva === true}
+            onChange={(e) => cambiaBarra({ ...barra, attiva: e.target.checked })}
+          />
+          Mostra la barra fissa
+        </label>
+        {barra.attiva === true && (
+          <div className="grid gap-4 md:grid-cols-2">
+            <CampoModulo
+              campo={{ tipo: "testo", chiave: "titolo", etichetta: "Titolo", aiuto: "Facoltativo. Es. «Consulenza gratuita»." }}
+              valore={barra.titolo}
+              onChange={(v) => cambiaBarra({ ...barra, titolo: v })}
+            />
+            <CampoModulo
+              campo={{ tipo: "testo", chiave: "testo", etichetta: "Testo sotto il titolo", aiuto: "Facoltativo. Es. il prezzo o «Da remoto, senza impegno»." }}
+              valore={barra.testo}
+              onChange={(v) => cambiaBarra({ ...barra, testo: v })}
+            />
+            <div className="md:col-span-2">
+              <CampoModulo
+                campo={{ tipo: "pulsante", chiave: "pulsante", etichetta: "Pulsante della barra" }}
+                valore={barra.pulsante}
+                onChange={(v) => cambiaBarra({ ...barra, pulsante: v })}
+              />
+            </div>
+          </div>
+        )}
+        {!iniziale.barra && !barraToccata && (
+          <p className="text-xs text-muted-foreground">
+            Oggi questa landing usa la barra predefinita: titolo e prezzo della guida con «Acquista». Modificala qui per
+            personalizzarla.
+          </p>
+        )}
+      </section>
+
       {/* Barra di salvataggio */}
       {/* Resta visibile sopra la navigazione in basso (smartphone) o in fondo alla finestra. */}
       <div className="sticky bottom-[calc(5.5rem+env(safe-area-inset-bottom))] z-20 rounded-xl border bg-background/95 shadow-lg backdrop-blur lg:bottom-4">
@@ -402,6 +487,7 @@ export function EditorLanding({ iniziale, base }: { iniziale: LandingDaModificar
         </div>
       </div>
     </div>
+    </SezioniPagina>
   );
 }
 

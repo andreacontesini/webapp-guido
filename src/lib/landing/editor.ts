@@ -5,16 +5,28 @@
  * `src/lib/landing/blocchi.ts`), quindi l'editor modifica il JSON così com'è.
  */
 import {
+  CAMPI_CONTATTO,
+  codiciCampiContatto,
   FORMATI_VIDEO,
   ICONE_PUNTI,
   type IconaPunto,
   type TipoBlocco,
 } from "@/lib/landing/blocchi";
 
-type Comune = { chiave: string; etichetta: string; aiuto?: string; obbligatorio?: boolean };
+type Comune = {
+  chiave: string;
+  etichetta: string;
+  aiuto?: string;
+  obbligatorio?: boolean;
+  /** Il campo compare solo se un altro campo del blocco ha uno di questi valori. */
+  quando?: { chiave: string; valori: unknown[] };
+};
 
 export type Campo =
   | (Comune & { tipo: "testo" })
+  | (Comune & { tipo: "video" })
+  /** Pulsante configurabile; `facoltativo`: con la casella "Mostra il pulsante". */
+  | (Comune & { tipo: "pulsante"; facoltativo?: boolean })
   | (Comune & { tipo: "testo-lungo" })
   | (Comune & { tipo: "immagine" })
   | (Comune & { tipo: "url" })
@@ -41,7 +53,52 @@ export const SCHEMI_BLOCCHI: Record<TipoBlocco, Campo[]> = {
     { tipo: "testo", chiave: "titolo", etichetta: "Titolo", obbligatorio: true },
     { tipo: "testo", chiave: "evidenza", etichetta: "Seconda parte del titolo (in blu)" },
     { tipo: "testo-lungo", chiave: "sottotitolo", etichetta: "Sottotitolo", obbligatorio: true },
-    { tipo: "testo", chiave: "nota", etichetta: "Nota sotto il pulsante" },
+    { tipo: "pulsante", chiave: "pulsante", etichetta: "Pulsante principale", facoltativo: true },
+    { tipo: "pulsante", chiave: "pulsanteSecondario", etichetta: "Pulsante secondario", facoltativo: true },
+    { tipo: "testo", chiave: "nota", etichetta: "Nota sotto i pulsanti" },
+    {
+      tipo: "scelta",
+      chiave: "media",
+      etichetta: "A fianco del testo",
+      opzioni: [
+        { valore: "guida", etichetta: "Copertina della guida" },
+        { valore: "immagine", etichetta: "Immagine" },
+        { valore: "video", etichetta: "Video (parte da solo, senza audio)" },
+        { valore: "nessuno", etichetta: "Niente" },
+      ],
+    },
+    { tipo: "immagine", chiave: "immagineUrl", etichetta: "Immagine", quando: { chiave: "media", valori: ["immagine"] } },
+    {
+      tipo: "testo",
+      chiave: "immagineAlt",
+      etichetta: "Descrizione dell'immagine per chi non vede",
+      quando: { chiave: "media", valori: ["immagine"] },
+    },
+    {
+      tipo: "video",
+      chiave: "videoUrl",
+      etichetta: "Video",
+      aiuto: "Carica un file MP4 fino a 10 MB oppure incolla un link di Bunny Stream, YouTube o Vimeo.",
+      quando: { chiave: "media", valori: ["video"] },
+    },
+    {
+      tipo: "immagine",
+      chiave: "videoCopertina",
+      etichetta: "Copertina del video",
+      aiuto: "Mostrata finché il video non parte.",
+      quando: { chiave: "media", valori: ["video"] },
+    },
+    {
+      tipo: "scelta",
+      chiave: "videoFormato",
+      etichetta: "Formato del video",
+      opzioni: [
+        { valore: "16:9", etichetta: "16:9 orizzontale" },
+        { valore: "1:1", etichetta: "1:1 quadrato" },
+        { valore: "9:16", etichetta: "9:16 verticale" },
+      ],
+      quando: { chiave: "media", valori: ["video"] },
+    },
     {
       tipo: "elenco",
       chiave: "numeri",
@@ -73,6 +130,7 @@ export const SCHEMI_BLOCCHI: Record<TipoBlocco, Campo[]> = {
         { tipo: "testo-lungo", chiave: "testo", etichetta: "Testo", obbligatorio: true },
       ],
     },
+    { tipo: "pulsante", chiave: "pulsante", etichetta: "Pulsante sotto il blocco", facoltativo: true },
   ],
   tappe: [
     { tipo: "testo", chiave: "titolo", etichetta: "Titolo", obbligatorio: true },
@@ -87,10 +145,12 @@ export const SCHEMI_BLOCCHI: Record<TipoBlocco, Campo[]> = {
         { tipo: "testo", chiave: "testo", etichetta: "Descrizione (una riga)", obbligatorio: true },
       ],
     },
+    { tipo: "pulsante", chiave: "pulsante", etichetta: "Pulsante sotto il blocco", facoltativo: true },
   ],
   testo: [
     { tipo: "testo", chiave: "titolo", etichetta: "Titolo" },
     { tipo: "elenco-testi", chiave: "paragrafi", etichetta: "Paragrafi", etichettaElemento: "paragrafo" },
+    { tipo: "pulsante", chiave: "pulsante", etichetta: "Pulsante sotto il blocco", facoltativo: true },
   ],
   immagine: [
     { tipo: "immagine", chiave: "url", etichetta: "Immagine", obbligatorio: true },
@@ -101,12 +161,12 @@ export const SCHEMI_BLOCCHI: Record<TipoBlocco, Campo[]> = {
     { tipo: "testo", chiave: "titolo", etichetta: "Titolo" },
     { tipo: "testo-lungo", chiave: "testo", etichetta: "Testo di accompagnamento" },
     {
-      tipo: "url",
+      tipo: "video",
       chiave: "indirizzo",
-      etichetta: "Indirizzo del video",
+      etichetta: "Video",
       obbligatorio: true,
       aiuto:
-        "Bunny Stream (link di embed o di riproduzione), YouTube, Vimeo oppure un file .mp4/.webm in https.",
+        "Carica un file MP4/WebM fino a 10 MB oppure incolla un link di Bunny Stream (consigliato per video lunghi), YouTube o Vimeo.",
     },
     {
       tipo: "immagine",
@@ -134,7 +194,7 @@ export const SCHEMI_BLOCCHI: Record<TipoBlocco, Campo[]> = {
     { tipo: "booleano", chiave: "controlli", etichetta: "Controlli del player visibili" },
     { tipo: "booleano", chiave: "sottotitoli", etichetta: "Sottotitoli attivi (se presenti)" },
     { tipo: "numero", chiave: "inizio", etichetta: "Parti dal secondo", min: 0 },
-    { tipo: "booleano", chiave: "pulsanteAcquisto", etichetta: "Pulsante «Acquista» sotto il video" },
+    { tipo: "pulsante", chiave: "pulsante", etichetta: "Pulsante sotto il blocco", facoltativo: true },
   ],
   galleria: [
     { tipo: "testo", chiave: "titolo", etichetta: "Titolo" },
@@ -196,6 +256,7 @@ export const SCHEMI_BLOCCHI: Record<TipoBlocco, Campo[]> = {
     { tipo: "testo", chiave: "luogo", etichetta: "Luogo" },
     { tipo: "immagine", chiave: "fotoUrl", etichetta: "Foto", aiuto: "Quadrata, almeno 400×400 px." },
     { tipo: "elenco-testi", chiave: "paragrafi", etichetta: "Paragrafi", etichettaElemento: "paragrafo" },
+    { tipo: "pulsante", chiave: "pulsante", etichetta: "Pulsante sotto il testo", facoltativo: true },
   ],
   faq: [
     { tipo: "testo", chiave: "titolo", etichetta: "Titolo" },
@@ -220,18 +281,68 @@ export const SCHEMI_BLOCCHI: Record<TipoBlocco, Campo[]> = {
       aiuto: "Il prezzo e i contenuti inclusi vengono dalla scheda della guida.",
       etichettaElemento: "garanzia",
     },
+    {
+      tipo: "testo",
+      chiave: "etichettaPulsante",
+      etichetta: "Testo del pulsante di acquisto",
+      aiuto: "Se vuoto: «Acquista la guida».",
+    },
   ],
   invito: [
     { tipo: "testo", chiave: "titolo", etichetta: "Titolo", obbligatorio: true },
     { tipo: "testo-lungo", chiave: "testo", etichetta: "Testo" },
+    { tipo: "pulsante", chiave: "pulsante", etichetta: "Pulsante" },
+  ],
+  elenco: [
+    { tipo: "testo", chiave: "titolo", etichetta: "Titolo" },
+    { tipo: "testo-lungo", chiave: "testo", etichetta: "Testo introduttivo" },
     {
       tipo: "scelta",
-      chiave: "azione",
-      etichetta: "Pulsante",
+      chiave: "simbolo",
+      etichetta: "Simbolo accanto alle voci",
       opzioni: [
-        { valore: "acquista", etichetta: "Acquista la guida" },
-        { valore: "accedi", etichetta: "Accedi all'area riservata" },
+        { valore: "spunta", etichetta: "Spunta (sì)" },
+        { valore: "croce", etichetta: "Croce (no)" },
+        { valore: "domanda", etichetta: "Punto di domanda" },
       ],
+    },
+    { tipo: "elenco-testi", chiave: "voci", etichetta: "Voci", etichettaElemento: "voce" },
+    { tipo: "pulsante", chiave: "pulsante", etichetta: "Pulsante sotto il blocco", facoltativo: true },
+  ],
+  modulo: [
+    { tipo: "testo", chiave: "titolo", etichetta: "Titolo" },
+    { tipo: "testo-lungo", chiave: "testo", etichetta: "Testo accanto al modulo" },
+    {
+      tipo: "elenco",
+      chiave: "campi",
+      etichetta: "Campi del modulo",
+      aiuto: "Nell'ordine in cui compaiono. Serve almeno l'email o il telefono. La casella della privacy c'è sempre.",
+      etichettaElemento: "campo",
+      campi: [
+        {
+          tipo: "scelta",
+          chiave: "campo",
+          etichetta: "Campo",
+          opzioni: codiciCampiContatto.map((c) => ({ valore: c, etichetta: CAMPI_CONTATTO[c] })),
+        },
+        { tipo: "testo", chiave: "etichetta", etichetta: "Etichetta mostrata", aiuto: "Se vuota si usa il nome del campo." },
+        { tipo: "booleano", chiave: "obbligatorio", etichetta: "Obbligatorio" },
+      ],
+    },
+    { tipo: "testo", chiave: "etichettaInvio", etichetta: "Testo del pulsante di invio", obbligatorio: true },
+    {
+      tipo: "testo-lungo",
+      chiave: "messaggioConferma",
+      etichetta: "Messaggio dopo l'invio",
+      obbligatorio: true,
+    },
+    {
+      tipo: "elenco-testi",
+      chiave: "destinatari",
+      etichetta: "Destinatari delle richieste",
+      aiuto:
+        "Email che ricevono le richieste di questo modulo. Le ricevono anche i destinatari con l'evento «Richieste landing» in Notifiche.",
+      etichettaElemento: "email",
     },
   ],
 };
@@ -248,13 +359,35 @@ export const ORDINE_BLOCCHI: TipoBlocco[] = [
   "testimonianze",
   "autore",
   "faq",
+  "elenco",
   "prezzo",
   "invito",
+  "modulo",
 ];
+
+/** Pulsante (JSON dell'editor) con i valori predefiniti. */
+export const pulsanteNuovo = (dati: Record<string, unknown> = {}) => ({
+  attivo: false,
+  etichetta: "",
+  azione: "acquista",
+  sezione: "",
+  link: "",
+  stile: "principale",
+  ...dati,
+});
 
 /** Contenuto iniziale di un blocco appena aggiunto. */
 export const BLOCCHI_NUOVI: Record<TipoBlocco, Record<string, unknown>> = {
-  hero: { titolo: "", evidenza: "", sottotitolo: "", numeri: [] },
+  hero: {
+    titolo: "",
+    evidenza: "",
+    sottotitolo: "",
+    numeri: [],
+    pulsante: pulsanteNuovo({ attivo: true, etichetta: "Acquista la guida" }),
+    pulsanteSecondario: pulsanteNuovo({ azione: "sezione", stile: "secondario" }),
+    media: "guida",
+    videoFormato: "16:9",
+  },
   "punti-chiave": { titolo: "", punti: [{ icona: "sicurezza", titolo: "", testo: "" }] },
   tappe: { titolo: "Cosa trovi nella guida", tappe: [{ titolo: "", testo: "" }] },
   testo: { titolo: "", paragrafi: [""] },
@@ -268,7 +401,7 @@ export const BLOCCHI_NUOVI: Record<TipoBlocco, Record<string, unknown>> = {
     ripeti: false,
     controlli: true,
     sottotitoli: false,
-    pulsanteAcquisto: false,
+    pulsante: pulsanteNuovo({ etichetta: "Acquista la guida" }),
   },
   galleria: { titolo: "", modalita: "griglia", colonne: 3, scorrimentoAutomatico: false, immagini: [] },
   testimonianze: { titolo: "Cosa dicono i lettori", elementi: [] },
@@ -278,7 +411,20 @@ export const BLOCCHI_NUOVI: Record<TipoBlocco, Record<string, unknown>> = {
     titolo: "Una vendita buona e giusta",
     garanzie: ["Pagamento sicuro con Stripe", "Accesso immediato dopo il pagamento"],
   },
-  invito: { titolo: "", azione: "acquista" },
+  invito: { titolo: "", pulsante: pulsanteNuovo({ attivo: true, etichetta: "Acquista la guida" }) },
+  elenco: { titolo: "", simbolo: "spunta", voci: [""] },
+  modulo: {
+    titolo: "Parliamone",
+    campi: [
+      { campo: "nome", etichetta: "", obbligatorio: true },
+      { campo: "email", etichetta: "", obbligatorio: true },
+      { campo: "telefono", etichetta: "", obbligatorio: false },
+      { campo: "messaggio", etichetta: "", obbligatorio: false },
+    ],
+    etichettaInvio: "Invia la richiesta",
+    messaggioConferma: "Grazie! Abbiamo ricevuto la tua richiesta e ti ricontatteremo presto.",
+    destinatari: [],
+  },
 };
 
 /** Elemento vuoto di un elenco, con i campi dello schema. */
@@ -286,7 +432,13 @@ export function elementoVuoto(campi: Campo[]) {
   return Object.fromEntries(
     campi.map((c) => [
       c.chiave,
-      c.tipo === "booleano" ? false : c.tipo === "scelta" ? c.opzioni[0]?.valore : "",
+      c.tipo === "booleano"
+        ? false
+        : c.tipo === "scelta"
+          ? c.opzioni[0]?.valore
+          : c.tipo === "pulsante"
+            ? pulsanteNuovo()
+            : "",
     ]),
   );
 }

@@ -139,7 +139,7 @@ export async function duplicaLanding(id: string): Promise<EsitoAzione> {
   const supabase = await creaClientServer();
   const { data: originale } = await supabase
     .from("landing_pages")
-    .select("slug, title, seo_title, seo_description, og_image_url, domain, blocks")
+    .select("slug, title, seo_title, seo_description, og_image_url, domain, blocks, mobile_bar")
     .eq("id", id)
     .maybeSingle();
   if (!originale) return { errore: "Landing non trovata." };
@@ -156,6 +156,7 @@ export async function duplicaLanding(id: string): Promise<EsitoAzione> {
       seo_description: originale.seo_description,
       og_image_url: originale.og_image_url,
       blocks: originale.blocks,
+      mobile_bar: originale.mobile_bar,
       updated_by: admin.id,
     });
     if (!error) {
@@ -197,6 +198,8 @@ export type DatiLanding = {
   immagineAnteprima: string;
   dominio: string;
   blocchi: unknown[];
+  /** Barra fissa su smartphone; `undefined` = lascia quella salvata. */
+  barra?: unknown;
 };
 
 export type EsitoSalvataggio = {
@@ -247,6 +250,27 @@ export async function salvaLanding(id: string, dati: DatiLanding): Promise<Esito
   if (JSON.stringify(blocchi).length > MAX_DIMENSIONE_JSON) {
     return { errore: "La landing è troppo grande: riduci testi o immagini." };
   }
+
+  // Barra fissa: solo i campi previsti, testi brevi.
+  let barra: Record<string, unknown> | undefined;
+  if (dati.barra !== undefined) {
+    const b = typeof dati.barra === "object" && dati.barra !== null ? (dati.barra as Record<string, unknown>) : {};
+    const breve = (v: unknown, max: number) => (typeof v === "string" ? v.trim().slice(0, max) : "");
+    const p = typeof b.pulsante === "object" && b.pulsante !== null ? (b.pulsante as Record<string, unknown>) : {};
+    barra = {
+      attiva: b.attiva === true,
+      titolo: breve(b.titolo, 80),
+      testo: breve(b.testo, 120),
+      pulsante: {
+        attivo: true,
+        etichetta: breve(p.etichetta, 60),
+        azione: breve(p.azione, 20),
+        sezione: breve(p.sezione, 60),
+        link: breve(p.link, 500),
+        stile: p.stile === "secondario" ? "secondario" : "principale",
+      },
+    };
+  }
   if (Object.keys(errori).length) return { errori };
 
   const supabase = await creaClientServer();
@@ -260,6 +284,7 @@ export async function salvaLanding(id: string, dati: DatiLanding): Promise<Esito
       og_image_url: immagineAnteprima || null,
       domain: isDominioAttivo(dati.dominio) ? dati.dominio : "app",
       blocks: blocchi,
+      ...(barra !== undefined ? { mobile_bar: barra } : {}),
       updated_by: admin.id,
     })
     .eq("id", id)
@@ -289,26 +314,36 @@ const TIPI_IMMAGINE: Record<string, string> = {
   "image/avif": "avif",
   "image/gif": "gif",
 };
+/** Video brevi nel bucket; quelli lunghi o pesanti vanno su Bunny Stream. */
+const TIPI_VIDEO: Record<string, string> = {
+  "video/mp4": "mp4",
+  "video/webm": "webm",
+};
 const DIMENSIONE_MAX_IMMAGINE = 10 * 1024 * 1024;
 
 export type EsitoPreparazioneImmagine =
   | { percorso: string; token: string; url: string; errore?: never }
   | { errore: string };
 
-/** Crea l'URL firmato per caricare un'immagine nel bucket pubblico delle landing. */
+/** Crea l'URL firmato per caricare un'immagine o un video breve nel bucket pubblico delle landing. */
 export async function preparaCaricamentoImmagine(file: {
   tipo: string;
   dimensione: number;
 }): Promise<EsitoPreparazioneImmagine> {
   await richiediAdmin();
-  const estensione = TIPI_IMMAGINE[file.tipo];
-  if (!estensione) return { errore: "Formato non supportato: usa JPG, PNG, WebP, AVIF o GIF." };
+  const video = file.tipo in TIPI_VIDEO;
+  const estensione = TIPI_IMMAGINE[file.tipo] ?? TIPI_VIDEO[file.tipo];
+  if (!estensione) return { errore: "Formato non supportato: usa JPG, PNG, WebP, AVIF, GIF, MP4 o WebM." };
   if (!(file.dimensione > 0) || file.dimensione > DIMENSIONE_MAX_IMMAGINE) {
-    return { errore: "L'immagine deve pesare al massimo 10 MB." };
+    return {
+      errore: video
+        ? "Il video deve pesare al massimo 10 MB: comprimilo o caricalo su Bunny Stream."
+        : "L'immagine deve pesare al massimo 10 MB.",
+    };
   }
 
   const casuale = Math.random().toString(36).slice(2, 10);
-  const percorso = `immagini/${Date.now()}-${casuale}.${estensione}`;
+  const percorso = `${video ? "video" : "immagini"}/${Date.now()}-${casuale}.${estensione}`;
   const storage = creaClientAdmin().storage.from(BUCKET_LANDING);
   const { data, error } = await storage.createSignedUploadUrl(percorso);
   if (error || !data) {

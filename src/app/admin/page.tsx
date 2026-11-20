@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
-import { ArrowRightIcon, BellIcon, FileTextIcon, MegaphoneIcon, PhoneCallIcon, UsersIcon } from "lucide-react";
+import { ArrowRightIcon, BellIcon, FileTextIcon, InboxIcon, MegaphoneIcon, PhoneCallIcon, UsersIcon } from "lucide-react";
 
 import { richiediAdmin } from "@/lib/auth/admin";
 import { statoRichiesta } from "@/lib/profilo/ricontatto";
@@ -31,6 +31,12 @@ const sezioni = [
     href: "/admin/landing",
   },
   {
+    titolo: "Richieste",
+    descrizione: "Messaggi arrivati dai moduli di contatto delle landing.",
+    icona: InboxIcon,
+    href: "/admin/richieste",
+  },
+  {
     titolo: "Notifiche",
     descrizione: "Chi riceve via email gli eventi dell'app e storico degli invii.",
     icona: BellIcon,
@@ -52,6 +58,9 @@ export default function AdminPage() {
 
       <Suspense fallback={null}>
         <AvvisoRicontatti />
+      </Suspense>
+      <Suspense fallback={null}>
+        <AvvisoRichieste />
       </Suspense>
 
       <ul className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
@@ -100,6 +109,31 @@ async function AvvisoRicontatti() {
         <PhoneCallIcon className="size-4" aria-hidden />
       </span>
       {quanti === 1 ? "1 cliente chiede di essere ricontattato" : `${quanti} clienti chiedono di essere ricontattati`}
+      <ArrowRightIcon className="ml-auto size-4 text-muted-foreground" aria-hidden />
+    </Link>
+  );
+}
+
+/** Richieste arrivate dai moduli delle landing e non ancora gestite. */
+async function AvvisoRichieste() {
+  await richiediAdmin();
+  const supabase = await creaClientServer();
+  const { count } = await supabase
+    .from("landing_requests")
+    .select("id", { count: "exact", head: true })
+    .is("handled_at", null);
+  const quante = count ?? 0;
+  if (quante === 0) return null;
+
+  return (
+    <Link
+      href="/admin/richieste"
+      className="flex items-center gap-3 rounded-xl border border-primary/30 bg-primary/5 p-4 text-sm font-medium hover:bg-primary/10 focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none"
+    >
+      <span className="inline-flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <InboxIcon className="size-4" aria-hidden />
+      </span>
+      {quante === 1 ? "1 richiesta dalle landing da gestire" : `${quante} richieste dalle landing da gestire`}
       <ArrowRightIcon className="ml-auto size-4 text-muted-foreground" aria-hidden />
     </Link>
   );
