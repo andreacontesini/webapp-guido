@@ -6,7 +6,7 @@
 
 ## 📍 Stato del progetto (aggiornato al 20/11/2026)
 - **Versione attuale:** `0.11.1` (ultimo tag `v0.11.1`). Fasi 1-11 sviluppate; per le Fasi 10 e 11 (landing) mancano i tag `v0.8.0` e `v0.9.0`.
-- **Prossimo passo:** passaggio di Stripe alle chiavi live (webhook di produzione e branding), poi tag `v1.0.0`. Database pulito: solo i due admin, nessun acquisto, statistiche e storico azzerati.
+- **Prossimo passo:** landing della consulenza con modulo di contatto (`v0.12.0`); in parallelo il passaggio di Stripe alle chiavi live. Database pulito: solo i due admin, nessun acquisto, statistiche e storico azzerati.
 - **Poi:** Fase 12 · Lancio della guida (`v1.0.0`).
 
 ### Da fare a mano (fuori dal codice)
@@ -190,6 +190,20 @@
   - Testo alternativo e didascalia per ogni immagine; caricamento differito.
 - [ ] **Tag Versione:** `v0.9.0` (codice completo, tag da creare).
 
+### Landing della consulenza e modulo di contatto (Target: v0.12.0)
+> Ricreare nell'app la landing della consulenza di Guido (oggi su WordPress, `guidocontesini.it/vendi-casa-da-privato/`) e rendere le landing più flessibili. Design: `docs/superpowers/specs/2026-11-20-landing-consulenza-design.md`.
+- [ ] **Pulsanti configurabili** (testo, azione, destinazione, stile): acquista, vai a una sezione della pagina, link, accedi. Nell'apertura (principale e secondario), nell'invito e, facoltativi, sotto video, tappe, testo, autore, elenco e punti chiave; testo del pulsante del prezzo. Landing esistenti convertite senza cambiamenti visibili.
+- [ ] **Apertura con media a scelta**: copertina della guida, immagine, video (avvio automatico senza audio) o niente.
+- [ ] **Barra fissa su smartphone** facoltativa, con titolo, testo e pulsante scelti nell'editor.
+- [ ] **Nuovo blocco "Elenco"** (spunte, croci o domande) con pulsante facoltativo.
+- [ ] **Nuovo blocco "Modulo di contatto"**: campi a scelta (nome, email, telefono, città, messaggio; obbligatori o no), privacy obbligatoria, testi, destinatari del blocco; anti-spam; richieste salvate in `landing_requests`.
+- [ ] **Notifica "Richieste landing"** (nuovo evento, solo per i moduli delle landing) e **sezione "Richieste" in admin** con avviso in Panoramica; richieste nelle statistiche delle landing.
+- [ ] **Media dall'editor**: il bucket `landing` accetta anche video MP4/WebM fino a 10 MB, con il pulsante "Carica video".
+- [ ] Privacy aggiornata con i dati del modulo di contatto.
+- [ ] Landing `/vendi-casa-da-privato` creata in bozza con i testi, il ritratto e il video della pagina WordPress.
+  - [ ] **Video su Bunny Stream:** quello attuale è compresso a 8,4 MB e caricato nel bucket `landing`; quando Bunny sarà attivo, caricare l'originale su Bunny e sostituire l'indirizzo nell'apertura della landing.
+- [ ] **Tag Versione:** `v0.12.0`.
+
 ### Fase 12: Lancio della Guida (Target: v1.0.0)
 - [ ] **Aspetti legali e fiscali:**
   - [x] Pagine pubbliche `/condizioni-di-vendita`, `/privacy` e `/cookie` (solo per le landing, nulla nell'area riservata), collegate dal piè di pagina delle landing (escluse dalla sitemap). Dati del venditore centralizzati in `src/lib/legale/venditore.ts`; indirizzi riservati alle landing aggiornati (codice e migrazione `20261120090000_slug_pagine_legali.sql`, applicata).
@@ -207,7 +221,7 @@
 ---
 
 ## 🔵 VERSIONE 2.x (Focus: Videocorso)
-**Sviluppo su un branch separato (`videocorso`), unito a `main` solo a corso completo e testato.** Fino ad allora in app il videocorso resta "In arrivo".
+**Sviluppo su un branch separato (`feat/videocorso`), unito a `main` solo a corso completo e testato.** Fino ad allora in app il videocorso resta "In arrivo".
 
 ### Fase 13: Database Videocorso
 - [ ] Estendere DB: tabelle `modules`, `lessons`, `attachments`; prodotto videocorso in `purchases`.
