@@ -6,11 +6,10 @@
 
 ## 📍 Stato del progetto (aggiornato al 20/11/2026)
 - **Versione attuale:** `0.11.1` (ultimo tag `v0.11.1`). Fasi 1-11 sviluppate; per le Fasi 10 e 11 (landing) mancano i tag `v0.8.0` e `v0.9.0`.
-- **Prossimo passo:** far rileggere a Guido le pagine legali, poi passaggio di Stripe alle chiavi live e controllo finale (Fase 12). Database pulito: solo i due admin, nessun acquisto, statistiche e storico azzerati.
+- **Prossimo passo:** passaggio di Stripe alle chiavi live (webhook di produzione e branding), poi tag `v1.0.0`. Database pulito: solo i due admin, nessun acquisto, statistiche e storico azzerati.
 - **Poi:** Fase 12 · Lancio della guida (`v1.0.0`).
 
 ### Da fare a mano (fuori dal codice)
-- [ ] Far rileggere a Guido condizioni di vendita, privacy e cookie.
 - [ ] Scegliere in `/admin/landing` se usare la prima landing come pagina iniziale.
 - [ ] Foto dell'autore e testimonianze vere per la landing, quando disponibili.
 - [ ] Al passaggio a Stripe live: chiavi, webhook di produzione (con gli stessi eventi di quello di test, vedi `docs/stripe.md`) e branding completo (Fase 12).
@@ -195,7 +194,6 @@
 - [ ] **Aspetti legali e fiscali:**
   - [x] Pagine pubbliche `/condizioni-di-vendita`, `/privacy` e `/cookie` (solo per le landing, nulla nell'area riservata), collegate dal piè di pagina delle landing (escluse dalla sitemap). Dati del venditore centralizzati in `src/lib/legale/venditore.ts`; indirizzi riservati alle landing aggiornati (codice e migrazione `20261120090000_slug_pagine_legali.sql`, applicata).
   - [x] Dati del venditore in `src/lib/legale/venditore.ts`: sede e partita IVA (anche nel piè di pagina delle landing). Codice fiscale e PEC facoltativi, mostrati solo se inseriti.
-  - [ ] Far rileggere i testi a Guido (ed eventualmente a un consulente) prima del lancio.
   - [ ] Rinuncia al recesso per contenuti digitali: rimandata. Finché nel checkout non c'è la casella, le condizioni prevedono il recesso ordinario di 14 giorni (sezione 8); quando si aggiunge, aggiornare quella sezione.
   - [x] Fattura: la gestisce la commercialista (la ricevuta Stripe non è una fattura); le condizioni rimandano all'email di assistenza per i dati di fatturazione.
 - [x] Test end-to-end con la lista in `docs/test-end-to-end.md` (27 casi: accesso, guida PDF, acquisto, rimborsi e contestazioni, profilo e ricontatto, GDPR, admin, email): tutti superati il 20/11/2026. Dati di prova poi cancellati (acquisti, storico notifiche, statistiche delle landing, richieste di ricontatto).
@@ -203,7 +201,7 @@
 - [x] Email (dalla Fase 7): modelli di Supabase Auth copiati nel pannello (Authentication → Emails → Templates, vedi `docs/supabase-auth.md`) e provati con un accesso reale; controllo dell'aspetto nei principali client (Gmail, Apple Mail, Outlook, smartphone) e in tema scuro.
 - [ ] Passaggio di Stripe alle chiavi live e webhook di produzione.
   - [ ] Branding nell'account live: logo e icona (`public/email/logo.png`), colori `#2b5bd7` / `#0f1e33`, nome pubblico ed email di assistenza `contesiniconsulenze@gmail.com`.
-- [ ] Deploy su Vercel (app.guidocontesini.it) e controllo finale su smartphone e desktop.
+- [x] Deploy su Vercel (app.guidocontesini.it) e controllo finale su smartphone e desktop (20/11/2026).
 - [ ] **Tag Versione:** rilascio `v1.0.0` (prima versione pubblica, solo guida).
 
 ---
