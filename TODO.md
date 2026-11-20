@@ -5,7 +5,7 @@
 ---
 
 ## 📍 Stato del progetto (aggiornato al 20/11/2026)
-- **Versione attuale:** `0.12.0` (ultimo tag `v0.11.1`). Fasi 1-11 sviluppate; per le Fasi 10 e 11 (landing) mancano i tag `v0.8.0` e `v0.9.0`.
+- **Versione attuale:** `0.12.0` (ultimo tag `v0.12.0`). Fasi 1-11 sviluppate; per le Fasi 10 e 11 (landing) mancano i tag `v0.8.0` e `v0.9.0`.
 - **Prossimo passo:** landing della consulenza con modulo di contatto (`v0.12.0`); in parallelo il passaggio di Stripe alle chiavi live. Database pulito: solo i due admin, nessun acquisto, statistiche e storico azzerati.
 - **Poi:** Fase 12 · Lancio della guida (`v1.0.0`).
 
@@ -203,7 +203,7 @@
 - [x] Landing `/vendi-casa-da-privato` creata in bozza con i testi, il ritratto e il video della pagina WordPress.
   - [ ] Controllo in anteprima (smartphone e computer), poi pubblicazione da `/admin/landing` e invio di prova del modulo (arriva la notifica, la richiesta compare in `/admin/richieste`).
   - [ ] **Video su Bunny Stream:** quello attuale è compresso a 8,4 MB e caricato nel bucket `landing`; quando Bunny sarà attivo, caricare l'originale su Bunny e sostituire l'indirizzo nell'apertura della landing.
-- [ ] **Tag Versione:** `v0.12.0`.
+- [x] **Tag Versione:** `v0.12.0`.
 
 ### Fase 12: Lancio della Guida (Target: v1.0.0)
 - [ ] **Aspetti legali e fiscali:**
